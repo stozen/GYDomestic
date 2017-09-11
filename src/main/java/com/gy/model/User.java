@@ -1,6 +1,7 @@
 package com.gy.model;
 
 import java.util.Date;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,7 +20,7 @@ import org.hibernate.annotations.GenericGenerator;
  * @date 2017.9.11
  */
 @Entity
-@Table(name="tb_gyuser")
+@Table(name="tb_gyuser",catalog="db_gyuser")
 public class User {
 	
 	/**
@@ -30,13 +31,11 @@ public class User {
 	/**
 	 * 创建用户名字段
 	 */
-	
 	private String username;
 	
 	/**
 	 * 创建用户密码字段
 	 */
-	
 	private String password;
 	
 	/**
@@ -49,6 +48,15 @@ public class User {
 	 */
 	private Date registtime;
 	
+	/**
+	 * 创建用户修改时间
+	 */
+	private Date modifytime;
+	
+	/**
+	 * 创建引用游戏
+	 */
+	private Set<Game> game;
 	
 	/**
 	 * 创建默认构造函数
@@ -99,7 +107,43 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	
+	@Column(name="logintime",length=6,nullable=true)
+	public Date getLogintime() {
+		return logintime;
+	}
 
+	public void setLogintime(Date logintime) {
+		this.logintime = logintime;
+	}
+
+	@Column(name="registtime",length=6,nullable=false)
+	public Date getRegisttime() {
+		return registtime;
+	}
+
+	public void setRegisttime(Date registtime) {
+		this.registtime = registtime;
+	}
+
+	@Column(name="modifytime",length=6,nullable=true)
+	public Date getModifytime() {
+		return modifytime;
+	}
+
+	public void setModifytime(Date modifytime) {
+		this.modifytime = modifytime;
+	}
+
+	@Column(name="game",length=20,nullable=true)
+	public Set<Game> getGame() {
+		return game;
+	}
+
+	public void setGame(Set<Game> game) {
+		this.game = game;
+	}
+	
 	/**
 	 * 创建toString方法
 	 */

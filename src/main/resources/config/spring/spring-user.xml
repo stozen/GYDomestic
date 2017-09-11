@@ -18,4 +18,7 @@
  >
  	<!-- 配置用户实体类 -->
  	<bean id="userManager" class="com.gy.model.User"></bean>
+ 	
+ 	<!-- 配置游戏实体类 -->
+ 	<bean id="gameManager" class="com.gy.model.Game"></bean>
 </beans>
