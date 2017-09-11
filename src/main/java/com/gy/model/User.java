@@ -25,22 +25,18 @@ public class User {
 	/**
 	 * 创建ID字段
 	 */
-	@Id
-	@GenericGenerator(name="generator",strategy="native")
-	@GeneratedValue(generator="generator")
-	@Column(name="userid",length=12,nullable=false,unique=true)
 	private int userid;
 	
 	/**
 	 * 创建用户名字段
 	 */
-	@Column(name="username",length=30,nullable=false,insertable=true,updatable=true)
+	
 	private String username;
 	
 	/**
 	 * 创建用户密码字段
 	 */
-	@Column(name="passwd",length=40,nullable=false,insertable=true,updatable=true)
+	
 	private String password;
 	
 	/**
@@ -51,6 +47,8 @@ public class User {
 	/**
 	 * 创建用户注册时间
 	 */
+	private Date registtime;
+	
 	
 	/**
 	 * 创建默认构造函数
@@ -72,6 +70,10 @@ public class User {
 	/**
 	 * 创建对应字段的set和get方法
 	 */
+	@Id
+	@GenericGenerator(name="generator",strategy="native")
+	@GeneratedValue(generator="generator")
+	@Column(name="userid",length=12,nullable=false,unique=true)
 	public int getUserid() {
 		return userid;
 	}
@@ -80,6 +82,7 @@ public class User {
 		this.userid = userid;
 	}
 
+	@Column(name="username",length=30,nullable=false,insertable=true,updatable=true)
 	public String getUsername() {
 		return username;
 	}
@@ -88,6 +91,7 @@ public class User {
 		this.username = username;
 	}
 
+	@Column(name="passwd",length=40,nullable=false,insertable=true,updatable=true)
 	public String getPassword() {
 		return password;
 	}

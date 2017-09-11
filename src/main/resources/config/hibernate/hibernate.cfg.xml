@@ -5,5 +5,8 @@
 	<session-factory>
 		<!-- 引入映射的类 -->
 		<mapping class="com.gy.model.User"/>
+		
+		<!-- 处理映射其他的类 -->
+		<mapping class="com.gy.model.Game"/>
 	</session-factory>
 </hibernate-configuration>

@@ -13,4 +13,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(value="/user")
 public class UserControl {
 	
+	
+	/**
+	 * 实现用户登录功能
+	 */
+	public void login() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/**
+	 * 实现用户注册功能
+	 */
+	public void regist() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/**
+	 * 实现用户忘记密码功能
+	 */
+	public void forgetPass() {
+		// TODO Auto-generated method stub
+
+	}
 }
