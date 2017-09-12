@@ -21,4 +21,9 @@
  	
  	<!-- 配置游戏实体类 -->
  	<bean id="gameManager" class="com.gy.model.Game"></bean>
+ 	
+ 	<!-- 配置订单实体类 -->
+ 	<bean id="orderManager" class="com.gy.model.Order"></bean>
+ 	
+ 	<!-- 配置其他的实体类，预留位置 -->
 </beans>

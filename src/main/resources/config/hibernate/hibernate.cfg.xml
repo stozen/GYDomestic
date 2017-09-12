@@ -3,10 +3,16 @@
 "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
 	<session-factory>
-		<!-- 引入映射的类 -->
+		<!-- 引入映射的用户类 -->
 		<mapping class="com.gy.model.User"/>
 		
-		<!-- 处理映射其他的类 -->
+		<!-- 处理映射游戏的类 -->
 		<mapping class="com.gy.model.Game"/>
+		
+		<!-- 处理映射的订单类 -->
+		<mapping class="com.gy.model.Order"/>
+		
+		<!-- 处理映射其他的类，预留位置 -->
+		
 	</session-factory>
 </hibernate-configuration>

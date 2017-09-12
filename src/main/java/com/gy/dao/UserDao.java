@@ -71,4 +71,5 @@ public interface UserDao {
 	 * @return true or false
 	 */
 	public boolean updateAll();
+
 }

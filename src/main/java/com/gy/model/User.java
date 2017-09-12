@@ -1,16 +1,22 @@
 package com.gy.model;
 
+import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
+import com.gy.model.*;
 
 
 /**
@@ -19,9 +25,10 @@ import org.hibernate.annotations.GenericGenerator;
  * @introduce 这是用户实体类
  * @date 2017.9.11
  */
+
 @Entity
-@Table(name="tb_gyuser",catalog="db_gyuser")
-public class User {
+@Table(name="tb_gyuser",catalog="db_gyforeign")
+public class User implements Serializable {
 	
 	/**
 	 * 创建ID字段
@@ -56,7 +63,12 @@ public class User {
 	/**
 	 * 创建引用游戏
 	 */
-	private Set<Game> game;
+	private Set<Game> games = new HashSet<Game>();
+	
+	/**
+	 * 创建引用的订单
+	 */
+	private Set<Order> orders = new HashSet<Order>();
 	
 	/**
 	 * 创建默认构造函数
@@ -77,6 +89,7 @@ public class User {
 
 	/**
 	 * 创建对应字段的set和get方法
+	 * 创建主键生成策略
 	 */
 	@Id
 	@GenericGenerator(name="generator",strategy="native")
@@ -90,6 +103,10 @@ public class User {
 		this.userid = userid;
 	}
 
+	/**
+	 * 创建用户登录的用户名
+	 * @return
+	 */
 	@Column(name="username",length=30,nullable=false,insertable=true,updatable=true)
 	public String getUsername() {
 		return username;
@@ -99,6 +116,10 @@ public class User {
 		this.username = username;
 	}
 
+	/**
+	 * 创建用户登录密码
+	 * @return
+	 */
 	@Column(name="passwd",length=40,nullable=false,insertable=true,updatable=true)
 	public String getPassword() {
 		return password;
@@ -108,7 +129,11 @@ public class User {
 		this.password = password;
 	}
 	
-	@Column(name="logintime",length=6,nullable=true)
+	/**
+	 * 创建用户登录时间
+	 * @return
+	 */
+	@Column(name="logintime",length=6,nullable=false)
 	public Date getLogintime() {
 		return logintime;
 	}
@@ -117,6 +142,10 @@ public class User {
 		this.logintime = logintime;
 	}
 
+	/**
+	 * 创建用户注册时间
+	 * @return
+	 */
 	@Column(name="registtime",length=6,nullable=false)
 	public Date getRegisttime() {
 		return registtime;
@@ -126,7 +155,11 @@ public class User {
 		this.registtime = registtime;
 	}
 
-	@Column(name="modifytime",length=6,nullable=true)
+	/**
+	 * 创建用户修改时间
+	 * @return
+	 */
+	@Column(name="modifytime",length=6,nullable=false)
 	public Date getModifytime() {
 		return modifytime;
 	}
@@ -135,22 +168,43 @@ public class User {
 		this.modifytime = modifytime;
 	}
 
-	@Column(name="game",length=20,nullable=true)
-	public Set<Game> getGame() {
-		return game;
+	/**
+	 * 创建生成的关联的游戏
+	 * @return
+	 */
+	@Column(name="game",length=20,nullable=false)
+	@OneToMany(mappedBy="user",cascade=CascadeType.ALL)
+	public Set<Game> getGames() {
+		return games;
 	}
 
-	public void setGame(Set<Game> game) {
-		this.game = game;
+	public void setGames(Set<Game> games) {
+		this.games = games;
 	}
 	
+	/**
+	 * 创建生成关联的订单
+	 * @return
+	 */
+	@Column(name="order",length=30,nullable=false)
+	@OneToMany(mappedBy="user",cascade=CascadeType.ALL)
+	public Set<Order> getOrders() {
+		return orders;
+	}
+
+	public void setOrders(Set<Order> orders) {
+		this.orders = orders;
+	}
+
 	/**
 	 * 创建toString方法
 	 */
 	@Override
 	public String toString() {
 		return "User [userid=" + userid + ", username=" + username
-				+ ", password=" + password + "]";
+				+ ", password=" + password + ", logintime=" + logintime
+				+ ", registtime=" + registtime + ", modifytime=" + modifytime
+				+ ", games=" + games + "]";
 	}
 	
 }

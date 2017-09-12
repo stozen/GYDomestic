@@ -21,8 +21,11 @@
  http://www.springframework.org/schema/data/mongo/spring-mongo-1.8.xsd"
 >
 	<!-- 注解扫描的包 -->
+	<!-- 启动包扫描功能，以便注册带有@Controller、@Service、@repository、@Component等注解的类成为spring的bean -->  
     <context:component-scan base-package="com.gy"></context:component-scan>
     
+    <!-- 启动Spring注解配置 -->
+    <context:annotation-config />
     <!-- 缓存配置 -->
     
     
@@ -33,6 +36,8 @@
     <!--<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"></bean>-->
     
     <!-- 开启注解方案2 -->
+    
+    <!-- 启动注解驱动的Spring MVC功能，注册请求url和注解POJO类方法的映射--> 
 	<mvc:annotation-driven />	
 	
 	<!-- 静态资源访问，方案1 -->
@@ -44,19 +49,26 @@
 	
 	<!-- 视图解释类 -->
 	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="prefix" value="/"></property>
+		<property name="prefix" value="/WEB-INF/jsp/"></property>
 		<!-- 可为空，方便实现自己的一句扩展名来选择视图解释类的逻辑 -->
 		<property name="suffix" value=".jsp"></property>
 	</bean>
 	
-	<!-- 下面开始配置返回json数据类型 在相应的方法上注解RequestBody即可-->
-	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
-		<property name="messageConverters">
-			<list>
-				<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"></bean>
-			</list>
-		</property>
-	</bean>	
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/> 
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"> 
+	    <property name="messageConverters"> 
+	        <list>
+	            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">               
+	                <property name="supportedMediaTypes"> 
+	                    <list>
+	                    	<value>application/json;charset=UTF-8</value> 
+	                        <value>text/html;charset=UTF-8</value> 
+	                    </list> 
+	                </property> 
+	            </bean> 
+	        </list> 
+	    </property> 
+	</bean>
 	
 	<!-- 上传或下载 -->
 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
