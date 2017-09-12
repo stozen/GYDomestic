@@ -16,6 +16,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gy.model.*;
 
 
@@ -38,6 +40,7 @@ public class User implements Serializable {
 	/**
 	 * 创建用户名字段
 	 */
+	/*@JsonProperty(value="username")*/
 	private String username;
 	
 	/**

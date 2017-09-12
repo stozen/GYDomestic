@@ -2,8 +2,13 @@ package com.gy.daoImpl;
 
 import java.util.List;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.gy.dao.UserDao;
 import com.gy.model.User;
+import com.gy.util.HibernateUtil;
 
 /**
  * @author Chencongye
@@ -11,8 +16,22 @@ import com.gy.model.User;
  * @introduce 这是用户数据实现的持久层
  * @date 2017.9.11
  */
-public class UserDaoImpl implements UserDao{
-
+public class UserDaoImpl implements UserDao{	
+	
+	/**
+	 * 创建Hibernate的会话工厂类
+	 */
+	@Autowired
+	private SessionFactory sessionFactory;
+	
+	
+	/**
+	 * 创建
+	 * @return
+	 */
+	private Session getSession(){
+		return this.sessionFactory.openSession();
+	}
 	
 	/* (non-Javadoc)
 	 * @see com.gy.dao.UserDao#findById(int)
@@ -41,6 +60,8 @@ public class UserDaoImpl implements UserDao{
 	@Override
 	public boolean add(User user) {
 		// TODO Auto-generated method stub
+		
+		
 		return false;
 	}
 

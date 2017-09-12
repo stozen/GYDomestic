@@ -70,8 +70,7 @@ public class UserControl {
 		
 		}
 	
-	
-	@RequestMapping(params = "method=buildtemplate",method = RequestMethod.GET)
+	@RequestMapping(value="forgetpasswd",method = RequestMethod.GET)
 	public ModelAndView listFormField(String funcId, int fmtId){
 	        ModelAndView mav = new ModelAndView();
 	        List<User> fmcs = new ArrayList<User>();
