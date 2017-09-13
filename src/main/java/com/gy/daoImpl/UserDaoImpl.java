@@ -28,12 +28,14 @@ public class UserDaoImpl implements UserDao{
 	@Autowired
 	private SessionFactory sessionFactory;	
 	
-	/**
-	 * 创建Hibernate封装好的模板
-	 */
-	@Autowired
-	private HibernateTemplate hibernateTemplate;
-	
+	public SessionFactory getSessionFactory() {
+		return sessionFactory;
+	}
+
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
+
 	/**
 	 * 创建获得Session对象
 	 * @return
