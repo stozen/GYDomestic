@@ -16,60 +16,48 @@ public interface UserDao {
 	 * 实现用户单个查询功能
 	 * @return true or false
 	 */
-	public User findById(int userid);
+	public User query(int userid);
 	
 	/**
 	 * 实现查询所有用户
 	 * @return List集合
 	 */
-	public List<User> findByAll();
+	public List<User> queryAll();
 	
 	/**
 	 * 实现用户添加功能
 	 * @return true or false
 	 */
-	public boolean add(User user);
+	public boolean save(User user);
 	
 	/**
 	 * 增加一些用户
 	 * @return true or false
 	 */
-	public boolean addSome();
+	public boolean saveAll(User[] users);
 	
 	/**
 	 * 实现删除一个用户
 	 * @return true or false
 	 */
-	public boolean deleteById(int userid);
+	public boolean delete(int userid);
 	
 	/**
 	 * 实现删除某些用户
 	 * @return true or false
 	 */
-	public boolean deleteBySome(Object[] User);
-	
-	/**
-	 * 实现删除所有用户
-	 * @return
-	 */
-	public boolean deleteByAll();
+	public boolean deleteAll(User[] User);
 	
 	/**
 	 * 更新一个用户
 	 * @return
 	 */
-	public boolean updateById(int userid);
-	
-	/**
-	 * 更新某些用户
-	 * @return
-	 */
-	public boolean updateSome();
-	
+	public boolean update(int userid);
+		
 	/**
 	 * 更新所有用户
 	 * @return true or false
 	 */
-	public boolean updateAll();
+	public boolean updateAll(User[] users);
 
 }

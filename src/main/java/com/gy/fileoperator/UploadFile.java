@@ -22,7 +22,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
  * @author Chencongye
  * @version 0.0.1
  * @introduce 这是文件上传功能
- * @date 2017.9.11
+ * @date 2017.9.12
  */
 
 public class UploadFile {
