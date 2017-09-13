@@ -26,4 +26,5 @@
  	<bean id="orderManager" class="com.gy.model.Order"></bean>
  	
  	<!-- 配置其他的实体类，预留位置 -->
+ 	
 </beans>

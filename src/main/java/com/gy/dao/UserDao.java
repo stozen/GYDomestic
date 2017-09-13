@@ -28,19 +28,19 @@ public interface UserDao {
 	 * 实现用户添加功能
 	 * @return true or false
 	 */
-	public boolean save(User user);
+	public int save(User user);
 	
 	/**
 	 * 增加一些用户
 	 * @return true or false
 	 */
-	public boolean saveAll(User[] users);
+	public void saveAll(User[] users);
 	
 	/**
 	 * 实现删除一个用户
 	 * @return true or false
 	 */
-	public boolean delete(int userid);
+	public void delete(User user);
 	
 	/**
 	 * 实现删除某些用户
@@ -52,7 +52,7 @@ public interface UserDao {
 	 * 更新一个用户
 	 * @return
 	 */
-	public boolean update(int userid);
+	public void update(int userid);
 		
 	/**
 	 * 更新所有用户
@@ -60,4 +60,9 @@ public interface UserDao {
 	 */
 	public boolean updateAll(User[] users);
 
+	/**
+	 * 刷新Session
+	 * @return true or false
+	 */
+	public void flush();
 }

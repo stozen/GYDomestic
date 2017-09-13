@@ -1,5 +1,6 @@
 package com.gy.servicesImpl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +20,24 @@ import com.gy.services.UserService;
 
 @Service
 public class UserServiceImpl implements UserService {
-
+	
 	/**
 	 * 自动装配
 	 */
 	@Autowired
 	private UserDao userDao;
+	
+	/**
+	 * 在自动注入的时候，需要生成set和get方法
+	 * @return
+	 */
+	public UserDao getUserDao() {
+		return userDao;
+	}
+
+	public void setUserDao(UserDao userDao) {
+		this.userDao = userDao;
+	}
 	
 	@Override
 	public User query(int userid) {
@@ -39,9 +52,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public boolean save(User user) {
+	public int save(User user) {
 		// TODO Auto-generated method stub
-		return false;
+		return userDao.save(user);
 	}
 
 	@Override

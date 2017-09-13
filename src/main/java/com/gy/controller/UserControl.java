@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,6 +27,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.google.gson.Gson;
 import com.gy.model.User;
+import com.gy.services.UserService;
 import com.gy.util.GetRequstBody;
 
 /**
@@ -39,13 +41,31 @@ import com.gy.util.GetRequstBody;
 @RequestMapping(value="/user")
 public class UserControl {
 	
+	@Autowired
+	private UserService userService;
+	
+	/**
+	 * 生成对应的set和get方法
+	 * @return
+	 */
+	public UserService getUserService() {
+		return userService;
+	}
+
+	public void setUserService(UserService userService) {
+		this.userService = userService;
+	}
+
+	/**
+	 * 这是打印log的信息
+	 */
 	private static Logger log = Logger.getLogger(UserControl.class);
 	
-	@RequestMapping(value = "/hello", produces = "text/json;charset=UTF-8")
+	/*@RequestMapping(value = "/hello", produces = "text/json;charset=UTF-8")
 	public @ResponseBody String hello() {
 		
 		return "你好！hello";
-	}
+	}*/
 	
 	@RequestMapping(value = "/login",headers={"Accept="+MediaType.APPLICATION_JSON_VALUE})
 	public @ResponseBody User login() {
@@ -61,6 +81,9 @@ public class UserControl {
 		log.debug("register a new user");
 		
 		String username = request.getParameter("username");
+		String password = request.getParameter("password");
+		
+		User user = new User();
 		
 		Map map = new HashMap();
 		map.put("username", username);

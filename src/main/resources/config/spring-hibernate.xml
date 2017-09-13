@@ -95,7 +95,7 @@
 		<property name="hibernateProperties">
 			<props>
 				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
-				<prop key="hibernate.hbm2ddl.auto">create</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
 				<prop key="hibernate.show_sql">true</prop>
 				<prop key="hibernate.format_sql">true</prop>
 			</props>
@@ -120,14 +120,28 @@
 		<property name="transactionManager" ref="transactionManager"></property>
 		<property name="transactionAttributes">
 			<props>
-				 <prop key="add*">PROPAGATION_REQUIRED,-Exception</prop>
+				 <prop key="save*">PROPAGATION_REQUIRED,-Exception</prop>
 				 <prop key="update*">PROPAGATION_REQUIRED,-Exception</prop>
-				 <prop key="insert*">PROPAGATION_REQUIRED,-Exception</prop>
 				 <prop key="modify*">PROPAGATION_REQUIRED,-Exception</prop>
 				 <prop key="delete*">PROPAGATION_REQUIRED,-Exception</prop>
-				 <prop key="del*">PROPAGATION_REQUIRED,-Exception</prop>
-				 <prop key="get*">PROPAGATION_NEVER</prop>
+				 <prop key="query*">PROPAGATION_REQUIRED,-Exception</prop>
 			</props>
 		</property> 
 	</bean>
+	
+	<!-- 配置UserDaoImpl实现类 -->
+ 	<bean id="userDao" class="com.gy.daoImpl.UserDaoImpl">
+ 		<property name="sessionFactory" ref="sessionFactory"></property>
+ 	</bean>
+ 	
+ 	<!-- 配置UserServiceImpl实现类 -->
+ 	<bean id="userServiceBase" class="com.gy.servicesImpl.UserServiceImpl">
+ 		<property name="userDao" ref="userDao"></property>
+ 	</bean>
+ 	
+ 	<!-- parent为transactionBese，表示支持事务 -->
+ 	<bean id="userService" parent="transactionBese"> 
+    	<property name="target" ref="userServiceBase"></property> 
+	</bean> 
+ 	
  </beans>
