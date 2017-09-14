@@ -29,8 +29,6 @@ import com.gy.model.User;
  */
 @Repository
 public class UserDaoImpl implements UserDao{	
-	
-	private static final String Integer = null;
 
 	/**
 	 * 创建Hibernate的会话工厂类
