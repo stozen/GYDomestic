@@ -13,4 +13,5 @@ public class Goods {
 	 * 创建商品主键id
 	 */
 	private int goodsid;
+	
 }

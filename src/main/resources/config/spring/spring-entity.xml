@@ -25,6 +25,10 @@
  	<!-- 配置订单实体类 -->
  	<bean id="orderManager" class="com.gy.model.Order"></bean>
  	
+ 	<!-- 配置用户账户类型 -->
+ 	<bean id="accountManager" class="com.gy.model.Account"></bean>
+ 	
+ 	<!-- <bean id="tokenManager" class="com.gy.model.Token"></bean> -->
  	<!-- 配置其他的实体类，预留位置 -->
  	
 </beans>

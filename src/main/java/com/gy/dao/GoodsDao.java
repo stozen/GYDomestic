@@ -8,5 +8,5 @@ package com.gy.dao;
  */
 
 public interface GoodsDao {
-
+	
 }

@@ -64,6 +64,16 @@ public class User implements Serializable {
 	private Date modifytime;
 	
 	/**
+	 * 创建用户的手机账号
+	 */
+	private String mobile;
+	
+	/**
+	 * 创建用户的邮箱
+	 */
+	private String email;
+	
+	/**
 	 * 创建引用游戏
 	 */
 	private Set<Game> games = new HashSet<Game>();
@@ -136,7 +146,7 @@ public class User implements Serializable {
 	 * 创建用户登录时间
 	 * @return
 	 */
-	@Column(name="logintime",length=6,nullable=false)
+	@Column(name="logintime",length=6,nullable=true,insertable=true,updatable=true)
 	public Date getLogintime() {
 		return logintime;
 	}
@@ -149,7 +159,7 @@ public class User implements Serializable {
 	 * 创建用户注册时间
 	 * @return
 	 */
-	@Column(name="registtime",length=6,nullable=false)
+	@Column(name="registtime",length=6,nullable=false,insertable=true,updatable=true)
 	public Date getRegisttime() {
 		return registtime;
 	}
@@ -162,13 +172,26 @@ public class User implements Serializable {
 	 * 创建用户修改时间
 	 * @return
 	 */
-	@Column(name="modifytime",length=6,nullable=false)
+	@Column(name="modifytime",length=6,nullable=true,insertable=true,updatable=true)
 	public Date getModifytime() {
 		return modifytime;
 	}
 
 	public void setModifytime(Date modifytime) {
 		this.modifytime = modifytime;
+	}
+	
+	/**
+	 * 创建用户的移动手机账号set和get方法
+	 * @return
+	 */
+	@Column(name="mobile",length=12,nullable=false,unique=true)
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
 	}
 
 	/**
@@ -198,7 +221,7 @@ public class User implements Serializable {
 	public void setOrders(Set<Order> orders) {
 		this.orders = orders;
 	}
-
+	
 	/**
 	 * 创建toString方法
 	 */
@@ -207,7 +230,8 @@ public class User implements Serializable {
 		return "User [userid=" + userid + ", username=" + username
 				+ ", password=" + password + ", logintime=" + logintime
 				+ ", registtime=" + registtime + ", modifytime=" + modifytime
-				+ ", games=" + games + "]";
+				+ ", mobile=" + mobile + ", games=" + games + ", orders="
+				+ orders + "]";
 	}
 	
 }

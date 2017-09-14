@@ -39,7 +39,7 @@ public class UserDaoImplTest {
 		
 		while (user.hasNext()) {
 			User u = (User) user.next();
-			System.err.println(u.getUsername());
+			System.err.println("姓名:"+u.getUsername()+"\n"+"电话号码:"+u.getMobile());
 		}
 	}
 

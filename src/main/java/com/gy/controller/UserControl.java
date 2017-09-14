@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -69,6 +70,10 @@ public class UserControl {
 		return "你好！hello";
 	}*/
 	
+	/**
+	 * 这是用户登录模块的使用
+	 * @return
+	 */
 	/*@RequestMapping(value = "/login",headers={"Accept="+MediaType.APPLICATION_JSON_VALUE},method=RequestMethod.GET)*/
 	@RequestMapping(value = "/login",method=RequestMethod.GET)
 	public @ResponseBody Map login(HttpServletRequest request,HttpServletResponse response) {
@@ -85,52 +90,53 @@ public class UserControl {
 		return map;
 	}
 	
+	/**
+	 * 这是用户测试模块
+	 * @return
+	 */
 	@RequestMapping(value = "/hello",method=RequestMethod.GET)
-	public @ResponseBody Map hello(HttpServletRequest request,HttpServletResponse response) {
+	public @ResponseBody Map<String, Object> hello(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
 		
-		/*User user = new User();
-		user.setUsername("zhangsan");*/
-		String username = request.getParameter("username");
+		Map<String, Object> map = new HashMap<String,Object>();
 		
-		Map map = new HashMap();
-		map.put("username", username);
-		map.put("status", new String[]{"战狼","中国"});
-		map.put("userid", "0001");
-		
+		map.put("status", "0200");
 		return map;
 	}
 	
+	/**
+	 * 这是用户注册模块，采用的是POST方法，POST一般用于插入数据
+	 * @return
+	 */
 	@RequestMapping(value="/register",method=RequestMethod.POST)
-	public @ResponseBody Map register(HttpServletRequest request, HttpServletResponse response) {
+	public @ResponseBody Map<String,Object> register(@RequestBody User user,BindingResult bindingResult) {
 		log.debug("register a new user");
 		
-		String username = request.getParameter("username");
-		String password = request.getParameter("password");
+		Map<String, Object> map = new HashMap<String, Object>();
 		
-		Set<Game> games = new HashSet<Game>();
-		Game game = new Game();
-		game.setGamename("王者荣耀");
-		games.add(game);
+		if (bindingResult.hasErrors()) {
+			map.put("errorCode", "40001");
+			map.put("errorMsg", bindingResult.getFieldError().getDefaultMessage());
+		}
 		
-		User user = new User();
-		user.setUsername(username);
-		user.setPassword(password);
+		user.setUsername(user.getUsername());
+		user.setPassword(user.getPassword());
 		user.setRegisttime(new Date());
-		user.setLogintime(new Date());
-		user.setModifytime(new Date());
-		user.setGames(games);
-		userService.save(user);
+		user.setMobile(user.getMobile());
 		
-		Map map = new HashMap();
-		map.put("username", username);
+		userService.save(user);
+		map.put("username", user.getUsername());
 		map.put("status", new String[]{"战狼","中国"});
-		map.put("password", password);
+		map.put("password", user.getPassword());
 		map.put("userid", "0001");
 		return map;
 		
 		}
 	
-	@RequestMapping(value="forgetpasswd",method = RequestMethod.GET)
+	/**
+	 * 这是用户忘记密码模块，采用的方法是PUT方法，PUT方法一般用于更新数据
+	 * @return
+	 */
+	@RequestMapping(value="forgetpasswd",method = RequestMethod.PUT)
 	public ModelAndView listFormField(String funcId, int fmtId){
 	        ModelAndView mav = new ModelAndView();
 	        List<User> fmcs = new ArrayList<User>();
@@ -146,10 +152,29 @@ public class UserControl {
 	        return mav;
 	    }
 	
+	/**
+	 * 这是用户退出登录模块，采用的方法是PUT方法，PUT方法一般用于更新数据
+	 * @return
+	 */
 	@RequestMapping(value="exit",method=RequestMethod.POST)
 	public @ResponseBody String exit(){
 		System.exit(0);
 		return "退出系统";
 	}
 
+	@RequestMapping(value="/test",method=RequestMethod.POST)
+	public @ResponseBody Map<String, Object> testPostJson(
+			@RequestBody  User user,
+			BindingResult bindingResult) {
+			
+		Map<String, Object> map = new HashMap<String, Object>();
+		if (bindingResult.hasErrors()) {
+			map.put("errorCode", "40001");
+			map.put("errorMsg", bindingResult.getFieldError().getDefaultMessage());
+		}
+		
+		map.put("user", user);
+		return map;
+	}
+	
 }
