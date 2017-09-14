@@ -86,5 +86,11 @@ public class UserServiceImpl implements UserService {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public User querysql(String sql) {
+		// TODO Auto-generated method stub
+		return userDao.querysql(sql);
+	}
 	
 }

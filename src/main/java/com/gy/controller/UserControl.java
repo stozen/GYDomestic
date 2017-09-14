@@ -44,6 +44,24 @@ import com.gy.services.UserService;
 @RequestMapping(value="/user")
 public class UserControl {
 	
+	/**
+	 * 创建一个返回给客户端的状态量
+	 */
+	private String status;
+	
+	/**
+	 * 创建一个返回给客户端的状态信息提示
+	 */
+	private String message;
+	
+	/**
+	 * 创建一个返回给客户端的userid
+	 */
+	private int userid;
+	
+	/**
+	 * 自动注入用户服务层
+	 */
 	@Autowired
 	private UserService userService;
 	
@@ -75,17 +93,66 @@ public class UserControl {
 	 * @return
 	 */
 	/*@RequestMapping(value = "/login",headers={"Accept="+MediaType.APPLICATION_JSON_VALUE},method=RequestMethod.GET)*/
-	@RequestMapping(value = "/login",method=RequestMethod.GET)
-	public @ResponseBody Map login(HttpServletRequest request,HttpServletResponse response) {
+	@RequestMapping(value="/login",method=RequestMethod.POST)
+	public @ResponseBody Map<String, Object> login(@RequestBody User user,BindingResult bindingResult) {
 		
-		/*User user = new User();
-		user.setUsername("zhangsan");*/
-		String username = request.getParameter("username");
+		Map<String, Object> map = new HashMap<String, Object>();
 		
-		Map map = new HashMap();
-		map.put("username", username);
-		map.put("status", new String[]{"战狼","中国"});
-		map.put("userid", "0001");
+		String sql = "from User u where u.username=" +  "'" + user.getUsername() + "'"+"or u.mobile="+"'"+user.getMobile()+"'";
+		User userdata = null;
+		try {
+			userdata = userService.querysql(sql);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		/*System.err.println(userdata);*/
+		/*如果查询出来说明数据库中存在这个用户*/
+		
+		/*1.先判断用户输入的数据是否为空*/
+		if(user.getUsername().equals("")|| "".equals(user.getUsername())|| user.getPassword()==null || user.getMobile()==null)
+		{
+			status = "0404";
+			message = "用户输入的内容有空值！";
+			userid = 0;
+		}
+		else
+		{
+			if(userdata!=null)
+			{
+				status = "0201";
+				message = "该用户存在！";
+				boolean flag = (userdata.getUsername().equals(user.getUsername()) || userdata.getMobile().equals(user.getMobile())) && (userdata.getPassword().equals(user.getPassword()));
+				if(flag){
+					status = "0200";
+					message = "登录成功！";
+					userid = userdata.getUserid();
+				}
+				else
+				{
+					status = "0403";
+					message = "登录失败,用户名或者密码可能输入错误！";
+					userid = userdata.getUserid();
+				}
+			}
+			else
+			{
+				status = "0404";
+				message = "不存在该用户！";
+				userid = 0;
+			}
+		}
+		
+		if (bindingResult.hasErrors()) {
+			map.put("errorCode", "40001");
+			map.put("errorMsg", bindingResult.getFieldError().getDefaultMessage());
+		}
+		
+		map.put("username", user.getUsername());
+		/*map.put("status", new String[]{"战狼","中国"});*/
+		map.put("status", status);
+		map.put("message", message);
+		map.put("userid", userid);
 		
 		return map;
 	}
@@ -136,8 +203,28 @@ public class UserControl {
 	 * 这是用户忘记密码模块，采用的方法是PUT方法，PUT方法一般用于更新数据
 	 * @return
 	 */
-	@RequestMapping(value="forgetpasswd",method = RequestMethod.PUT)
-	public ModelAndView listFormField(String funcId, int fmtId){
+	@RequestMapping(value="forgetpassone",method = RequestMethod.PUT)
+	public ModelAndView forgetPassOne(String funcId, int fmtId){
+	        ModelAndView mav = new ModelAndView();
+	        List<User> fmcs = new ArrayList<User>();
+	        
+	        User user = new User();
+	        user.setRegisttime(new Date());
+	        user.setUsername("lixiaolong");
+	        
+	        fmcs.add(user);
+	        Gson gson=new Gson();
+	        String json_txt = gson.toJson(fmcs);
+	        mav.addObject("json_data", json_txt);
+	        return mav;
+	    }
+	
+	/**
+	 * 这是用户忘记密码模块，采用的方法是PUT方法，PUT方法一般用于更新数据
+	 * @return
+	 */
+	@RequestMapping(value="forgetpasstwo",method = RequestMethod.PUT)
+	public ModelAndView forgetPasstwo(String funcId, int fmtId){
 	        ModelAndView mav = new ModelAndView();
 	        List<User> fmcs = new ArrayList<User>();
 	        
@@ -161,8 +248,9 @@ public class UserControl {
 		System.exit(0);
 		return "退出系统";
 	}
-
-	@RequestMapping(value="/test",method=RequestMethod.POST)
+	
+	/*这是测试模块，不用管*/
+	/*@RequestMapping(value="/test",method=RequestMethod.POST)
 	public @ResponseBody Map<String, Object> testPostJson(
 			@RequestBody  User user,
 			BindingResult bindingResult) {
@@ -176,5 +264,5 @@ public class UserControl {
 		map.put("user", user);
 		return map;
 	}
-	
+	*/
 }

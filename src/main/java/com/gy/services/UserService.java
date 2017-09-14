@@ -26,6 +26,13 @@ public interface UserService {
 	public List<User> queryAll();
 	
 	/**
+	 * 根据条件来查询用户数据
+	 * @param sql
+	 * @return
+	 */
+	public User querysql(String sql);
+	
+	/**
 	 * 实现用户添加功能
 	 * @return true or false
 	 */

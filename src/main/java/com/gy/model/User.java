@@ -195,11 +195,24 @@ public class User implements Serializable {
 	}
 
 	/**
+	 * 创建用户的邮箱账号set和get方法
+	 * @return
+	 */
+	@Column(name="email",length=23,nullable=false,unique=true)
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	
+	/**
 	 * 创建生成的关联的游戏
 	 * @return
 	 */
 	@Column(name="game",length=20,nullable=false)
-	@OneToMany(mappedBy="user",cascade=CascadeType.ALL)
+	@OneToMany(mappedBy="user",cascade=CascadeType.ALL,fetch=FetchType.EAGER)
 	public Set<Game> getGames() {
 		return games;
 	}

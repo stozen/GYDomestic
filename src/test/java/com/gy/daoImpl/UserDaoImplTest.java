@@ -47,11 +47,12 @@ public class UserDaoImplTest {
 	public void testSave() {
 		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
 		User user = new User();
-		user.setUsername("赵六");
+		user.setUsername("lisi");
 		user.setLogintime(new Date());
 		user.setModifytime(new Date());
 		user.setRegisttime(new Date());
 		user.setPassword("123456");
+		user.setMobile("12345678913");
 		
 		System.err.println("<------------------------方法调用前------------------------>");
 		UserDaoImpl userdao = (UserDaoImpl) context.getBean("userDao");
@@ -103,4 +104,16 @@ public class UserDaoImplTest {
 		fail("Not yet implemented");
 	}
 
+	@Test
+	public void testQuerysql() {
+		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
+		UserDaoImpl userdao = (UserDaoImpl) context.getBean("userDao");
+		String sql = "from User where username='王五' or mobile='123456889'";
+		System.err.println("<------------------------方法调用查询开始------------------------>");
+		User user = userdao.querysql(sql);
+	
+		System.err.println(user);
+		System.err.println("<------------------------方法调用查询结束------------------------>");
+	}
+	
 }
