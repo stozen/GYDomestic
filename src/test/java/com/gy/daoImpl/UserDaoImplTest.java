@@ -47,7 +47,7 @@ public class UserDaoImplTest {
 	public void testSave() {
 		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
 		User user = new User();
-		user.setUsername("李四");
+		user.setUsername("赵六");
 		user.setLogintime(new Date());
 		user.setModifytime(new Date());
 		user.setRegisttime(new Date());
@@ -69,18 +69,15 @@ public class UserDaoImplTest {
 	@Test
 	public void testDelete() {
 		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
+		
 		UserDaoImpl userdao = (UserDaoImpl) context.getBean("userDao");
 		/*System.err.println("<------------------------方法调用前,先查询用户开始------------------------>");
 		User user = userdao.query(1);
 		System.err.println(user.getLogintime()+user.getUsername());
 		System.err.println("<------------------------方法调用前,先查询用户结束------------------------>");*/
 		
-		User user = userdao.query(1);
-		
-		System.err.println(user);
-		
 		System.err.println("<------------------------方法调用删除开始------------------------>");
-		userdao.delete(user);
+		userdao.delete(6);
 		System.err.println("<------------------------方法调用删除结束------------------------>");
 	}
 
@@ -91,7 +88,14 @@ public class UserDaoImplTest {
 
 	@Test
 	public void testUpdate() {
-		fail("Not yet implemented");
+		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
+		UserDaoImpl userdao = (UserDaoImpl) context.getBean("userDao");
+		User user = userdao.query(2);
+		user.setUsername("李小龙");
+		
+		System.err.println("<------------------------方法调用更新开始------------------------>");
+		userdao.update(2);
+		System.err.println("<------------------------方法调用更新结束------------------------>");
 	}
 
 	@Test

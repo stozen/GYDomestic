@@ -28,6 +28,7 @@
     <context:annotation-config />
     <!-- 缓存配置 -->
     
+    <mvc:default-servlet-handler/>
     
     <!-- 开启注解方案1 -->
     <!-- 注解方法处理 -->

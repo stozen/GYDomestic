@@ -29,7 +29,7 @@ public interface UserService {
 	 * 实现用户添加功能
 	 * @return true or false
 	 */
-	public int save(User user);
+	public void save(User user);
 	
 	/**
 	 * 增加一些用户

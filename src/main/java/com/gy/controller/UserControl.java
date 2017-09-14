@@ -4,8 +4,10 @@ import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javassist.expr.NewArray;
 
@@ -26,9 +28,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView; 
 
 import com.google.gson.Gson;
+import com.gy.model.Game;
 import com.gy.model.User;
 import com.gy.services.UserService;
-import com.gy.util.GetRequstBody;
 
 /**
  * @author Chencongye
@@ -67,13 +69,35 @@ public class UserControl {
 		return "你好！hello";
 	}*/
 	
-	@RequestMapping(value = "/login",headers={"Accept="+MediaType.APPLICATION_JSON_VALUE})
-	public @ResponseBody User login() {
+	/*@RequestMapping(value = "/login",headers={"Accept="+MediaType.APPLICATION_JSON_VALUE},method=RequestMethod.GET)*/
+	@RequestMapping(value = "/login",method=RequestMethod.GET)
+	public @ResponseBody Map login(HttpServletRequest request,HttpServletResponse response) {
 		
-		User user = new User();
-		user.setUsername("zhangsan");
+		/*User user = new User();
+		user.setUsername("zhangsan");*/
+		String username = request.getParameter("username");
 		
-		return user;
+		Map map = new HashMap();
+		map.put("username", username);
+		map.put("status", new String[]{"战狼","中国"});
+		map.put("userid", "0001");
+		
+		return map;
+	}
+	
+	@RequestMapping(value = "/hello",method=RequestMethod.GET)
+	public @ResponseBody Map hello(HttpServletRequest request,HttpServletResponse response) {
+		
+		/*User user = new User();
+		user.setUsername("zhangsan");*/
+		String username = request.getParameter("username");
+		
+		Map map = new HashMap();
+		map.put("username", username);
+		map.put("status", new String[]{"战狼","中国"});
+		map.put("userid", "0001");
+		
+		return map;
 	}
 	
 	@RequestMapping(value="/register",method=RequestMethod.POST)
@@ -83,11 +107,24 @@ public class UserControl {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		
+		Set<Game> games = new HashSet<Game>();
+		Game game = new Game();
+		game.setGamename("王者荣耀");
+		games.add(game);
+		
 		User user = new User();
+		user.setUsername(username);
+		user.setPassword(password);
+		user.setRegisttime(new Date());
+		user.setLogintime(new Date());
+		user.setModifytime(new Date());
+		user.setGames(games);
+		userService.save(user);
 		
 		Map map = new HashMap();
 		map.put("username", username);
 		map.put("status", new String[]{"战狼","中国"});
+		map.put("password", password);
 		map.put("userid", "0001");
 		return map;
 		
@@ -108,5 +145,11 @@ public class UserControl {
 	        mav.addObject("json_data", json_txt);
 	        return mav;
 	    }
+	
+	@RequestMapping(value="exit",method=RequestMethod.POST)
+	public @ResponseBody String exit(){
+		System.exit(0);
+		return "退出系统";
+	}
 
 }

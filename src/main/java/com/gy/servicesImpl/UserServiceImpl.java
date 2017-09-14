@@ -52,9 +52,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public int save(User user) {
+	public void save(User user) {
 		// TODO Auto-generated method stub
-		return userDao.save(user);
+		userDao.save(user);
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public boolean delete(int userid) {
 		// TODO Auto-generated method stub
-		return false;
+		return userDao.delete(userid);
 	}
 
 	@Override

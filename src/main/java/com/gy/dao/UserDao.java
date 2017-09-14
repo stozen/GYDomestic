@@ -28,7 +28,7 @@ public interface UserDao {
 	 * 实现用户添加功能
 	 * @return true or false
 	 */
-	public int save(User user);
+	public void save(User user);
 	
 	/**
 	 * 增加一些用户
@@ -40,7 +40,7 @@ public interface UserDao {
 	 * 实现删除一个用户
 	 * @return true or false
 	 */
-	public void delete(User user);
+	public boolean delete(int userid);
 	
 	/**
 	 * 实现删除某些用户

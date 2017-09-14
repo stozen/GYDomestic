@@ -129,6 +129,8 @@
 		</property> 
 	</bean>
 	
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	
 	<!-- 配置UserDaoImpl实现类 -->
  	<bean id="userDao" class="com.gy.daoImpl.UserDaoImpl">
  		<property name="sessionFactory" ref="sessionFactory"></property>
