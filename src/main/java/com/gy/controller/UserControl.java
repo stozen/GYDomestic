@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -108,52 +109,97 @@ public class UserControl {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
-		/*一般登录的检索用户所用的账户类型*/
-		String sql = "from User u where u.username=" +  "'" + user.getUsername() + "'"+"or u.mobile="+"'"+user.getMobile()+"'"+"'"+user.getEmail()+"'";
+		/*1.先判断用户以什么样的方式登录*/
+		String type = user.getType().trim();
+		
+		/*2.一般登录的检索用户所用的账户类型*/
+		String sql = "from User u where u.username=" +  "'" + user.getUsername() + "'"+"or u.mobile="+"'"+user.getMobile()+"'"+" or u.email="+"'"+user.getEmail()+"'"+" and u.password="+"'"+user.getPassword()+"'";
 		User userdata = null;
-		/*如果查询出来说明数据库中存在这个用户*/
-		try {
-			userdata = userService.querysql(sql);
-			boolean judgenull = user.getUsername().equals("") || "".equals(user.getUsername())|| user.getPassword().equals("") || "".equals(user.getPassword()) || user.getMobile().equals("") || "".equals(user.getMobile()) || user.getEmail().equals("") || "".equals(user.getEmail());
-			/*1.先判断用户输入的数据是否为空*/
-			if(judgenull)
-			{
-				status = "0404";
-				message = "用户输入的内容有空值！";
-				userid = 0;
-			}
-			else
-			{
-				if(userdata!=null)
-				{
-					status = "0201";
-					message = "该用户存在！";
-					boolean flag = (userdata.getUsername().equals(user.getUsername()) || userdata.getMobile().equals(user.getMobile())) && (userdata.getPassword().equals(user.getPassword()));
-					if(flag){
-						status = "0200";
-						message = "登录成功！";
-						userid = userdata.getUserid();
+		
+		switch (type) {
+			case "1":
+				/*这是普通方式登录*/
+				System.err.println("这是普通方式登录");
+				/*3.如果查询出来说明数据库中存在这个用户*/
+				try {
+					userdata = userService.querysql(sql);
+					boolean judgenull = user.getUsername().equals("") || "".equals(user.getUsername())|| user.getPassword().equals("") || "".equals(user.getPassword()) || user.getMobile().equals("") || "".equals(user.getMobile()) || user.getEmail().equals("") || "".equals(user.getEmail());
+					/*4.先判断用户输入的数据是否为空*/
+					if(judgenull)
+					{
+						if(userdata!=null)
+						{
+							status = "0201";
+							message = "该用户存在！";
+							boolean flag = (userdata.getUsername().equals(user.getUsername()) || userdata.getMobile().equals(user.getMobile())) || (userdata.getEmail().equals(user.getEmail())) && (userdata.getPassword().equals(user.getPassword()));
+							if(flag){
+								status = "0200";
+								message = "普通模式登录成功！";
+								userid = userdata.getUserid();
+							}
+							else
+							{
+								status = "0403";
+								message = "登录失败,用户名或者密码可能输入错误！";
+								userid = userdata.getUserid();
+							}
+						}
+						else
+						{
+							status = "0404";
+							message = "用户输入的内容有空值！";
+							System.err.println(userdata.getEmail());
+							userid = 0;
+						}
 					}
 					else
 					{
-						status = "0403";
-						message = "登录失败,用户名或者密码可能输入错误！";
-						userid = userdata.getUserid();
+						if(userdata!=null)
+						{
+							status = "0201";
+							message = "该用户存在！";
+							boolean flag = (userdata.getUsername().equals(user.getUsername()) || userdata.getMobile().equals(user.getMobile())) && (userdata.getPassword().equals(user.getPassword()));
+							if(flag){
+								status = "0200";
+								message = "普通模式登录成功！";
+								userid = userdata.getUserid();
+							}
+							else
+							{
+								status = "0403";
+								message = "登录失败,用户名或者密码可能输入错误！";
+								userid = userdata.getUserid();
+							}
+						}
+						else
+						{
+							status = "0404";
+							message = "不存在该用户！";
+							userid = 0;
+						}
 					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				else
-				{
-					status = "0404";
-					message = "不存在该用户！";
-					userid = 0;
-				}
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+				break;
+			case "2":
+				/*这是facebook方式登录*/
+				System.err.println("这是facebook方式登录");
+				message = "这是facebook登录！";
+				break;
+			case "3":
+				/*这是twitter方式登录*/
+				System.err.println("这是twitter方式登录");
+				message = "这是twitter方式登录！";
+				break;
+			case "4":
+				/*这是googleplay方式登录*/
+				System.err.println("这是googleplay方式登录");
+				message = "这是googleplay方式登录！";
+				break;
+				
 		}
-		
-		/*2.检察用户用什么样的方式登录*/
 		
 		/*System.err.println(userdata);*/
 		
@@ -172,19 +218,6 @@ public class UserControl {
 	}
 	
 	/**
-	 * 这是用户测试模块
-	 * @return
-	 */
-	@RequestMapping(value = "/hello",method=RequestMethod.GET)
-	public @ResponseBody Map<String, Object> hello(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
-		
-		Map<String, Object> map = new HashMap<String,Object>();
-		
-		map.put("status", "0200");
-		return map;
-	}
-	
-	/**
 	 * 这是用户注册模块，采用的是POST方法，POST一般用于插入数据
 	 * @return
 	 */
@@ -199,7 +232,7 @@ public class UserControl {
 		if(validatecode.equals("123456"))
 		{
 			/*2.先判断数据库中是否存在这个用户*/
-			String sql = "from User u where u.username=" +  "'" + user.getUsername() + "'"+"or u.mobile="+"'"+user.getMobile()+"'"+"'"+user.getEmail()+"'";
+			String sql = "from User u where u.username=" + "'" + user.getUsername() + "'"+"or u.mobile="+"'"+user.getMobile()+"'"+"'"+user.getEmail()+"'";
 			User userdata = null;
 			try {
 				userdata = userService.querysql(sql);
@@ -231,9 +264,15 @@ public class UserControl {
 						user.setGames(collgame);*/
 						user.setEmail(user.getEmail());
 						user.setRegisttime(new Date());
+						user.setType(user.getType());
 						user.setUsername(user.getUsername());
 						user.setPassword(user.getPassword());
 						user.setMobile(user.getMobile());
+						Set<Game> game = user.getGames();
+						
+						/*Game games = new Game();*/
+						user.setGames(game);
+						System.err.println(game);
 						if(userService.save(user)){
 							status = "0200";
 							message = "注册成功!";
@@ -292,9 +331,11 @@ public class UserControl {
 	 * @return
 	 */
 	@RequestMapping(value="forgetpasstwo",method = RequestMethod.PUT)
-	public ModelAndView forgetPasstwo(String funcId, int fmtId){
-	        ModelAndView mav = new ModelAndView();
-	        List<User> fmcs = new ArrayList<User>();
+	public @ResponseBody Map<String, Object> forgetPasstwo(@RequestBody User user,BindingResult bindingResult){
+		/*创建返回给客户端的json数据*/
+		Map<String, Object> map = new HashMap<String, Object>();    
+		
+	     /*   List<User> fmcs = new ArrayList<User>();
 	        
 	        User user = new User();
 	        user.setRegisttime(new Date());
@@ -303,34 +344,18 @@ public class UserControl {
 	        fmcs.add(user);
 	        Gson gson=new Gson();
 	        String json_txt = gson.toJson(fmcs);
-	        mav.addObject("json_data", json_txt);
-	        return mav;
-	    }
+	        mav.addObject("json_data", json_txt);*/
+        return map;
+	}
 	
 	/**
 	 * 这是用户退出登录模块，采用的方法是PUT方法，PUT方法一般用于更新数据
 	 * @return
 	 */
-	@RequestMapping(value="exit",method=RequestMethod.POST)
+	@RequestMapping(value="/exit",method=RequestMethod.POST)
 	public @ResponseBody String exit(){
 		System.exit(0);
 		return "退出系统";
 	}
 	
-	/*这是测试模块，不用管*/
-	/*@RequestMapping(value="/test",method=RequestMethod.POST)
-	public @ResponseBody Map<String, Object> testPostJson(
-			@RequestBody  User user,
-			BindingResult bindingResult) {
-			
-		Map<String, Object> map = new HashMap<String, Object>();
-		if (bindingResult.hasErrors()) {
-			map.put("errorCode", "40001");
-			map.put("errorMsg", bindingResult.getFieldError().getDefaultMessage());
-		}
-		
-		map.put("user", user);
-		return map;
-	}
-	*/
 }
