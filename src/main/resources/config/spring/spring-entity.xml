@@ -27,6 +27,9 @@
  	
  	<!-- 配置用户账户类型 -->
  	<bean id="accountManager" class="com.gy.model.Account"></bean>
+
+ 	<!-- 配置商品类型 -->
+ 	<bean id="goodsManager" class="com.gy.model.Goods"></bean>
  	
  	<!-- <bean id="tokenManager" class="com.gy.model.Token"></bean> -->
  	<!-- 配置其他的实体类，预留位置 -->

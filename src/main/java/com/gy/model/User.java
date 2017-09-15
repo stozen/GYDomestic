@@ -5,16 +5,18 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -74,6 +76,11 @@ public class User implements Serializable {
 	private String email;
 	
 	/**
+	 * 创建用户登录方式
+	 */
+	private String type;
+	
+	/**
 	 * 创建引用游戏
 	 */
 	private Set<Game> games = new HashSet<Game>();
@@ -82,6 +89,11 @@ public class User implements Serializable {
 	 * 创建引用的订单
 	 */
 	private Set<Order> orders = new HashSet<Order>();
+	
+	/**
+	 * 创建引用的账户
+	 */
+	private Set<Account> accounts = new HashSet<Account>();
 	
 	/**
 	 * 创建默认构造函数
@@ -211,8 +223,12 @@ public class User implements Serializable {
 	 * 创建生成的关联的游戏
 	 * @return
 	 */
-	@Column(name="game",length=20,nullable=false)
+	/*@Column(name="game",length=20,nullable=true)
 	@OneToMany(mappedBy="user",cascade=CascadeType.ALL,fetch=FetchType.EAGER)
+	@JoinColumn(name="userid")*/
+	@OneToMany
+	@Cascade(value={CascadeType.SAVE_UPDATE})
+	@JoinColumn(name="userid")
 	public Set<Game> getGames() {
 		return games;
 	}
@@ -225,14 +241,37 @@ public class User implements Serializable {
 	 * 创建生成关联的订单
 	 * @return
 	 */
-	@Column(name="order",length=30,nullable=false)
-	@OneToMany(mappedBy="user",cascade=CascadeType.ALL)
+	/*@Column(name="order",length=30,nullable=false)
+	@OneToMany(mappedBy="user",cascade=javax.persistence.CascadeType.ALL)*/
+	@OneToMany
+	@Cascade(value={CascadeType.SAVE_UPDATE})
+	@JoinColumn(name="userid")
 	public Set<Order> getOrders() {
 		return orders;
 	}
 
 	public void setOrders(Set<Order> orders) {
 		this.orders = orders;
+	}
+	
+	@Column(name="type",length=8,nullable=false)
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	@OneToMany
+	@Cascade(value={CascadeType.SAVE_UPDATE})
+	@JoinColumn(name="userid")
+	public Set<Account> getAccounts() {
+		return accounts;
+	}
+
+	public void setAccounts(Set<Account> accounts) {
+		this.accounts = accounts;
 	}
 	
 	/**

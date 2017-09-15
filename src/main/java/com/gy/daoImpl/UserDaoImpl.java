@@ -123,13 +123,21 @@ public class UserDaoImpl implements UserDao{
 	 * @return User
 	 */
 	@Override
-	public void save(User user) {
+	public boolean save(User user) {
 		// TODO Auto-generated method stub
 		/*System.err.println("得到的Session---->"+sessionFactory);*/
 		Session session = getSession();
+		boolean flag = false;
 		try {
 			tx = session.beginTransaction();
-			session.save(user);
+			int i = (Integer) session.save(user);
+			if(i>0)
+			{
+				flag = true;
+			}
+			else{
+				flag = false;
+			}
 			tx.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -143,7 +151,7 @@ public class UserDaoImpl implements UserDao{
 				session.close();
 			}
 		}
-		
+		return flag;
 	}
 
 	/**
@@ -262,11 +270,20 @@ public class UserDaoImpl implements UserDao{
 	public User querysql(String sql) {
 		// TODO Auto-generated method stub
 		Session session = getSession();
+		String message = "";
 		User user = null;
 		try {
 			tx = session.beginTransaction();
 			Query query = session.createQuery(sql);
-			user = (User) query.list().get(0);
+			List<User> list = new ArrayList<User>();
+			list = query.list();
+			if(list!=null && list.size()>0){
+				user = (User)list.get(0);
+			}
+			else
+			{
+				System.err.println("数组越界,用户输入的内容有空值！！！");
+			}
 			tx.commit();
 			return user;
 		} catch (Exception e) {

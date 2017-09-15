@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -43,6 +45,11 @@ public class Account {
 	 * 创建账户的密码
 	 */
 	private String accoutpasswd;
+	
+	/**
+	 * 和用户表建立关联关系
+	 */
+	private User user;
 	
 	/**
 	 * 生成默认构造方法
@@ -122,6 +129,16 @@ public class Account {
 		this.accoutpasswd = accoutpasswd;
 	}
 
+	@ManyToOne
+	@JoinColumn(name="userid")
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 * 生成toString方法

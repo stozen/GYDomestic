@@ -3,14 +3,17 @@ package com.gy.daoImpl;
 import static org.junit.Assert.*;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.gy.dao.UserDao;
+import com.gy.model.Game;
 import com.gy.model.User;
 
 public class UserDaoImplTest {
@@ -46,13 +49,24 @@ public class UserDaoImplTest {
 	@Test
 	public void testSave() {
 		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
+		
 		User user = new User();
+		
 		user.setUsername("lisi");
+		user.setEmail("123456@qq.com");
 		user.setLogintime(new Date());
 		user.setModifytime(new Date());
 		user.setRegisttime(new Date());
 		user.setPassword("123456");
 		user.setMobile("12345678913");
+		
+		/*Set<Game> collgame = new HashSet<Game>();*/
+		Game game = new Game();
+		game.setGamename("王者荣耀");
+		game.setGamepackage("com.tencent.wangzhe");
+		game.setRemark("这是王者荣耀游戏");
+		user.getGames().add(game);
+		/*collgame.add(game);*/
 		
 		System.err.println("<------------------------方法调用前------------------------>");
 		UserDaoImpl userdao = (UserDaoImpl) context.getBean("userDao");

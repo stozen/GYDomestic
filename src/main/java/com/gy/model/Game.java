@@ -106,8 +106,10 @@ public class Game implements Serializable {
 		this.gamepackage = gamepackage;
 	}
 
-	@ManyToOne(cascade=CascadeType.ALL,optional=false,fetch=FetchType.EAGER)
-	@JoinColumn(name="userid",referencedColumnName="userid")
+	/*@ManyToOne(cascade=CascadeType.ALL,optional=false,fetch=FetchType.EAGER)
+	@JoinColumn(name="userid",referencedColumnName="userid")*/
+	@ManyToOne
+	@JoinColumn(name="userid")
 	public User getUser() {
 		return user;
 	}
