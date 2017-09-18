@@ -95,7 +95,7 @@
 		<property name="hibernateProperties">
 			<props>
 				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
-				<prop key="hibernate.hbm2ddl.auto">create</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
 				<prop key="hibernate.show_sql">true</prop>
 				<prop key="hibernate.format_sql">true</prop>
 			</props>
@@ -144,6 +144,21 @@
  	<!-- parent为transactionBese，表示支持事务 -->
  	<bean id="userService" parent="transactionBese"> 
     	<property name="target" ref="userServiceBase"></property> 
-	</bean> 
+	</bean>
+	
+	<!-- 配置AccountDaoImpl实现类 -->
+ 	<bean id="accountDao" class="com.gy.daoImpl.AccountDaoImpl">
+ 		<property name="sessionFactory" ref="sessionFactory"></property>
+ 	</bean>
+ 	
+ 	<!-- 配置AccountServiceImpl实现类 -->
+ 	<bean id="accountServiceBase" class="com.gy.servicesImpl.AccountServiceImpl">
+ 		<property name="accountDao" ref="accountDao"></property>
+ 	</bean>
+ 	
+ 	<!-- parent为transactionBese，表示支持事务 -->
+ 	<bean id="accountService" parent="transactionBese"> 
+    	<property name="target" ref="accountServiceBase"></property> 
+	</bean>  
  	
  </beans>

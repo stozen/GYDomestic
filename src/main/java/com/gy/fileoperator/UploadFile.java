@@ -11,6 +11,7 @@ import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,13 +26,15 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
  * @date 2017.9.12
  */
 
+@Controller
+@RequestMapping(value="/file")
 public class UploadFile {
 	
 	/**
 	 * 文件上传的第一种方式
 	 * @return
 	 */
-	@RequestMapping("fileupload1")
+	@RequestMapping("upload1")
 	public String fileUploadFirst(@RequestParam("file") CommonsMultipartFile file) throws IOException {
 		// TODO Auto-generated method stub
 		 //用来检测程序运行时间
@@ -66,7 +69,7 @@ public class UploadFile {
 	 * 文件上传的第二种方式
 	 * @return
 	 */
-	@RequestMapping("fileupload2")
+	@RequestMapping("upload2")
 	public String fileuploadSecond(@RequestParam("file") CommonsMultipartFile file) throws IOException {
 		// TODO Auto-generated method stub
 		long  startTime=System.currentTimeMillis();
@@ -85,7 +88,7 @@ public class UploadFile {
 	 * 文件上传的第三种方式
 	 * @return
 	 */
-	@RequestMapping("fileupload3")
+	@RequestMapping("upload3")
 	public String fileUploadThird(HttpServletRequest request) throws IllegalStateException, IOException{
 		// TODO Auto-generated method stub
 	    long  startTime=System.currentTimeMillis();

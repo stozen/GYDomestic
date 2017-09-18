@@ -187,7 +187,7 @@ public class UserDaoImpl implements UserDao{
 			e.printStackTrace();
 		} finally {
 			if(session!=null) {
-				session.close();
+				session.close(); 
 			}
 		}
 		return flag;
@@ -200,6 +200,14 @@ public class UserDaoImpl implements UserDao{
 	@Override
 	public boolean deleteAll(User[] User) {
 		// TODO Auto-generated method stub
+		boolean flag = false;
+		try {
+			getSession().delete(User);
+			flag = true;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return false;
 	}
 
