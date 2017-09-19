@@ -221,7 +221,7 @@ public class User implements Serializable {
 	/*@Column(name="game",length=20,nullable=true)
 	@OneToMany(mappedBy="user",cascade=CascadeType.ALL,fetch=FetchType.EAGER)
 	@JoinColumn(name="userid")*/
-	@OneToMany(mappedBy="Game")
+	@OneToMany
 	@Cascade(value={CascadeType.SAVE_UPDATE})
 	@JoinColumn(name="userid")
 	public Set<Game> getGames() {

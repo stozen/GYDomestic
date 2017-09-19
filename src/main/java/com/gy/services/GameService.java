@@ -26,43 +26,59 @@ public interface GameService {
 	public List<Game> queryAll();
 	
 	/**
+	 * 根据条件来查询游戏
+	 * @param sql
+	 * @return
+	 */
+	public Game querysql(String sql);
+	
+	/**
+	 * 根据条件来查询游戏
+	 * @param sql
+	 * @return
+	 */
+	public Game queryBysql(String sql);
+	
+	/**
 	 * 实现游戏添加功能
 	 * @return true or false
 	 */
 	public boolean save(Game game);
 	
 	/**
+	 * 实现游戏添加或者更新功能
+	 * @param user
+	 * @return
+	 */
+	public boolean saveorupdate(Game game);
+	
+	/**
 	 * 增加一些游戏
 	 * @return true or false
 	 */
-	public boolean saveAll(Game[] games);
+	public void saveAll(Game[] games);
 	
 	/**
-	 * 实现删除一个用户
+	 * 实现删除一个游戏
 	 * @return true or false
 	 */
 	public boolean delete(int gameid);
 	
 	/**
-	 * 实现删除某些用户
+	 * 实现删除某些游戏
 	 * @return true or false
 	 */
-	public boolean deleteAll(Game[] Game);
+	public boolean deleteAll(Game[] games);
 	
 	/**
 	 * 更新一个游戏
 	 * @return
 	 */
-	public boolean update(int gameid);
+	public boolean update(Game game);
 		
 	/**
 	 * 更新所有游戏
 	 * @return true or false
 	 */
-	public boolean updateAll(Game[] game);
-
-	/**
-	 * 刷新Session
-	 * @return true or false
-	 */
+	public boolean updateAll(Game[] games);
 }

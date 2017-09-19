@@ -282,6 +282,7 @@ public class UserControl {
 								Set<Game> games = new HashSet<Game>();
 								games = user.getGames();
 								
+								
 							}
 						}
 					}

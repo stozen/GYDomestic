@@ -161,4 +161,19 @@
     	<property name="target" ref="accountServiceBase"></property> 
 	</bean>  
  	
+ 	<!-- 配置GameDaoImpl实现类 -->
+ 	<bean id="gameDao" class="com.gy.daoImpl.GameDaoImpl">
+ 		<property name="sessionFactory" ref="sessionFactory"></property>
+ 	</bean>
+ 	
+ 	<!-- 配置GameServiceImpl实现类 -->
+ 	<bean id="gameServiceBase" class="com.gy.servicesImpl.GameServiceImpl">
+ 		<property name="gameDao" ref="gameDao"></property>
+ 	</bean>
+ 	
+ 	<!-- parent为transactionBese，表示支持事务 -->
+ 	<bean id="gameService" parent="transactionBese"> 
+    	<property name="target" ref="gameServiceBase"></property> 
+	</bean>
+ 	
  </beans>
