@@ -556,48 +556,62 @@ public class UserControl {
 	 * @return
 	 */
 	@RequestMapping(value="forgetpassone",method = RequestMethod.PUT)
-	public @ResponseBody Map<String, Object> forgetPassOne(@RequestBody User user, BindingResult bindingResult){
+	public @ResponseBody Map<String, Object> forgetPassOne(@RequestBody Map map, BindingResult bindingResult){
 	        
 	        /*创建返回给客户端的json数据*/
-			Map<String, Object> map = new HashMap<String, Object>();
+			/*Map<String, Object> map = new HashMap<String, Object>();*/
+			
+			String mobile = ((String)map.get("mobile")).trim();
+			String valicode = ((String)map.get("valicode")).trim();
 			
 			/*1.先根据用户提供的手机号，查询数据库中是否存在这个用户如果存在则返回为真*/
 			/*1.1 先判断用户输入的内容不能为空 */
-			String sql = "from User u where u.mobile="+"'"+user.getMobile()+"'";
-			String mobile = user.getMobile().trim();
+			String sql = "from User u where u.mobile="+"'"+mobile+"'";
+			/*String mobile = user.getMobile().trim();*/
 			/*validata = "123456";*/
 			User userdata = null;
-			String validata = "123456";
-			if(validata.equals("123456"))
+			/*String validata = "123456";*/
+			if(valicode.equals("") || "".equals(valicode))
 			{
-				boolean judge = (mobile.equals("") || "".equals(mobile));
-				if(judge)
-				{
-					status = "0404";
-					message = "用户输入的手机号为空！";
-					userid = 0;
-				}
-				else
-				{
-					userdata = userService.querysql(sql);
-					if(userdata!=null)
-					{
-						status = "0200";
-						message = "成功，进行下一步！";
-						userid = userdata.getUserid();
-					}
-				}
+				status = "0404";
+				message = "用户输入的验证码有空！";
+				userid = 0;
 			}
 			else
 			{
-				status = "0404";
-				message = "验证码不对";
+				if(valicode.equals("123456"))
+				{
+					boolean judge = (mobile.equals("") || "".equals(mobile));
+					if(judge)
+					{
+						status = "0404";
+						message = "用户输入的手机号为空！";
+						userid = 0;
+					}
+					else
+					{
+						userdata = userService.querysql(sql);
+						if(userdata!=null)
+						{
+							status = "0200";
+							message = "成功，进行下一步！";
+							userid = userdata.getUserid();
+						}
+					}
+				}
+				else
+				{
+					status = "0404";
+					message = "验证码不对";
+					userid = 0;
+				}
+				
 			}
-			
 			
 	        /*user.setModifytime(new Date());
 	        user.setPassword(user.getPassword());*/
-	        
+	        map.remove("mobile");
+	        map.remove("valicode");
 	        map.put("status", status);
 	        map.put("message", message);
 	        map.put("userid", userid);
@@ -609,13 +623,17 @@ public class UserControl {
 	 * @return
 	 */
 	@RequestMapping(value="forgetpasstwo",method = RequestMethod.PUT)
-	public @ResponseBody Map<String, Object> forgetPasstwo(@RequestBody User user,BindingResult bindingResult){
+	public @ResponseBody Map<String, Object> forgetPassTwo(@RequestBody Map map,BindingResult bindingResult){
 		/*创建返回给客户端的json数据*/
-		Map<String, Object> map = new HashMap<String, Object>();    
+		/*Map<String, Object> map = new HashMap<String, Object>(); */   
+		
+		String mobile = ((String)map.get("mobile")).trim();
+		String password = ((String)map.get("password")).trim();
+		String confirmpass = ((String)map.get("confirmpass")).trim();
 		
 		/*1.先在数据库中查找这个用户*/
-		String sql = "from User u where u.mobile="+"'"+user.getMobile()+"'";
-		String mobile = user.getMobile().trim();
+		String sql = "from User u where u.mobile="+"'"+mobile.trim()+"'";
+		/*String mobile = user.getMobile().trim();*/
 		validatecode = "123456";
 		User userdata = null;
 		boolean judge = (mobile.equals("") || "".equals(mobile));
@@ -631,29 +649,47 @@ public class UserControl {
 			userdata = userService.queryBysql(sql);
 			if(userdata != null)
 			{
-				String passworddata = userdata.getPassword();
-				
-				if(user.getPassword().equals(passworddata))
+				if((password.equals("")||"".equals(password)) || (confirmpass.equals("")||"".equals(confirmpass)))
 				{
-					status = "0403";
-					message = "不能使用之前的密码！！！";
+					status = "0404";
+					message = "用户输入的密码或者确认密码有空值！";
 					userid = userdata.getUserid();
 				}
 				else
 				{
-					userdata.setPassword(user.getPassword());
-					
-					userService.update(userdata);
-					
-					status = "0200";
-					message = "更新密码成功！！！";
-					userid = userdata.getUserid();
+					if(confirmpass.equals(password))
+					{
+						String passworddata = userdata.getPassword();
+						
+						if(confirmpass.equals(passworddata))
+						{
+							status = "0403";
+							message = "不能使用之前的密码！！！";
+							userid = userdata.getUserid();
+						}
+						else
+						{
+							userdata.setPassword(confirmpass);
+							
+							userService.update(userdata);
+							
+							status = "0200";
+							message = "更新密码成功！！！";
+							userid = userdata.getUserid();
+						}
+					}
+					else
+					{
+						status = "0403";
+						message = "两次输入的密码不一致！";
+						userid = userdata.getUserid();
+					}
 				}
-				
-				/*userdata.setPassword();*/
 			}
 		}
-		  
+		map.remove("mobile");
+		map.remove("password");
+		map.remove("confirmpass");
 		map.put("status", status);
 		map.put("message", message);
 		map.put("userid", userid);
@@ -664,19 +700,9 @@ public class UserControl {
 	 * 这是用户退出登录模块，采用的方法是PUT方法，PUT方法一般用于更新数据
 	 * @return
 	 */
-	@RequestMapping(value="/exit",method=RequestMethod.POST)
+	/*@RequestMapping(value="/exit",method=RequestMethod.POST)
 	public @ResponseBody String exit(){
 		System.exit(0);
 		return "退出系统";
-	}
-	
-	/*@RequestMapping(value="get",method=RequestMethod.POST)
-	public @ResponseBody Map<String, Object> getMessage(@RequestBody Map model){
-		
-		model.get("code");
-		model.get("username");
-		
-		return model;
 	}*/
-	
 }
