@@ -258,13 +258,15 @@ public class AccountDaoImpl implements AccountDao {
 	 * @return
 	 */
 	@Override
-	public void update(int accountid) {
+	public boolean update(Account account) {
 		// TODO Auto-generated method stub
-		Account account = query(accountid);
+		/*Account account = query(accountid);*/
 		Session session = getSession();
+		boolean flag = false;
 		try {
 			tx = session.beginTransaction();
 			session.update(account);
+			flag = true;
 			tx.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -277,6 +279,7 @@ public class AccountDaoImpl implements AccountDao {
 				session.close();
 			}
 		}
+		return flag;
 	}
 
 	/**

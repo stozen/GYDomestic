@@ -117,9 +117,9 @@ public class AccountServiceImpl implements AccountService {
 	 * @return
 	 */
 	@Override
-	public void update(int accountid) {
+	public boolean update(Account account) {
 		// TODO Auto-generated method stub
-		accountDao.update(accountid);
+		return accountDao.update(account);
 	}
 	
 	/**

@@ -216,13 +216,14 @@ public class UserDaoImpl implements UserDao{
 	 * @return User
 	 */
 	@Override
-	public void update(int userid) {
+	public boolean update(User user) {
 		// TODO Auto-generated method stub
-		User user = query(userid);
 		Session session = getSession();
+		boolean flag = false;
 		try {
 			tx = session.beginTransaction();
 			session.update(user);
+			flag = true;
 			tx.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -235,6 +236,7 @@ public class UserDaoImpl implements UserDao{
 				session.close();
 			}
 		}
+		return flag;
 	}
 
 	/**
@@ -309,5 +311,73 @@ public class UserDaoImpl implements UserDao{
 		}
 		return user;
 	}
-
+	
+	/**
+	 * 根据条件来查询用户
+	 * @return User
+	 */
+	@Override
+	public User queryBysql(String sql) {
+		// TODO Auto-generated method stub
+		Session session = getSession();
+		String message = "";
+		User user = null;
+		try {
+			tx = session.beginTransaction();
+			Query query = session.createQuery(sql);
+			List<User> list = new ArrayList<User>();
+			list = query.list();
+			if(list!=null && list.size()>0){
+				user = (User)list.get(0);
+			}
+			else
+			{
+				System.err.println("数组越界,用户输入的内容有空值！！！");
+			}
+			tx.commit();
+			return user;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			if(tx!=null)
+			{
+				tx.rollback();
+			}
+			e.printStackTrace();
+		} finally {
+			if(session!=null)
+			{
+				session.close();
+			}
+		}
+		return user;
+	}
+	
+	/**
+	 * 实现更新或者添加用户
+	 * @return User
+	 */
+	@Override
+	public boolean saveorupdate(User user) {
+		// TODO Auto-generated method stub
+		Session session = getSession();
+		boolean flag = false;
+		try {
+			tx = session.beginTransaction();
+			session.saveOrUpdate(user);
+			flag = true;
+			tx.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			if(tx!=null)
+			{
+				tx.rollback();
+			}
+			e.printStackTrace();
+		} finally {
+			if(session!=null) {
+				session.close();
+			}
+		}
+		return flag;
+	}
 }

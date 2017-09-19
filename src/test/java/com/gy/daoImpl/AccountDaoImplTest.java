@@ -3,6 +3,8 @@ package com.gy.daoImpl;
 import static org.junit.Assert.*;
 
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -20,14 +22,27 @@ public class AccountDaoImplTest {
 		AccountDaoImpl accountDao = (AccountDaoImpl) context.getBean("accountDao");
 		
 		System.err.println("<------------------------方法调用前,先查询用户开始------------------------>");
-		Account account = accountDao.query(1);
+		String accsql = "from Account where accountname= 'facebook' and accounttype='4'";
+		Account account = accountDao.querysql(accsql);
 		System.err.println(account);
 		System.err.println("<------------------------方法调用前,先查询用户结束------------------------>");
 	}
 
 	@Test
 	public void testQueryAll() {
-		fail("Not yet implemented");
+		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
+		AccountDaoImpl accountDao = (AccountDaoImpl) context.getBean("accountDao");
+		List<Account> accounts = accountDao.queryAll();
+		/*for (User user : users) {
+			System.err.println(user);
+		}*/
+		
+		Iterator<Account> account = accounts.iterator();
+		
+		while (account.hasNext()) {
+			Account acc = (Account) account.next();
+			System.err.println("姓名:"+acc.getAccountname()+"\n"+"账户类型:"+acc.getAccounttype());
+		}
 	}
 
 	@Test
@@ -41,8 +56,8 @@ public class AccountDaoImplTest {
 		
 		Account account = new Account();
 		
-		account.setAccountname("facebook");
-		account.setAccounttype("2");
+		account.setAccountname("twitter");
+		account.setAccounttype("3");
 		account.setAccoutpasswd("123456");
 		
 		/*Set<Game> collgame = new HashSet<Game>();
@@ -76,7 +91,17 @@ public class AccountDaoImplTest {
 
 	@Test
 	public void testUpdate() {
-		fail("Not yet implemented");
+		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
+		AccountDaoImpl accountDao = (AccountDaoImpl) context.getBean("accountDao");
+		
+		System.err.println("<------------------------方法调用查询该用户开始------------------------>");
+		Account account = accountDao.query(1);
+		account.setAccountname("twitterid");
+		System.err.println("<------------------------方法调用查询该用户结束------------------------>");
+		
+		System.err.println("<------------------------方法调用更新开始------------------------>");
+		accountDao.update(account);
+		System.err.println("<------------------------方法调用更新结束------------------------>");
 	}
 
 	@Test

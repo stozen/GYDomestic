@@ -52,13 +52,14 @@ public class UserDaoImplTest {
 		
 		User user = new User();
 		
-		user.setUsername("lisi");
-		user.setEmail("123456@qq.com");
+		user.setUsername("wangwu");
+		user.setEmail("1234567@qq.com");
 		user.setLogintime(new Date());
 		user.setModifytime(new Date());
 		user.setRegisttime(new Date());
 		user.setPassword("123456");
-		user.setMobile("12345678913");
+		user.setMobile("12345678914");
+		user.setType("2");
 		
 		/*Set<Game> collgame = new HashSet<Game>();*/
 		Game game = new Game();
@@ -105,11 +106,12 @@ public class UserDaoImplTest {
 	public void testUpdate() {
 		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
 		UserDaoImpl userdao = (UserDaoImpl) context.getBean("userDao");
-		User user = userdao.query(2);
-		user.setUsername("李小龙");
+		
+		User user = userdao.query(3);
+		user.setUsername("李龙");
 		
 		System.err.println("<------------------------方法调用更新开始------------------------>");
-		userdao.update(2);
+		userdao.update(user);
 		System.err.println("<------------------------方法调用更新结束------------------------>");
 	}
 
@@ -123,9 +125,11 @@ public class UserDaoImplTest {
 		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
 		UserDaoImpl userdao = (UserDaoImpl) context.getBean("userDao");
 		String sql = "from User where username='王五' or mobile='123456889'";
+		String selectsql = "from User u,Account acc where u.userid=acc.userid";
 		System.err.println("<------------------------方法调用查询开始------------------------>");
 		User user = userdao.querysql(sql);
 	
+		System.err.println(userdao.querysql(selectsql));
 		System.err.println(user);
 		System.err.println("<------------------------方法调用查询结束------------------------>");
 	}

@@ -192,7 +192,7 @@ public class User implements Serializable {
 	 * 创建用户的移动手机账号set和get方法
 	 * @return
 	 */
-	@Column(name="mobile",length=12,nullable=false,unique=true)
+	@Column(name="mobile",length=12,nullable=false)
 	public String getMobile() {
 		return mobile;
 	}
@@ -205,7 +205,7 @@ public class User implements Serializable {
 	 * 创建用户的邮箱账号set和get方法
 	 * @return
 	 */
-	@Column(name="email",length=23,nullable=false,unique=true)
+	@Column(name="email",length=23,nullable=false)
 	public String getEmail() {
 		return email;
 	}
@@ -221,7 +221,7 @@ public class User implements Serializable {
 	/*@Column(name="game",length=20,nullable=true)
 	@OneToMany(mappedBy="user",cascade=CascadeType.ALL,fetch=FetchType.EAGER)
 	@JoinColumn(name="userid")*/
-	@OneToMany
+	@OneToMany(mappedBy="Game")
 	@Cascade(value={CascadeType.SAVE_UPDATE})
 	@JoinColumn(name="userid")
 	public Set<Game> getGames() {

@@ -60,7 +60,7 @@ public interface AccountService {
 	 * 更新一个账户
 	 * @return
 	 */
-	public void update(int accountid);
+	public boolean update(Account account);
 		
 	/**
 	 * 更新所有账户

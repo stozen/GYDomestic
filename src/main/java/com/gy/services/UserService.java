@@ -33,10 +33,24 @@ public interface UserService {
 	public User querysql(String sql);
 	
 	/**
+	 * 根据条件来查询用户数据
+	 * @param sql
+	 * @return
+	 */
+	public User queryBysql(String sql);
+	
+	/**
 	 * 实现用户添加功能
 	 * @return true or false
 	 */
 	public boolean save(User user);
+	
+	/**
+	 * 实现用户添加或者更新功能
+	 * @param user
+	 * @return
+	 */
+	public boolean saveorupdate(User user);
 	
 	/**
 	 * 增加一些用户
@@ -60,7 +74,7 @@ public interface UserService {
 	 * 更新一个用户
 	 * @return
 	 */
-	public boolean update(int userid);
+	public boolean update(User user);
 		
 	/**
 	 * 更新所有用户

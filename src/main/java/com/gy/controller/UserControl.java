@@ -30,8 +30,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView; 
 
 import com.google.gson.Gson;
+import com.gy.model.Account;
 import com.gy.model.Game;
 import com.gy.model.User;
+import com.gy.services.AccountService;
 import com.gy.services.UserService;
 
 /**
@@ -87,6 +89,25 @@ public class UserControl {
 	public void setUserService(UserService userService) {
 		this.userService = userService;
 	}
+	
+	/**
+	 * 自动注入账户的服务层
+	 * @return
+	 */
+	@Autowired
+	private AccountService accountService;
+	
+	/**
+	 * 生成对应的set和get方法
+	 * @return
+	 */
+	public AccountService getAccountService() {
+		return accountService;
+	}
+
+	public void setAccountService(AccountService accountService) {
+		this.accountService = accountService;
+	}
 
 	/**
 	 * 这是打印log的信息
@@ -123,7 +144,7 @@ public class UserControl {
 				/*3.如果查询出来说明数据库中存在这个用户*/
 				try {
 					userdata = userService.querysql(sql);
-					boolean judgenull = user.getUsername().equals("") || "".equals(user.getUsername())|| user.getPassword().equals("") || "".equals(user.getPassword()) || user.getMobile().equals("") || "".equals(user.getMobile()) || user.getEmail().equals("") || "".equals(user.getEmail());
+					boolean judgenull = user.getUsername().trim().equals("") || "".equals(user.getUsername().trim())|| user.getPassword().trim().equals("") || "".equals(user.getPassword().trim()) || user.getMobile().trim().equals("") || "".equals(user.getMobile().trim()) || user.getEmail().trim().equals("") || "".equals(user.getEmail().trim());
 					/*4.先判断用户输入的数据是否为空*/
 					if(judgenull)
 					{
@@ -133,9 +154,9 @@ public class UserControl {
 							message = "该用户存在！";
 							boolean flag = (userdata.getUsername().equals(user.getUsername()) || userdata.getMobile().equals(user.getMobile())) || (userdata.getEmail().equals(user.getEmail())) && (userdata.getPassword().equals(user.getPassword()));
 							if(flag){
+								userid = userdata.getUserid();
 								status = "0200";
 								message = "普通模式登录成功！";
-								userid = userdata.getUserid();
 							}
 							else
 							{
@@ -156,13 +177,20 @@ public class UserControl {
 					{
 						if(userdata!=null)
 						{
-							status = "0201";
-							message = "该用户存在！";
 							boolean flag = (userdata.getUsername().equals(user.getUsername()) || userdata.getMobile().equals(user.getMobile())) && (userdata.getPassword().equals(user.getPassword()));
 							if(flag){
 								status = "0200";
 								message = "普通模式登录成功！";
 								userid = userdata.getUserid();
+								/*User usernew = userService.query(userid);
+								
+								Set<Game> games = new HashSet<Game>();
+								games = user.getGames();
+								usernew = user;
+								usernew.setGames(games);
+								usernew.setRegisttime(userdata.getRegisttime());
+								System.err.println("登录时保存的游戏");
+								userService.saveorupdate(usernew);*/
 							}
 							else
 							{
@@ -186,17 +214,233 @@ public class UserControl {
 			case "2":
 				/*这是facebook方式登录*/
 				System.err.println("这是facebook方式登录");
-				message = "这是facebook登录！";
+				/*message = "这是facebook登录！";*/
+				/*1.如果是第一次登录那么进行，写入数据库*/
+				Account account = null;
+				Set<Account> accounts = new HashSet<Account>();
+
+				accounts = user.getAccounts();
+				if(accounts.size()>0)
+				{
+					Iterator acc = accounts.iterator(); 
+					while(acc.hasNext())
+					{
+						account = (Account) acc.next();
+						/*System.err.println(account.getAccountname());*/
+						/*System.err.println(account);*/
+					}
+					if(account.getAccountname().equals("") || "".equals(account.getAccountname()))
+					{
+						status = "0403";
+						message = "用户输入的账号为空!";
+						userid = 0;
+					}
+					else
+					{
+						String accsql = "from Account where accountname="+"'"+account.getAccountname().trim()+"'"+"and accounttype="+"'"+user.getType()+"'";
+						Account accountdata = accountService.querysql(accsql);
+						System.err.println(accountdata);
+						if(accountdata==null)
+						{
+							status = "0200";
+							message = "第一次登录数据库不存在重新生成账户！！";
+							String username = account.getAccountname();
+							/*userid = 0;*/
+							account.setAccounttype(user.getType());
+							user.setRegisttime(new Date());
+							user.setAccounts(user.getAccounts());
+							user.setEmail("");
+							user.setMobile("");
+							user.setUsername(account.getAccountname());
+							user.setPassword("");
+							user.setType(type);
+							user.setGames(user.getGames());
+							System.err.println("保存数据");
+							userService.save(user);
+							String idsql = "from Account where accountname="+"'"+account.getAccountname().trim()+"'"+"and accounttype="+"'"+user.getType()+"'";
+							Account accountdatanew = accountService.querysql(idsql);
+							System.err.println(accountdatanew);
+							if(accountdatanew==null)
+							{
+								status = "0404";
+								message = "类型参数错误，空指针";
+								userid = 0;
+							}
+							else
+							{
+								userid = accountdatanew.getUser().getUserid();
+							}
+						}
+						else
+						{
+							if(accountdata.getAccounttype().equals(user.getType()) && accountdata.getAccountname().equals(account.getAccountname()))
+							{
+								status = "0200";
+								message = "第三方Facebook登录成功！";
+								userid = accountdata.getUser().getUserid();
+								/*1.如果用这个账户去登录别的游戏*/
+								Set<Game> games = new HashSet<Game>();
+								games = user.getGames();
+								
+							}
+						}
+					}
+				}
+				else
+				{
+					status = "0404";
+					message = "用户没有填写第三方登录信息！！！";
+					userid = 0;
+				}
+				
 				break;
 			case "3":
 				/*这是twitter方式登录*/
 				System.err.println("这是twitter方式登录");
 				message = "这是twitter方式登录！";
+				/*1.如果是第一次登录那么进行，写入数据库*/
+				Account account1 = null;
+				Set<Account> accounts1 = new HashSet<Account>();
+				accounts1 = user.getAccounts();
+				if(accounts1.size()>0)
+				{
+					Iterator acc = accounts1.iterator(); 
+					while(acc.hasNext())
+					{
+						account1 = (Account) acc.next();
+						System.err.println(account1.getAccountname());
+						System.err.println(account1);
+					}
+					if(account1.getAccountname().equals("") || "".equals(account1.getAccountname()))
+					{
+						status = "0403";
+						message = "用户输入的账号为空!";
+						userid = 0;
+					}
+					else
+					{
+						String accsql = "from Account where accountname="+"'"+account1.getAccountname().trim()+"'"+"and accounttype="+"'"+user.getType()+"'";
+						Account accountdata1 = accountService.querysql(accsql);
+						System.err.println(accountdata1);
+						if(accountdata1==null)
+						{
+							status = "0200";
+							message = "第一次登录数据库不存在重新生成账户！！";
+							String username = account1.getAccountname();
+							account1.setAccounttype(user.getType());
+							user.setRegisttime(new Date());
+							user.setAccounts(user.getAccounts());
+							user.setEmail("");
+							user.setMobile("");
+							user.setUsername(account1.getAccountname());
+							user.setPassword("");
+							user.setType(type);
+							System.err.println("保存数据");
+							userService.save(user);
+							String idsql = "from Account where accountname="+"'"+account1.getAccountname().trim()+"'"+"and accounttype="+"'"+user.getType()+"'";
+							Account accountdatanew1 = accountService.querysql(idsql);
+							if(accountdatanew1==null)
+							{
+								status = "0404";
+								message = "类型参数错误，空指针";
+								userid = 0;
+							}
+							else
+							{
+								userid = accountdatanew1.getUser().getUserid();
+							}
+						}
+						else
+						{
+							if(accountdata1.getAccounttype().equals(user.getType()) && accountdata1.getAccountname().trim().equals(account1.getAccountname()))
+							{
+								status = "0200";
+								message = "第三方Twitter登录成功！";
+								userid = accountdata1.getUser().getUserid();
+							}
+						}
+					}
+				}
+				else
+				{
+					status = "0404";
+					message = "用户没有填写第三方登录信息！！！";
+					userid = 0;
+				}
 				break;
 			case "4":
 				/*这是googleplay方式登录*/
 				System.err.println("这是googleplay方式登录");
 				message = "这是googleplay方式登录！";
+				/*1.如果是第一次登录那么进行，写入数据库*/
+				Account account2 = null;
+				Set<Account> accounts2 = new HashSet<Account>();
+				accounts2 = user.getAccounts();
+				if(accounts2.size()>0)
+				{
+					Iterator acc = accounts2.iterator(); 
+					while(acc.hasNext())
+					{
+						account2 = (Account) acc.next();
+						System.err.println(account2.getAccountname());
+						System.err.println(account2);
+					}
+					if(account2.getAccountname().equals("") || "".equals(account2.getAccountname()))
+					{
+						status = "0403";
+						message = "用户输入的账号为空!";
+						userid = 0;
+					}
+					else
+					{
+						String accsql = "from Account where accountname="+"'"+account2.getAccountname().trim()+"'"+"and accounttype="+"'"+user.getType()+"'";
+						Account accountdata2 = accountService.querysql(accsql);
+						System.err.println(accountdata2);
+						if(accountdata2==null)
+						{
+							status = "0200";
+							message = "第一次登录数据库不存在重新生成账户！！";
+							account2.setAccounttype(user.getType());
+							String username = account2.getAccountname();
+							user.setRegisttime(new Date());
+							user.setAccounts(user.getAccounts());
+							user.setEmail("");
+							user.setMobile("");
+							user.setUsername(account2.getAccountname());
+							user.setPassword("");
+							user.setType(type);
+							/*System.err.println("保存数据");*/
+							userService.save(user);
+							String idsql = "from Account where accountname="+"'"+account2.getAccountname().trim()+"'"+"and accounttype="+"'"+user.getType()+"'";
+							Account accountdatanew2 = accountService.querysql(idsql);
+							if(accountdatanew2==null)
+							{
+								status = "0404";
+								message = "类型参数错误，空指针";
+								userid = 0;
+							}
+							else
+							{
+								userid = accountdatanew2.getUser().getUserid();
+							}
+						}
+						else
+						{
+							if(accountdata2.getAccounttype().equals(user.getType()) && accountdata2.getAccountname().equals(account2.getAccountname()))
+							{
+								status = "0200";
+								message = "第三方GooglePlay登录成功！";
+								userid = accountdata2.getUser().getUserid();
+							}
+						}
+					}
+				}
+				else
+				{
+					status = "0404";
+					message = "用户没有填写第三方登录信息！！！";
+					userid = 0;
+				}
 				break;
 				
 		}
@@ -208,7 +452,7 @@ public class UserControl {
 			map.put("errorMsg", bindingResult.getFieldError().getDefaultMessage());
 		}
 		
-		map.put("username", user.getUsername());
+		/*map.put("username", user.getUsername());*/
 		/*map.put("status", new String[]{"战狼","中国"});*/
 		map.put("status", status);
 		map.put("message", message);
@@ -311,19 +555,52 @@ public class UserControl {
 	 * @return
 	 */
 	@RequestMapping(value="forgetpassone",method = RequestMethod.PUT)
-	public ModelAndView forgetPassOne(String funcId, int fmtId){
-	        ModelAndView mav = new ModelAndView();
-	        List<User> fmcs = new ArrayList<User>();
+	public @ResponseBody Map<String, Object> forgetPassOne(@RequestBody User user, BindingResult bindingResult){
 	        
-	        User user = new User();
-	        user.setRegisttime(new Date());
-	        user.setUsername("lixiaolong");
+	        /*创建返回给客户端的json数据*/
+			Map<String, Object> map = new HashMap<String, Object>();
+			
+			/*1.先根据用户提供的手机号，查询数据库中是否存在这个用户如果存在则返回为真*/
+			/*1.1 先判断用户输入的内容不能为空 */
+			String sql = "from User u where u.mobile="+"'"+user.getMobile()+"'";
+			String mobile = user.getMobile().trim();
+			/*validata = "123456";*/
+			User userdata = null;
+			String validata = "123456";
+			if(validata.equals("123456"))
+			{
+				boolean judge = (mobile.equals("") || "".equals(mobile));
+				if(judge)
+				{
+					status = "0404";
+					message = "用户输入的手机号为空！";
+					userid = 0;
+				}
+				else
+				{
+					userdata = userService.querysql(sql);
+					if(userdata!=null)
+					{
+						status = "0200";
+						message = "成功，进行下一步！";
+						userid = userdata.getUserid();
+					}
+				}
+			}
+			else
+			{
+				status = "0404";
+				message = "验证码不对";
+			}
+			
+			
+	        /*user.setModifytime(new Date());
+	        user.setPassword(user.getPassword());*/
 	        
-	        fmcs.add(user);
-	        Gson gson=new Gson();
-	        String json_txt = gson.toJson(fmcs);
-	        mav.addObject("json_data", json_txt);
-	        return mav;
+	        map.put("status", status);
+	        map.put("message", message);
+	        map.put("userid", userid);
+	        return map;
 	    }
 	
 	/**
@@ -335,16 +612,50 @@ public class UserControl {
 		/*创建返回给客户端的json数据*/
 		Map<String, Object> map = new HashMap<String, Object>();    
 		
-	     /*   List<User> fmcs = new ArrayList<User>();
-	        
-	        User user = new User();
-	        user.setRegisttime(new Date());
-	        user.setUsername("lixiaolong");
-	        
-	        fmcs.add(user);
-	        Gson gson=new Gson();
-	        String json_txt = gson.toJson(fmcs);
-	        mav.addObject("json_data", json_txt);*/
+		/*1.先在数据库中查找这个用户*/
+		String sql = "from User u where u.mobile="+"'"+user.getMobile()+"'";
+		String mobile = user.getMobile().trim();
+		validatecode = "123456";
+		User userdata = null;
+		boolean judge = (mobile.equals("") || "".equals(mobile));
+		if(judge)
+		{
+			status = "0404";
+			message = "手机号为空！";
+			userid = 0;
+		}
+		else
+		{
+			/*2.更新这个用户的密码*/
+			userdata = userService.queryBysql(sql);
+			if(userdata != null)
+			{
+				String passworddata = userdata.getPassword();
+				
+				if(user.getPassword().equals(passworddata))
+				{
+					status = "0403";
+					message = "不能使用之前的密码！！！";
+					userid = userdata.getUserid();
+				}
+				else
+				{
+					userdata.setPassword(user.getPassword());
+					
+					userService.update(userdata);
+					
+					status = "0200";
+					message = "更新密码成功！！！";
+					userid = userdata.getUserid();
+				}
+				
+				/*userdata.setPassword();*/
+			}
+		}
+		  
+		map.put("status", status);
+		map.put("message", message);
+		map.put("userid", userid);
         return map;
 	}
 	
@@ -357,5 +668,14 @@ public class UserControl {
 		System.exit(0);
 		return "退出系统";
 	}
+	
+	/*@RequestMapping(value="get",method=RequestMethod.POST)
+	public @ResponseBody Map<String, Object> getMessage(@RequestBody Map model){
+		
+		model.get("code");
+		model.get("username");
+		
+		return model;
+	}*/
 	
 }
