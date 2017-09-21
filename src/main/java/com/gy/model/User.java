@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
@@ -89,6 +90,11 @@ public class User implements Serializable {
 	 */
 	private Set<Account> accounts = new HashSet<Account>();
 	
+	/**
+	 * 创建用户Token对象
+	 */
+	private Token token;
+
 	/**
 	 * 创建默认构造函数
 	 */
@@ -266,6 +272,21 @@ public class User implements Serializable {
 
 	public void setAccounts(Set<Account> accounts) {
 		this.accounts = accounts;
+	}
+	
+	/**
+	 * 生成用户Token对象
+	 * @return
+	 */
+	@OneToOne
+	@Cascade(value={CascadeType.SAVE_UPDATE})
+	@JoinColumn(name="userid")
+	public Token getToken() {
+		return token;
+	}
+
+	public void setToken(Token token) {
+		this.token = token;
 	}
 	
 	/**

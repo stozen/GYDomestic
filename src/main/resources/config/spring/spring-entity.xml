@@ -31,7 +31,8 @@
  	<!-- 配置商品类型 -->
  	<bean id="goodsManager" class="com.gy.model.Goods"></bean>
  	
- 	<!-- <bean id="tokenManager" class="com.gy.model.Token"></bean> -->
+ 	<!-- 配置用户验证Token类型 -->
+ 	<bean id="tokenManager" class="com.gy.model.Token"></bean>
  	<!-- 配置其他的实体类，预留位置 -->
  	
 </beans>

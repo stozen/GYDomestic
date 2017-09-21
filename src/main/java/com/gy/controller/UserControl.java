@@ -27,6 +27,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,6 +39,7 @@ import com.google.gson.Gson;
 import com.gy.config.Constant;
 import com.gy.model.Account;
 import com.gy.model.Game;
+import com.gy.model.Token;
 import com.gy.model.User;
 import com.gy.services.AccountService;
 import com.gy.services.GameService;
@@ -173,7 +175,7 @@ public class UserControl {
 	 */
 	/*@RequestMapping(value = "/login",headers={"Accept="+MediaType.APPLICATION_JSON_VALUE},method=RequestMethod.GET)*/
 	@RequestMapping(value="/login",method=RequestMethod.POST)
-	public @ResponseBody Map<String, Object> login(@RequestBody User user,BindingResult bindingResult) {
+	public @ResponseBody Map<String, Object> login(@RequestBody User user,BindingResult bindingResult,@RequestHeader String token) {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		
@@ -185,110 +187,24 @@ public class UserControl {
 		User userdata = null;
 		
 		switch (type) {
+			/*1以用户名加密码的方式登录*/
 			case "1":
-				/*这是普通方式登录*/
-				/*System.err.println("这是普通方式登录");*/
-				/*3.如果查询出来说明数据库中存在这个用户*/
-				try {
+				
+				if(!(user.getUsername().equals("") || "".equals(user.getUsername())) && !(user.getPassword().equals("") || "".equals(user.getPassword())))
+				{
 					userdata = userService.querysql(sql);
-					boolean judgenull = user.getUsername().trim().equals("") || "".equals(user.getUsername().trim())|| user.getPassword().trim().equals("") || "".equals(user.getPassword().trim()) || user.getMobile().trim().equals("") || "".equals(user.getMobile().trim()) || user.getEmail().trim().equals("") || "".equals(user.getEmail().trim());
-					/*4.先判断用户输入的数据是否为空*/
-					if(judgenull)
-					{
+					try {
+						userdata = userService.querysql(sql);
+						
+						/*4.先判断用户输入的数据是否为空*/
+						
 						if(userdata!=null)
 						{
-							status = "0201";
-							message = "该用户存在！";
-							boolean flag = (userdata.getUsername().equals(user.getUsername()) || userdata.getMobile().equals(user.getMobile())) || (userdata.getEmail().equals(user.getEmail())) && (userdata.getPassword().equals(user.getPassword()));
-							if(flag){
-								userid = userdata.getUserid();
-								status = "0200";
-								message = "普通模式登录成功！";
-								/*1.用户登录游戏时向数据库中插入游戏数据*/
-								Set<Game> games = new HashSet<Game>();
-								games = user.getGames();
-								if(games.size()<=0)
-								{
-									System.err.println("登录时不保存游戏，游戏数据为空！");
-								}
-								else
-								{
-									System.err.println("登录时保存的游戏");
-									
-									Iterator<Game> game = games.iterator();
-									
-									Game gamedata = new Game();
-									
-									while(game.hasNext())
-									{
-										gamedata = game.next();
-									}
-									gamedata.setUser(userdata);
-									
-									gameService.saveorupdate(gamedata);
-									
-								}
-								
-								/*2.生成Token给客户端*/
-								subject = JwtUtil.generalSubject(userdata);
-								token = jwt.createJWT(Constant.JWT_ID, subject, Constant.JWT_TTL);
-								map.put("token", token);
-								/*Claims claims = jwt.parseJWT(token);
-								Date expiratedate = claims.getExpiration();
-								Date now = new Date();
-								if(CompareDate.compare_date(now, expiratedate)==1)
-								{
-									token过期了,重新刷新
-									refreshtoken = jwt.createJWT(Constant.JWT_ID, subject, Constant.JWT_REFRESH_TTL);
-									map.put("refreshtoken", refreshtoken);
-									status = "0201";
-									message = "";
-								}
-								
-								else if(CompareDate.compare_date(now, expiratedate)==-1)
-								{
-									token没有过期
-									map.put("token", token);
-								}
-								else
-								{
-									token没有过期
-									map.put("token", token);
-								}
-								
-								String getsubject = claims.getSubject();
-								
-								
-								System.err.println("现在时间:"+now+"过期时间:"+expiratedate+"加密内容:"+getsubject);
-								JSONObject jo = new JSONObject();
-								jo.put("token", token);
-								jo.put("refreshToken", refreshToken);*/
-							}
-							else
-							{
-								status = "0403";
-								message = "登录失败,用户名或者密码可能输入错误！";
-								userid = userdata.getUserid();
-							}
-						}
-						else
-						{
-							status = "0404";
-							message = "用户输入的内容有空值！";
-							userid = 0;
-						}
-					}
-					else
-					{
-						if(userdata!=null)
-						{
-							boolean flag = (userdata.getUsername().equals(user.getUsername()) || userdata.getMobile().equals(user.getMobile())) && (userdata.getPassword().equals(user.getPassword()));
+							boolean flag = (userdata.getUsername().equals(user.getUsername())) && (userdata.getPassword().equals(user.getPassword()));
 							if(flag){
 								status = "0200";
-								message = "普通模式登录成功！";
+								message = "普通用户名模式登录成功！";
 								userid = userdata.getUserid();
-								
-								User usernew = userService.query(userid);
 								
 								Set<Game> games = new HashSet<Game>();
 								games = user.getGames();
@@ -326,13 +242,153 @@ public class UserControl {
 							message = "不存在该用户！";
 							userid = 0;
 						}
+						
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
+				else
+				{
+					status = "0403";
+					message = "用户名或者密码输入值为空！";
+					userid = 0;
+				}	
 				break;
+			/*2以邮箱加密码的方式登录*/
 			case "2":
+				if(!(user.getEmail().equals("") || "".equals(user.getEmail())) && !(user.getPassword().equals("") || "".equals(user.getPassword())))
+				{
+					userdata = userService.querysql(sql);
+					try {
+						userdata = userService.querysql(sql);
+						
+						/*4.先判断用户输入的数据是否为空*/
+						
+						if(userdata!=null)
+						{
+							boolean flag = (userdata.getEmail().equals(user.getEmail())) && (userdata.getPassword().equals(user.getPassword()));
+							if(flag){
+								status = "0200";
+								message = "普通邮箱模式登录成功！";
+								userid = userdata.getUserid();
+								
+								Set<Game> games = new HashSet<Game>();
+								games = user.getGames();
+								if(games.size()<=0)
+								{
+									System.err.println("登录时不保存游戏，游戏数据为空！");
+								}
+								else
+								{
+									System.err.println("登录保存游戏数据！");
+									
+									Iterator<Game> game = games.iterator();
+									
+									Game gamedata = new Game();
+									
+									while(game.hasNext())
+									{
+										gamedata = game.next();
+									}
+									gamedata.setUser(userdata);
+									
+									gameService.saveorupdate(gamedata);
+								}
+							}
+							else
+							{
+								status = "0403";
+								message = "登录失败,邮箱或者密码可能输入错误！";
+								userid = userdata.getUserid();
+							}
+						}
+						else
+						{
+							status = "0404";
+							message = "不存在该用户！";
+							userid = 0;
+						}
+						
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				else
+				{
+					status = "0403";
+					message = "邮箱或者密码输入值为空！";
+					userid = 0;
+				}	
+				break;
+			case "3":
+				if(!(user.getMobile().equals("") || "".equals(user.getMobile())) && !(user.getPassword().equals("") || "".equals(user.getPassword())))
+				{
+					userdata = userService.querysql(sql);
+					try {
+						userdata = userService.querysql(sql);
+						
+						/*4.先判断用户输入的数据是否为空*/
+						
+						if(userdata!=null)
+						{
+							boolean flag = (userdata.getMobile().equals(user.getMobile())) && (userdata.getPassword().equals(user.getPassword()));
+							if(flag){
+								status = "0200";
+								message = "普通手机模式登录成功！";
+								userid = userdata.getUserid();
+								
+								Set<Game> games = new HashSet<Game>();
+								games = user.getGames();
+								if(games.size()<=0)
+								{
+									System.err.println("登录时不保存游戏，游戏数据为空！");
+								}
+								else
+								{
+									System.err.println("登录保存游戏数据！");
+									
+									Iterator<Game> game = games.iterator();
+									
+									Game gamedata = new Game();
+									
+									while(game.hasNext())
+									{
+										gamedata = game.next();
+									}
+									gamedata.setUser(userdata);
+									
+									gameService.saveorupdate(gamedata);
+								}
+							}
+							else
+							{
+								status = "0403";
+								message = "登录失败,手机或者密码可能输入错误！";
+								userid = userdata.getUserid();
+							}
+						}
+						else
+						{
+							status = "0404";
+							message = "不存在该用户！";
+							userid = 0;
+						}
+						
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				else
+				{
+					status = "0403";
+					message = "手机或者密码输入值为空！";
+					userid = 0;
+				}	
+				break;
+			case "4":
 				/*这是facebook方式登录*/
 				System.err.println("这是facebook方式登录");
 				/*message = "这是facebook登录！";*/
@@ -457,7 +513,7 @@ public class UserControl {
 				}
 				
 				break;
-			case "3":
+			case "5":
 				/*这是twitter方式登录*/
 				System.err.println("这是twitter方式登录");
 				message = "这是twitter方式登录！";
@@ -576,7 +632,7 @@ public class UserControl {
 					userid = 0;
 				}
 				break;
-			case "4":
+			case "6":
 				/*这是googleplay方式登录*/
 				System.err.println("这是googleplay方式登录");
 				message = "这是googleplay方式登录！";
@@ -716,69 +772,162 @@ public class UserControl {
 	/**
 	 * 这是用户注册模块，采用的是POST方法，POST一般用于插入数据
 	 * @return
+	 * @throws Exception 
 	 */
 	@RequestMapping(value="/register",method=RequestMethod.POST)
-	public @ResponseBody Map<String,Object> register(@RequestBody User user,BindingResult bindingResult) {
+	public @ResponseBody Map<String,Object> register(@RequestBody Map map,BindingResult bindingResult) throws Exception {
 		/*log.debug("register a new user");*/
 		
-		/*创建返回给客户端的json数据*/
-		Map<String, Object> map = new HashMap<String, Object>();
+		/*创建返回给客户端的json数据
+		Map<String, Object> map = new HashMap<String, Object>();*/
 		
-		/*1.首先判断短信验证码输入的是否有误*/
-		if(validatecode.equals("123456"))
+		
+		String password = ((String)map.get("password")).trim();
+		String type = ((String)map.get("type")).trim();
+		String valicode = ((String)map.get("valicode")).trim();
+		
+		if(valicode.equals("") || "".equals(valicode))
 		{
-			/*2.先判断数据库中是否存在这个用户*/
-			String sql = "from User u where u.username=" + "'" + user.getUsername() + "'"+"or u.mobile="+"'"+user.getMobile()+"'"+"or u.email="+"'"+user.getEmail()+"'";
-			User userdata = null;
-			try {
-				userdata = userService.querysql(sql);
-				boolean judgenull = user.getUsername().equals("") || "".equals(user.getUsername())|| user.getPassword().equals("") || "".equals(user.getPassword()) || user.getMobile().equals("") || "".equals(user.getMobile()) || user.getEmail().equals("") || "".equals(user.getEmail());
-				if(judgenull)
-				{
-					status = "0404";
-					message = "用户输入的内容有空值！";
-					userid = 0;
-				}
-				else
-				{
-					if(userdata!=null){
-						/*3.如果用户输入的内容在数据库中存在，那么代表已经注册过了，无须再注册*/
-						status = "0403";
-						message = "该用户已经注册了，请重新填写！";
-						userid = userdata.getUserid();
-					}
-					else
-					{
-						/*4.如果数据库中不存在那么进行注册*/
-						user.setEmail(user.getEmail());
-						user.setRegisttime(new Date());
-						user.setType(user.getType());
-						user.setUsername(user.getUsername());
-						user.setPassword(user.getPassword());
-						user.setMobile(user.getMobile());
-						/*1.注册不需要添加游戏*/
-						/*Set<Game> game = user.getGames();
-						
-						Game games = new Game();
-						user.setGames(game);
-						System.err.println(game);*/
-						if(userService.save(user)){
-							status = "0200";
-							message = "注册成功!";
-							User user1 = (User)userService.querysql("from User where username="+"'"+user.getUsername()+"'");
-							userid = user1.getUserid();
-						}
-					}
-				}
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			status = "0403";
+			message = "验证码输入为空值！";
+			userid = 0;
 		}
 		else
 		{
-			status = "0404";
-			message = "用户输入的短信验证码错误！";
+			if(valicode.equals("123456"))
+			{
+				/*2.先判断数据库中是否存在这个用户*/
+				/*String sql = "from User u where u.username=" + "'" + username + "'"+"or u.mobile="+"'"+mobile+"'"+"or u.email="+"'"+email+"'";
+				User userdata = userService.querysql(sql);*/
+				
+				switch (type) {
+				case "1":
+					String username = ((String)map.get("username")).trim();
+					if(!(username.equals("") || "".equals(username)) && !(password.equals("") || "".equals(password)))
+					{
+						String namesql = "from User u where u.username=" + "'" + username+"'"+"and u.password="+"'"+password+"'";
+						User userdata = userService.querysql(namesql);
+						if(userdata!=null)
+						{
+							status = "0202";
+							message = "该用户已经注册了，请重新填写！";
+							userid = userdata.getUserid();
+						}
+						else
+						{
+							/*4.如果数据库中不存在那么进行注册*/
+							User user = new User();
+							/*user.setEmail(email);*/
+							user.setRegisttime(new Date());
+							user.setType(type);
+							user.setEmail("");
+							user.setMobile("");
+							user.setUsername(username);
+							user.setPassword(password);
+							if(userService.save(user)){
+								status = "0200";
+								message = "用户名注册成功!";
+								User user1 = (User)userService.querysql("from User where username="+"'"+user.getUsername()+"'");
+								userid = user1.getUserid();
+								/*2.生成Token给客户端*/
+								/*subject = JwtUtil.generalSubject(user1);
+								token = jwt.createJWT(Constant.JWT_ID, subject, Constant.JWT_TTL);
+								2.注册成功需要把相应的token值存储到token表中
+								map.put("token", token);*/
+							}
+						}
+					}
+					else 
+					{
+						status = "0403";
+						message = "用户输入的用户名或者密码为空！";
+						userid = 0;
+					}
+					break;
+				case "2":
+					String email = ((String)map.get("email")).trim();
+					if(!(email.equals("") || "".equals(email)) && !(password.equals("") || "".equals(password)))
+					{
+						String namesql = "from User u where u.email=" + "'" +email+"'"+"and u.password="+"'"+password+"'";
+						User userdata = userService.querysql(namesql);
+						if(userdata!=null)
+						{
+							status = "0202";
+							message = "该用户已经注册了，请重新填写！";
+							userid = userdata.getUserid();
+						}
+						else
+						{
+							/*4.如果数据库中不存在那么进行注册*/
+							User user = new User();
+							/*user.setEmail(email);*/
+							user.setRegisttime(new Date());
+							user.setType(type);
+							user.setEmail(email);
+							user.setUsername("");
+							user.setMobile("");
+							user.setPassword(password);
+							if(userService.save(user)){
+								status = "0200";
+								message = "邮箱注册成功!";
+								User user1 = (User)userService.querysql("from User where username="+"'"+user.getUsername()+"'");
+								userid = user1.getUserid();
+							}
+						}
+					}
+					else 
+					{
+						status = "0403";
+						message = "用户输入的邮箱或者密码为空！";
+						userid = 0;
+					}
+					break;
+				case "3":
+					String mobile = ((String)map.get("mobile")).trim();
+					if(!(mobile.equals("") || "".equals(mobile)) && !(password.equals("") || "".equals(password)))
+					{
+						String namesql = "from User u where u.mobile=" + "'"+mobile+"'"+"and u.password="+"'"+password+"'";
+						User userdata = userService.querysql(namesql);
+						if(userdata!=null)
+						{
+							status = "0202";
+							message = "该用户已经注册了，请重新填写！";
+							userid = userdata.getUserid();
+						}
+						else
+						{
+							/*4.如果数据库中不存在那么进行注册*/
+							User user = new User();
+							/*user.setEmail(email);*/
+							user.setRegisttime(new Date());
+							user.setType(type);
+							user.setMobile(mobile);
+							user.setEmail("");
+							user.setUsername("");
+							user.setPassword(password);
+							if(userService.save(user)){
+								status = "0200";
+								message = "手机注册成功!";
+								User user1 = (User)userService.querysql("from User where username="+"'"+user.getUsername()+"'");
+								userid = user1.getUserid();
+							}
+						}
+					}
+					else 
+					{
+						status = "0403";
+						message = "用户输入的电话或者密码为空！";
+						userid = 0;
+					}
+					break;
+				}
+			}
+			else
+			{
+				status = "0402";
+				message = "验证码填写错误！";
+				userid = 0;
+			}
 		}
 		
 		/*这一段用来确定用户输入的参数是否有误*/
@@ -787,7 +936,13 @@ public class UserControl {
 			map.put("errorMsg", bindingResult.getFieldError().getDefaultMessage());
 		}
 		
-		map.put("username", user.getUsername());
+		map.remove("username");
+		map.remove("password");
+		map.remove("valicode");
+		map.remove("mobile");
+		map.remove("email");
+		map.remove("type");
+		/*map.put("username", username);*/
 		map.put("status", status);
 		map.put("message", message);
 		map.put("userid", userid);
@@ -811,10 +966,7 @@ public class UserControl {
 			/*1.先根据用户提供的手机号，查询数据库中是否存在这个用户如果存在则返回为真*/
 			/*1.1 先判断用户输入的内容不能为空 */
 			String sql = "from User u where u.mobile="+"'"+mobile+"'";
-			/*String mobile = user.getMobile().trim();*/
-			/*validata = "123456";*/
 			User userdata = null;
-			/*String validata = "123456";*/
 			if(valicode.equals("") || "".equals(valicode))
 			{
 				status = "0404";
@@ -858,8 +1010,6 @@ public class UserControl {
 				
 			}
 			
-	        /*user.setModifytime(new Date());
-	        user.setPassword(user.getPassword());*/
 	        map.remove("mobile");
 	        map.remove("valicode");
 	        map.put("status", status);
@@ -883,7 +1033,6 @@ public class UserControl {
 		
 		/*1.先在数据库中查找这个用户*/
 		String sql = "from User u where u.mobile="+"'"+mobile.trim()+"'";
-		/*String mobile = user.getMobile().trim();*/
 		validatecode = "123456";
 		User userdata = null;
 		boolean judge = (mobile.equals("") || "".equals(mobile));
@@ -946,13 +1095,4 @@ public class UserControl {
         return map;
 	}
 	
-	/**
-	 * 这是用户退出登录模块，采用的方法是PUT方法，PUT方法一般用于更新数据
-	 * @return
-	 */
-	/*@RequestMapping(value="/exit",method=RequestMethod.POST)
-	public @ResponseBody String exit(){
-		System.exit(0);
-		return "退出系统";
-	}*/
 }
