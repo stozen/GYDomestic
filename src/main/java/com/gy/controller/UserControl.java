@@ -226,29 +226,33 @@ public class UserControl {
 									gamedata.setUser(userdata);
 									
 									gameService.saveorupdate(gamedata);
+									
 								}
 								
 								/*2.生成Token给客户端*/
 								subject = JwtUtil.generalSubject(userdata);
 								token = jwt.createJWT(Constant.JWT_ID, subject, Constant.JWT_TTL);
-								
-								Claims claims = jwt.parseJWT(token);
+								map.put("token", token);
+								/*Claims claims = jwt.parseJWT(token);
 								Date expiratedate = claims.getExpiration();
 								Date now = new Date();
 								if(CompareDate.compare_date(now, expiratedate)==1)
 								{
-									/*token过期了,重新刷新*/
+									token过期了,重新刷新
 									refreshtoken = jwt.createJWT(Constant.JWT_ID, subject, Constant.JWT_REFRESH_TTL);
 									map.put("refreshtoken", refreshtoken);
+									status = "0201";
+									message = "";
 								}
+								
 								else if(CompareDate.compare_date(now, expiratedate)==-1)
 								{
-									/*token没有过期*/
+									token没有过期
 									map.put("token", token);
 								}
 								else
 								{
-									/*token没有过期*/
+									token没有过期
 									map.put("token", token);
 								}
 								
@@ -256,7 +260,7 @@ public class UserControl {
 								
 								
 								System.err.println("现在时间:"+now+"过期时间:"+expiratedate+"加密内容:"+getsubject);
-								/*JSONObject jo = new JSONObject();
+								JSONObject jo = new JSONObject();
 								jo.put("token", token);
 								jo.put("refreshToken", refreshToken);*/
 							}
@@ -288,18 +292,26 @@ public class UserControl {
 								
 								Set<Game> games = new HashSet<Game>();
 								games = user.getGames();
-								
-								Iterator<Game> game = games.iterator();
-								
-								Game gamedata = new Game();
-								
-								while(game.hasNext())
+								if(games.size()<=0)
 								{
-									gamedata = game.next();
+									System.err.println("登录时不保存游戏，游戏数据为空！");
 								}
-								gamedata.setUser(userdata);
-								
-								gameService.saveorupdate(gamedata);
+								else
+								{
+									System.err.println("登录保存游戏数据！");
+									
+									Iterator<Game> game = games.iterator();
+									
+									Game gamedata = new Game();
+									
+									while(game.hasNext())
+									{
+										gamedata = game.next();
+									}
+									gamedata.setUser(userdata);
+									
+									gameService.saveorupdate(gamedata);
+								}
 							}
 							else
 							{
@@ -383,17 +395,26 @@ public class UserControl {
 							Set<Game> games = new HashSet<Game>();
 							games = user.getGames();
 							
-							Iterator<Game> game = games.iterator();
-							
-							Game gamedata = new Game();
-							
-							while(game.hasNext())
+							if(games.size()<=0)
 							{
-								gamedata = game.next();
+								System.err.println("登录时不保存游戏，游戏数据为空！");
 							}
-							gamedata.setUser(user);
+							else
+							{
+								System.err.println("登录保存游戏数据！");
+								Iterator<Game> game = games.iterator();
+								
+								Game gamedata = new Game();
+								
+								while(game.hasNext())
+								{
+									gamedata = game.next();
+								}
+								gamedata.setUser(user);
+								
+								gameService.saveorupdate(gamedata);
+							}
 							
-							gameService.saveorupdate(gamedata);
 						}
 						else
 						{
@@ -406,17 +427,24 @@ public class UserControl {
 								Set<Game> games = new HashSet<Game>();
 								games = user.getGames();
 								
-								Iterator<Game> game = games.iterator();
-								
-								Game gamedata = new Game();
-								
-								while(game.hasNext())
+								if(games.size()<=0)
 								{
-									gamedata = game.next();
+									System.err.println("登录时不保存游戏，游戏数据为空！");
 								}
-								gamedata.setUser(accountdata.getUser());
-								gameService.saveorupdate(gamedata);
-								
+								else
+								{
+									System.err.println("登录时保存游戏数据！");
+									Iterator<Game> game = games.iterator();
+									
+									Game gamedata = new Game();
+									
+									while(game.hasNext())
+									{
+										gamedata = game.next();
+									}
+									gamedata.setUser(accountdata.getUser());
+									gameService.saveorupdate(gamedata);
+								}
 							}
 						}
 					}
@@ -487,17 +515,26 @@ public class UserControl {
 							Set<Game> games = new HashSet<Game>();
 							games = user.getGames();
 							
-							Iterator<Game> game = games.iterator();
-							
-							Game gamedata = new Game();
-							
-							while(game.hasNext())
+							if(games.size()<=0)
 							{
-								gamedata = game.next();
+								System.err.println("登录时不保存游戏，游戏数据为空！");
 							}
-							gamedata.setUser(user);
+							else
+							{
+								System.err.println("登录时保存游戏数据！");
+								Iterator<Game> game = games.iterator();
+								
+								Game gamedata = new Game();
+								
+								while(game.hasNext())
+								{
+									gamedata = game.next();
+								}
+								gamedata.setUser(user);
+								
+								gameService.saveorupdate(gamedata);
+							}
 							
-							gameService.saveorupdate(gamedata);
 						}
 						else
 						{
@@ -510,16 +547,24 @@ public class UserControl {
 								Set<Game> games = new HashSet<Game>();
 								games = user.getGames();
 								
-								Iterator<Game> game = games.iterator();
-								
-								Game gamedata = new Game();
-								
-								while(game.hasNext())
+								if(games.size()<=0)
 								{
-									gamedata = game.next();
+									System.err.println("登录时不保存游戏，游戏数据为空！");
 								}
-								gamedata.setUser(accountdata1.getUser());
-								gameService.saveorupdate(gamedata);
+								else
+								{
+									System.err.println("登录时保存游戏数据！");
+									Iterator<Game> game = games.iterator();
+									
+									Game gamedata = new Game();
+									
+									while(game.hasNext())
+									{
+										gamedata = game.next();
+									}
+									gamedata.setUser(accountdata1.getUser());
+									gameService.saveorupdate(gamedata);
+								}
 							}
 						}
 					}
@@ -588,18 +633,25 @@ public class UserControl {
 							}
 							Set<Game> games = new HashSet<Game>();
 							games = user.getGames();
-							
-							Iterator<Game> game = games.iterator();
-							
-							Game gamedata = new Game();
-							
-							while(game.hasNext())
+							if(games.size()<=0)
 							{
-								gamedata = game.next();
+								System.err.println("登录时不保存游戏，游戏数据为空！");
 							}
-							gamedata.setUser(user);
-							
-							gameService.saveorupdate(gamedata);
+							else
+							{
+								System.err.println("登录时保存游戏数据！");
+								Iterator<Game> game = games.iterator();
+								
+								Game gamedata = new Game();
+								
+								while(game.hasNext())
+								{
+									gamedata = game.next();
+								}
+								gamedata.setUser(user);
+								
+								gameService.saveorupdate(gamedata);
+							}
 						}
 						else
 						{
@@ -611,16 +663,24 @@ public class UserControl {
 								Set<Game> games = new HashSet<Game>();
 								games = user.getGames();
 								
-								Iterator<Game> game = games.iterator();
-								
-								Game gamedata = new Game();
-								
-								while(game.hasNext())
+								if(games.size()<=0)
 								{
-									gamedata = game.next();
+									System.err.println("登录时不保存游戏，游戏数据为空！");
 								}
-								gamedata.setUser(accountdata2.getUser());
-								gameService.saveorupdate(gamedata);
+								else
+								{
+									System.err.println("登录时保存游戏数据！");
+									Iterator<Game> game = games.iterator();
+									
+									Game gamedata = new Game();
+									
+									while(game.hasNext())
+									{
+										gamedata = game.next();
+									}
+									gamedata.setUser(accountdata2.getUser());
+									gameService.saveorupdate(gamedata);
+								}
 							}
 						}
 					}
@@ -696,11 +756,12 @@ public class UserControl {
 						user.setUsername(user.getUsername());
 						user.setPassword(user.getPassword());
 						user.setMobile(user.getMobile());
-						Set<Game> game = user.getGames();
+						/*1.注册不需要添加游戏*/
+						/*Set<Game> game = user.getGames();
 						
-						/*Game games = new Game();*/
+						Game games = new Game();
 						user.setGames(game);
-						System.err.println(game);
+						System.err.println(game);*/
 						if(userService.save(user)){
 							status = "0200";
 							message = "注册成功!";

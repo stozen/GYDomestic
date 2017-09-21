@@ -8,4 +8,9 @@ package com.gy.model;
  */
 public class Token {
 	
+	private int tokenid;
+	
+	private String token;
+	
+	
 }

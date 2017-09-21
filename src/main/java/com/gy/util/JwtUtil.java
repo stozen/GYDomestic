@@ -21,7 +21,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JwtUtil {
 	
-    private String profiles="test";
+    private String profiles="develop";
 	
 	/**
 	 * 由字符串生成加密key
