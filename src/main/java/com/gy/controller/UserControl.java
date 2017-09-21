@@ -1086,6 +1086,7 @@ public class UserControl {
 				}
 			}
 		}
+		
 		map.remove("mobile");
 		map.remove("password");
 		map.remove("confirmpass");
