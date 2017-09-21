@@ -18,7 +18,7 @@ import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
-/*@Component*/
+@Component
 public class JwtUtil {
 	
     private String profiles="test";
@@ -81,8 +81,9 @@ public class JwtUtil {
 	 */
 	public static String generalSubject(User user){
 		JSONObject jo = new JSONObject();
-		jo.put("userId", user.getUserid());
+		jo.put("userid", user.getUserid());
 		jo.put("username", user.getUsername());
+		jo.put("password", user.getPassword());
 		return jo.toJSONString();
 	}
 }

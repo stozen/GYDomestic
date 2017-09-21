@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alibaba.fastjson.JSONObject;
 
-/*@WebServlet("/refreshToken" )*/
+@WebServlet("/refreshToken" )
 public class RefreshToken extends HttpServlet{
 
 	private Logger logger = LogManager.getLogger(RefreshToken.class);

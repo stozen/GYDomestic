@@ -15,9 +15,11 @@ import javassist.expr.NewArray;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,13 +31,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView; 
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
+import com.gy.config.Constant;
 import com.gy.model.Account;
 import com.gy.model.Game;
 import com.gy.model.User;
 import com.gy.services.AccountService;
 import com.gy.services.GameService;
 import com.gy.services.UserService;
+import com.gy.servicesImpl.UserServiceImpl;
+import com.gy.util.JwtUtil;
+import com.gy.util.ResponseUtil;
 
 /**
  * @author Chencongye
@@ -72,6 +79,21 @@ public class UserControl {
 	 * 创建一个短信验证码
 	 */
 	private String validatecode = "123456";
+	
+	/**
+	 * 创建Token的User对象
+	 */
+	private String subject = "";
+	
+	/**
+	 * 生成返回给客户端的Token
+	 */
+	private String token = "";
+	
+	/**
+	 * 刷新Token返回给客户端
+	 */
+	private String refreshtoken = "";
 	
 	/**
 	 * 自动注入用户服务层
@@ -128,16 +150,19 @@ public class UserControl {
 		this.gameService = gameService;
 	}
 
-	/**
-	 * 这是打印log的信息
-	 */
-	private static Logger log = Logger.getLogger(UserControl.class);
-	
 	/*@RequestMapping(value = "/hello", produces = "text/json;charset=UTF-8")
 	public @ResponseBody String hello() {
 		
 		return "你好！hello";
 	}*/
+	
+	@Autowired
+	private JwtUtil jwt;
+	
+	/**
+	 * 这是打印log的信息
+	 */
+	private static final Logger logger = LogManager.getLogger(UserControl.class);
 	
 	/**
 	 * 这是用户登录模块的使用
@@ -176,22 +201,37 @@ public class UserControl {
 								userid = userdata.getUserid();
 								status = "0200";
 								message = "普通模式登录成功！";
+								/*1.用户登录游戏时向数据库中插入游戏数据*/
 								Set<Game> games = new HashSet<Game>();
 								games = user.getGames();
-								
-								Iterator<Game> game = games.iterator();
-								
-								Game gamedata = new Game();
-								
-								while(game.hasNext())
+								if(games.size()<=0)
 								{
-									gamedata = game.next();
+									System.err.println("登录时不保存游戏，游戏数据为空！");
 								}
-								gamedata.setUser(userdata);
+								else
+								{
+									System.err.println("登录时保存的游戏");
+									
+									Iterator<Game> game = games.iterator();
+									
+									Game gamedata = new Game();
+									
+									while(game.hasNext())
+									{
+										gamedata = game.next();
+									}
+									gamedata.setUser(userdata);
+									
+									gameService.saveorupdate(gamedata);
+								}
 								
-								gameService.saveorupdate(gamedata);
-								
-								System.err.println("登录时保存的游戏");
+								/*2.生成Token给客户端*/
+								subject = JwtUtil.generalSubject(userdata);
+								token = jwt.createJWT(Constant.JWT_ID, subject, Constant.JWT_TTL);
+								refreshtoken = jwt.createJWT(Constant.JWT_ID, subject, Constant.JWT_REFRESH_TTL);
+								/*JSONObject jo = new JSONObject();
+								jo.put("token", token);
+								jo.put("refreshToken", refreshToken);*/
 							}
 							else
 							{
@@ -578,6 +618,8 @@ public class UserControl {
 		/*map.put("username", user.getUsername());*/
 		/*map.put("status", new String[]{"战狼","中国"});*/
 		map.put("status", status);
+		map.put("token",token);
+		map.put("refreshtoken",refreshtoken);
 		map.put("message", message);
 		map.put("userid", userid);
 		
