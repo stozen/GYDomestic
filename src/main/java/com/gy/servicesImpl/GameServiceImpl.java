@@ -150,4 +150,14 @@ public class GameServiceImpl implements GameService {
 		return gameDao.updateAll(games);
 	}
 
+	/**
+	 * 插入游戏
+	 * @return true or false
+	 */
+	@Override
+	public int insert(String sql) {
+		// TODO Auto-generated method stub
+		return gameDao.insert(sql);
+	}
+
 }

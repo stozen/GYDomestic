@@ -3,13 +3,17 @@ package com.gy.servicesImpl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.gy.dao.UserDao;
 import com.gy.daoImpl.UserDaoImpl;
 import com.gy.model.User;
 import com.gy.services.UserService;
+import com.gy.util.JwtUtil;
 
 /**
  * @author Chencongye
@@ -19,7 +23,13 @@ import com.gy.services.UserService;
  */
 
 @Service
+@Component
 public class UserServiceImpl implements UserService {
+	
+	private static final Logger logger = LogManager.getLogger(UserServiceImpl.class);
+	
+	@Autowired
+	private JwtUtil jwt;
 	
 	/**
 	 * 自动装配

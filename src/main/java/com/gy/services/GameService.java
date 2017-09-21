@@ -81,4 +81,11 @@ public interface GameService {
 	 * @return true or false
 	 */
 	public boolean updateAll(Game[] games);
+	
+	/**
+	 * 实现插入游戏的功能
+	 * @param sql
+	 * @return
+	 */
+	public int insert(String sql);
 }

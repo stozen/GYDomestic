@@ -34,6 +34,7 @@ import com.gy.model.Account;
 import com.gy.model.Game;
 import com.gy.model.User;
 import com.gy.services.AccountService;
+import com.gy.services.GameService;
 import com.gy.services.UserService;
 
 /**
@@ -110,6 +111,24 @@ public class UserControl {
 	}
 
 	/**
+	 * 实现自动装配
+	 */
+	@Autowired
+	private GameService gameService;
+	
+	/**
+	 * 生成对应的set和get方法
+	 * @return
+	 */
+	public GameService getGameService() {
+		return gameService;
+	}
+
+	public void setGameService(GameService gameService) {
+		this.gameService = gameService;
+	}
+
+	/**
 	 * 这是打印log的信息
 	 */
 	private static Logger log = Logger.getLogger(UserControl.class);
@@ -140,7 +159,7 @@ public class UserControl {
 		switch (type) {
 			case "1":
 				/*这是普通方式登录*/
-				System.err.println("这是普通方式登录");
+				/*System.err.println("这是普通方式登录");*/
 				/*3.如果查询出来说明数据库中存在这个用户*/
 				try {
 					userdata = userService.querysql(sql);
@@ -157,6 +176,22 @@ public class UserControl {
 								userid = userdata.getUserid();
 								status = "0200";
 								message = "普通模式登录成功！";
+								Set<Game> games = new HashSet<Game>();
+								games = user.getGames();
+								
+								Iterator<Game> game = games.iterator();
+								
+								Game gamedata = new Game();
+								
+								while(game.hasNext())
+								{
+									gamedata = game.next();
+								}
+								gamedata.setUser(userdata);
+								
+								gameService.saveorupdate(gamedata);
+								
+								System.err.println("登录时保存的游戏");
 							}
 							else
 							{
@@ -169,7 +204,6 @@ public class UserControl {
 						{
 							status = "0404";
 							message = "用户输入的内容有空值！";
-							System.err.println(userdata.getEmail());
 							userid = 0;
 						}
 					}
@@ -182,15 +216,23 @@ public class UserControl {
 								status = "0200";
 								message = "普通模式登录成功！";
 								userid = userdata.getUserid();
-								/*User usernew = userService.query(userid);
+								
+								User usernew = userService.query(userid);
 								
 								Set<Game> games = new HashSet<Game>();
 								games = user.getGames();
-								usernew = user;
-								usernew.setGames(games);
-								usernew.setRegisttime(userdata.getRegisttime());
-								System.err.println("登录时保存的游戏");
-								userService.saveorupdate(usernew);*/
+								
+								Iterator<Game> game = games.iterator();
+								
+								Game gamedata = new Game();
+								
+								while(game.hasNext())
+								{
+									gamedata = game.next();
+								}
+								gamedata.setUser(userdata);
+								
+								gameService.saveorupdate(gamedata);
 							}
 							else
 							{
@@ -254,9 +296,10 @@ public class UserControl {
 							user.setUsername(account.getAccountname());
 							user.setPassword("");
 							user.setType(type);
-							user.setGames(user.getGames());
+							
 							System.err.println("保存数据");
 							userService.save(user);
+							
 							String idsql = "from Account where accountname="+"'"+account.getAccountname().trim()+"'"+"and accounttype="+"'"+user.getType()+"'";
 							Account accountdatanew = accountService.querysql(idsql);
 							System.err.println(accountdatanew);
@@ -270,6 +313,20 @@ public class UserControl {
 							{
 								userid = accountdatanew.getUser().getUserid();
 							}
+							Set<Game> games = new HashSet<Game>();
+							games = user.getGames();
+							
+							Iterator<Game> game = games.iterator();
+							
+							Game gamedata = new Game();
+							
+							while(game.hasNext())
+							{
+								gamedata = game.next();
+							}
+							gamedata.setUser(user);
+							
+							gameService.saveorupdate(gamedata);
 						}
 						else
 						{
@@ -282,6 +339,16 @@ public class UserControl {
 								Set<Game> games = new HashSet<Game>();
 								games = user.getGames();
 								
+								Iterator<Game> game = games.iterator();
+								
+								Game gamedata = new Game();
+								
+								while(game.hasNext())
+								{
+									gamedata = game.next();
+								}
+								gamedata.setUser(accountdata.getUser());
+								gameService.saveorupdate(gamedata);
 								
 							}
 						}
@@ -350,6 +417,20 @@ public class UserControl {
 							{
 								userid = accountdatanew1.getUser().getUserid();
 							}
+							Set<Game> games = new HashSet<Game>();
+							games = user.getGames();
+							
+							Iterator<Game> game = games.iterator();
+							
+							Game gamedata = new Game();
+							
+							while(game.hasNext())
+							{
+								gamedata = game.next();
+							}
+							gamedata.setUser(user);
+							
+							gameService.saveorupdate(gamedata);
 						}
 						else
 						{
@@ -358,6 +439,20 @@ public class UserControl {
 								status = "0200";
 								message = "第三方Twitter登录成功！";
 								userid = accountdata1.getUser().getUserid();
+								
+								Set<Game> games = new HashSet<Game>();
+								games = user.getGames();
+								
+								Iterator<Game> game = games.iterator();
+								
+								Game gamedata = new Game();
+								
+								while(game.hasNext())
+								{
+									gamedata = game.next();
+								}
+								gamedata.setUser(accountdata1.getUser());
+								gameService.saveorupdate(gamedata);
 							}
 						}
 					}
@@ -424,6 +519,20 @@ public class UserControl {
 							{
 								userid = accountdatanew2.getUser().getUserid();
 							}
+							Set<Game> games = new HashSet<Game>();
+							games = user.getGames();
+							
+							Iterator<Game> game = games.iterator();
+							
+							Game gamedata = new Game();
+							
+							while(game.hasNext())
+							{
+								gamedata = game.next();
+							}
+							gamedata.setUser(user);
+							
+							gameService.saveorupdate(gamedata);
 						}
 						else
 						{
@@ -432,6 +541,19 @@ public class UserControl {
 								status = "0200";
 								message = "第三方GooglePlay登录成功！";
 								userid = accountdata2.getUser().getUserid();
+								Set<Game> games = new HashSet<Game>();
+								games = user.getGames();
+								
+								Iterator<Game> game = games.iterator();
+								
+								Game gamedata = new Game();
+								
+								while(game.hasNext())
+								{
+									gamedata = game.next();
+								}
+								gamedata.setUser(accountdata2.getUser());
+								gameService.saveorupdate(gamedata);
 							}
 						}
 					}
@@ -477,7 +599,7 @@ public class UserControl {
 		if(validatecode.equals("123456"))
 		{
 			/*2.先判断数据库中是否存在这个用户*/
-			String sql = "from User u where u.username=" + "'" + user.getUsername() + "'"+"or u.mobile="+"'"+user.getMobile()+"'"+"'"+user.getEmail()+"'";
+			String sql = "from User u where u.username=" + "'" + user.getUsername() + "'"+"or u.mobile="+"'"+user.getMobile()+"'"+"or u.email="+"'"+user.getEmail()+"'";
 			User userdata = null;
 			try {
 				userdata = userService.querysql(sql);
@@ -499,14 +621,6 @@ public class UserControl {
 					else
 					{
 						/*4.如果数据库中不存在那么进行注册*/
-						/*Set<Game> collgame = new HashSet<Game>();
-						Game game = new Game();
-						game.setGamename("王者荣耀");
-						game.setGamepackage("com.tencent.wangzhe");
-						game.setRemark("这是王者荣耀游戏");
-						collgame.add(game);
-						
-						user.setGames(collgame);*/
 						user.setEmail(user.getEmail());
 						user.setRegisttime(new Date());
 						user.setType(user.getType());
@@ -596,6 +710,12 @@ public class UserControl {
 							status = "0200";
 							message = "成功，进行下一步！";
 							userid = userdata.getUserid();
+						}
+						else
+						{
+							status = "0404";
+							message = "登录不成功，数据库中不存在这个账户！";
+							userid = 0;
 						}
 					}
 				}

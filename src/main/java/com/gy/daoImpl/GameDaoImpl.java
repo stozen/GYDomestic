@@ -344,4 +344,34 @@ public class GameDaoImpl implements GameDao {
 		return false;
 	}
 
+	/**
+	 * 创建批量插入游戏功能
+	 * @return Game
+	 */
+	@Override
+	public int insert(String sql) {
+		// TODO Auto-generated method stub
+		Session session = getSession();
+		int flag = 0;
+		try {
+			tx = session.beginTransaction();
+			
+			Query query = session.createQuery(sql);
+			flag = query.executeUpdate();
+			
+			tx.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			if (tx!=null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+		} finally {
+			if(session!=null) {
+				session.close();
+			}
+		}
+		return flag;
+	}
+
 }

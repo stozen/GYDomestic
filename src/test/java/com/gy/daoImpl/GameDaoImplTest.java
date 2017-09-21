@@ -123,7 +123,27 @@ public class GameDaoImplTest {
 
 	@Test
 	public void testUpdateAll() {
-		fail("Not yet implemented");
+		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
+		GameDaoImpl gamedao = (GameDaoImpl) context.getBean("gameDao");
+	
 	}
 
+	@Test
+	public void testInsert() {
+		// TODO Auto-generated method stub
+		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
+		GameDaoImpl gamedao = (GameDaoImpl) context.getBean("gameDao");
+		UserDaoImpl userdao = (UserDaoImpl) context.getBean("userDao");
+		User user = userdao.query(1);
+		
+		Game game = new Game();
+		game.setGamename("王者荣耀");
+		game.setGamepackage("com.tencent.king");
+		game.setRemark("决一死战");
+		game.setUser(user);
+		
+		String sql = "update Game g set gamename="+"'"+game.getGamename()+"'"+",gamepackage="+"'"+game.getGamepackage()+"'"+",remark="+"'"+game.getRemark()+"'"+" where g.userid="+1;
+		
+		gamedao.saveorupdate(game);
+	}
 }

@@ -17,7 +17,6 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 
-
 /**
  * @author Chencongye
  * @version 0.0.1
