@@ -1,5 +1,7 @@
 package com.gy.controller;
 
+import io.jsonwebtoken.Claims;
+
 import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,6 +43,7 @@ import com.gy.services.AccountService;
 import com.gy.services.GameService;
 import com.gy.services.UserService;
 import com.gy.servicesImpl.UserServiceImpl;
+import com.gy.util.CompareDate;
 import com.gy.util.JwtUtil;
 import com.gy.util.ResponseUtil;
 
@@ -228,7 +231,31 @@ public class UserControl {
 								/*2.生成Token给客户端*/
 								subject = JwtUtil.generalSubject(userdata);
 								token = jwt.createJWT(Constant.JWT_ID, subject, Constant.JWT_TTL);
-								refreshtoken = jwt.createJWT(Constant.JWT_ID, subject, Constant.JWT_REFRESH_TTL);
+								
+								Claims claims = jwt.parseJWT(token);
+								Date expiratedate = claims.getExpiration();
+								Date now = new Date();
+								if(CompareDate.compare_date(now, expiratedate)==1)
+								{
+									/*token过期了,重新刷新*/
+									refreshtoken = jwt.createJWT(Constant.JWT_ID, subject, Constant.JWT_REFRESH_TTL);
+									map.put("refreshtoken", refreshtoken);
+								}
+								else if(CompareDate.compare_date(now, expiratedate)==-1)
+								{
+									/*token没有过期*/
+									map.put("token", token);
+								}
+								else
+								{
+									/*token没有过期*/
+									map.put("token", token);
+								}
+								
+								String getsubject = claims.getSubject();
+								
+								
+								System.err.println("现在时间:"+now+"过期时间:"+expiratedate+"加密内容:"+getsubject);
 								/*JSONObject jo = new JSONObject();
 								jo.put("token", token);
 								jo.put("refreshToken", refreshToken);*/
@@ -618,10 +645,10 @@ public class UserControl {
 		/*map.put("username", user.getUsername());*/
 		/*map.put("status", new String[]{"战狼","中国"});*/
 		map.put("status", status);
-		map.put("token",token);
-		map.put("refreshtoken",refreshtoken);
 		map.put("message", message);
 		map.put("userid", userid);
+		/*map.put("token",token);
+		map.put("refreshtoken",refreshtoken);*/
 		
 		return map;
 	}
