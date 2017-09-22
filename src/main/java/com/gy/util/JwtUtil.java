@@ -18,6 +18,7 @@ import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+@SuppressWarnings("unused")
 @Component
 public class JwtUtil {
 	

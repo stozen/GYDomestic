@@ -9,6 +9,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -27,6 +30,7 @@ import org.hibernate.annotations.GenericGenerator;
  * @author Administrator
  *
  */
+@SuppressWarnings("serial")
 @Entity
 @Table(name="tb_gyorder",catalog="db_gyforeign")
 public class Order implements Serializable {
@@ -37,24 +41,59 @@ public class Order implements Serializable {
 	private int orderid;
 	
 	/**
-	 * 创建订单详情
+	 * 创建实付金额
 	 */
-	private String orderdetail;
+	private double payment;
 	
 	/**
-	 * 创建订单时间
+	 * 创建支付类型
 	 */
-	private Date ordertime;
+	private int paytype;
 	
+	/**
+	 * 支付状态
+	 */
+	private int status;
+	
+	/**
+	 * 订单创建时间
+	 */
+	private Date createtime;
+	
+	/**
+	 * 订单更新时间
+	 */
+	private Date updatetime;
+	
+	/**
+	 * 订单付款时间
+	 */
+	private Date paytime;
+	
+	/**
+	 * 交易完成时间
+	 */
+	private Date endtime;
+	
+	/**
+	 * 交易关闭时间
+	 */
+	private Date closetime;
+	
+	/**
+	 * 交易流水号
+	 */
+	private String serialnumber;
+
 	/**
 	 * 创建订单用户 
 	 */
 	private User user;
 	
 	/**
-	 * 创建对应的关联商品的一对多关系
+	 * 创建对应的订单详情的一对多关系
 	 */
-	private Set<Goods> goods;
+	private Set<OrderGoods> ordergoods;
 	
 	/**
 	 * 创建默认构造方法
@@ -62,23 +101,28 @@ public class Order implements Serializable {
 	public Order() {
 		// TODO Auto-generated constructor stub
 	}
-
+	
+	
 	/**
 	 * 创建带有参数的构造方法
-	 * @param orderid
-	 * @param orderdetail
-	 * @param ordertime
-	 * @param user
-	 * @param goods
 	 */
-	public Order(int orderid, String orderdetail, Date ordertime, User user,
-			Set<Goods> goods) {
+	public Order(int orderid, double payment, int paytype, int status,
+			Date createtime, Date updatetime, Date paytime, Date endtime,
+			Date closetime, String serialnumber, User user,
+			Set<OrderGoods> ordergoods) {
 		super();
 		this.orderid = orderid;
-		this.orderdetail = orderdetail;
-		this.ordertime = ordertime;
+		this.payment = payment;
+		this.paytype = paytype;
+		this.status = status;
+		this.createtime = createtime;
+		this.updatetime = updatetime;
+		this.paytime = paytime;
+		this.endtime = endtime;
+		this.closetime = closetime;
+		this.serialnumber = serialnumber;
 		this.user = user;
-		this.goods = goods;
+		this.ordergoods = ordergoods;
 	}
 	
 	/**
@@ -98,29 +142,99 @@ public class Order implements Serializable {
 	}
 
 	/**
-	 * 创建生成订单详情
-	 * @return
+	 * 创建实付金额
 	 */
-	@Column(name="orderdetail",length=50,nullable=true)
-	public String getOrderdetail() {
-		return orderdetail;
+	@Column(name="payment",precision=18,scale=4,nullable=true,insertable=true,updatable=true)
+	public double getPayment() {
+		return payment;
 	}
 
-	public void setOrderdetail(String orderdetail) {
-		this.orderdetail = orderdetail;
+	public void setPayment(double payment) {
+		this.payment = payment;
 	}
 
 	/**
-	 * 创建生成订单时间
-	 * @return
+	 * 创建付款类型
 	 */
-	@Column(name="ordertime",length=6,nullable=true)
-	public Date getOrdertime() {
-		return ordertime;
+	@Column(name="paytype",length=8,nullable=true,insertable=true,updatable=true)
+	public int getPaytype() {
+		return paytype;
 	}
 
-	public void setOrdertime(Date ordertime) {
-		this.ordertime = ordertime;
+	public void setPaytype(int paytype) {
+		this.paytype = paytype;
+	}
+
+	/**
+	 * 创建支付状态
+	 */
+	@Column(name="status",length=12,nullable=true,insertable=true,updatable=true)
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	/**
+	 * 创建交易开始时间
+	 */
+	@Column(name="createtime",length=6,nullable=true,insertable=true,updatable=true)
+	public Date getCreatetime() {
+		return createtime;
+	}
+
+	public void setCreatetime(Date createtime) {
+		this.createtime = createtime;
+	}
+
+	/**
+	 * 创建交易更新时间
+	 */
+	@Column(name="updatetime",length=6,nullable=true,insertable=true,updatable=true)
+	public Date getUpdatetime() {
+		return updatetime;
+	}
+
+	public void setUpdatetime(Date updatetime) {
+		this.updatetime = updatetime;
+	}
+
+	/**
+	 * 创建支付时间
+	 */
+	@Column(name="paytime",length=6,nullable=true,insertable=true,updatable=true)
+	public Date getPaytime() {
+		return paytime;
+	}
+
+	public void setPaytime(Date paytime) {
+		this.paytime = paytime;
+	}
+
+	/**
+	 * 创建支付结束时间
+	 */
+	@Column(name="endtime",length=6,nullable=true,insertable=true,updatable=true)
+	public Date getEndtime() {
+		return endtime;
+	}
+
+	public void setEndtime(Date endtime) {
+		this.endtime = endtime;
+	}
+
+	/**
+	 * 交易关闭时间
+	 */
+	@Column(name="closetime",length=6,nullable=true,insertable=true,updatable=true)
+	public Date getClosetime() {
+		return closetime;
+	}
+
+	public void setClosetime(Date closetime) {
+		this.closetime = closetime;
 	}
 
 	/**
@@ -138,16 +252,39 @@ public class Order implements Serializable {
 	public void setUser(User user) {
 		this.user = user;
 	}
+
+	/**
+	 * 创建对账用的流水账号
+	 * @return
+	 */
+	@Column(name="serialnumber",length=30,nullable=true,insertable=true,updatable=true)
+	public String getSerialnumber() {
+		return serialnumber;
+	}
 	
-	@OneToMany
+	public void setSerialnumber(String serialnumber) {
+		this.serialnumber = serialnumber;
+	}
+	
+	/*
+	@ManyToMany
 	@Cascade(value={CascadeType.SAVE_UPDATE})
-	@JoinColumn(name="orderid")
-	public Set<Goods> getGoods() {
-		return goods;
+	@JoinTable(
+			name="tb_gyorderitem",
+			joinColumns={@JoinColumn(name="orderid")},
+			inverseJoinColumns={@JoinColumn(name="goodsid")}
+			)
+	*/
+	@OneToMany(mappedBy="order")
+	@Cascade(CascadeType.ALL)
+	/*@JoinColumn(name="orderid")*/
+	public Set<OrderGoods> getOrdergoods() {
+		return ordergoods;
 	}
 
-	public void setGoods(Set<Goods> goods) {
-		this.goods = goods;
+
+	public void setOrdergoods(Set<OrderGoods> ordergoods) {
+		this.ordergoods = ordergoods;
 	}
 	
 }

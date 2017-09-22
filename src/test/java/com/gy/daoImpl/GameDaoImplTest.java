@@ -2,7 +2,6 @@ package com.gy.daoImpl;
 
 import static org.junit.Assert.*;
 
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -15,6 +14,7 @@ import com.gy.model.User;
 
 public class GameDaoImplTest {
 
+	@SuppressWarnings("resource")
 	@Test
 	public void testQuery() {
 		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
@@ -26,6 +26,7 @@ public class GameDaoImplTest {
 		System.err.println("<------------------------方法调用前,先查询用户结束------------------------>");
 	}
 
+	@SuppressWarnings("resource")
 	@Test
 	public void testQueryAll() {
 		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
@@ -45,6 +46,7 @@ public class GameDaoImplTest {
 		System.err.println("<------------------------方法调用前,先查询用户结束------------------------>");
 	}
 
+	@SuppressWarnings("resource")
 	@Test
 	public void testQuerysql() {
 		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
@@ -64,6 +66,7 @@ public class GameDaoImplTest {
 		fail("Not yet implemented");
 	}
 
+	@SuppressWarnings("resource")
 	@Test
 	public void testSave() {
 		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
@@ -108,6 +111,7 @@ public class GameDaoImplTest {
 		fail("Not yet implemented");
 	}
 
+	@SuppressWarnings("resource")
 	@Test
 	public void testUpdate() {
 		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
@@ -121,6 +125,7 @@ public class GameDaoImplTest {
 		System.err.println("<------------------------方法调用更新结束------------------------>");
 	}
 
+	@SuppressWarnings({ "unused", "resource" })
 	@Test
 	public void testUpdateAll() {
 		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
@@ -128,6 +133,7 @@ public class GameDaoImplTest {
 	
 	}
 
+	@SuppressWarnings({ "resource", "unused" })
 	@Test
 	public void testInsert() {
 		// TODO Auto-generated method stub

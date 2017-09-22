@@ -1,26 +1,13 @@
 package com.gy.servicesImpl;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.fastjson.JSONObject;
-import com.gy.config.Constant;
 import com.gy.dao.UserDao;
-import com.gy.daoImpl.UserDaoImpl;
 import com.gy.model.User;
 import com.gy.services.UserService;
-import com.gy.util.JwtUtil;
-import com.gy.util.ResponseUtil;
 
 /**
  * @author Chencongye

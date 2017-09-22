@@ -1,8 +1,6 @@
 package com.gy.util;
 
 import static org.junit.Assert.*;
-import io.jsonwebtoken.Claims;
-
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,6 +22,7 @@ public class JwtUtilTest {
 		fail("Not yet implemented");
 	}
 
+	@SuppressWarnings({ "unused", "static-access" })
 	@Test
 	public void testParseJWT() throws Exception {
 		String token = "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJqd3QiLCJpYXQiOjE1MDU5NTc1NjUsInN1YiI6IntcInVzZXJuYW1lXCI6XCJ6aGFvbGkyNDNcIixcInVzZXJpZFwiOjEsXCJwYXNzd29yZFwiOlwiNDU2Nzg5XCJ9IiwiZXhwIjoxNTA1OTYxMTY1fQ.ScCXOvXN_W1zYZweLEjqg5RVvdF92ZcCPFIZcUpYEh0";

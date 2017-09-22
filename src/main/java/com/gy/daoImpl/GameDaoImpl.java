@@ -12,8 +12,6 @@ import org.springframework.stereotype.Repository;
 
 import com.gy.dao.GameDao;
 import com.gy.model.Game;
-import com.gy.model.User;
-import com.gy.services.GameService;
 
 /**
  * @author Chencongye
@@ -81,6 +79,7 @@ public class GameDaoImpl implements GameDao {
 	 * 创建获得查询所有游戏功能
 	 * @return Game
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Game> queryAll() {
 		// TODO Auto-generated method stub
@@ -111,6 +110,7 @@ public class GameDaoImpl implements GameDao {
 	 * 根据条件来查询游戏
 	 * @return Game
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public Game querysql(String sql) {
 		// TODO Auto-generated method stub
@@ -150,6 +150,7 @@ public class GameDaoImpl implements GameDao {
 	 * 根据条件来查询游戏
 	 * @return Game
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public Game queryBysql(String sql) {
 		// TODO Auto-generated method stub
@@ -292,6 +293,7 @@ public class GameDaoImpl implements GameDao {
 	 * 创建删除所有游戏功能
 	 * @return Game
 	 */
+	@SuppressWarnings("unused")
 	@Override
 	public boolean deleteAll(Game[] games) {
 		// TODO Auto-generated method stub

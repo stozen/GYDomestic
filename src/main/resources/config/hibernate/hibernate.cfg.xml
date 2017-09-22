@@ -21,6 +21,9 @@
 		<!-- 处理映射的用户账户类 -->
 		<mapping class="com.gy.model.Token"/>
 		
+		<!-- 处理映射的用户账户类 -->
+		<mapping class="com.gy.model.OrderGoods"/>
+		
 		<!-- 处理映射其他的类，预留位置 -->
 		
 	</session-factory>

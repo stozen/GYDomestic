@@ -1,26 +1,15 @@
 package com.gy.daoImpl;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
-
-import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Expression;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate4.HibernateTemplate;
-import org.springframework.orm.hibernate4.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.gy.dao.UserDao;
 import com.gy.model.User;
 
@@ -92,6 +81,7 @@ public class UserDaoImpl implements UserDao{
 	 * 创建获得查询所有用户功能
 	 * @return User
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<User> queryAll() {
 		// TODO Auto-generated method stub
@@ -197,6 +187,7 @@ public class UserDaoImpl implements UserDao{
 	 * 创建删除所有用户功能
 	 * @return User
 	 */
+	@SuppressWarnings("unused")
 	@Override
 	public boolean deleteAll(User[] User) {
 		// TODO Auto-generated method stub
@@ -276,11 +267,11 @@ public class UserDaoImpl implements UserDao{
 	 * 根据条件来查询用户
 	 * @return User
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public User querysql(String sql) {
 		// TODO Auto-generated method stub
 		Session session = getSession();
-		String message = "";
 		User user = null;
 		try {
 			tx = session.beginTransaction();
@@ -316,11 +307,11 @@ public class UserDaoImpl implements UserDao{
 	 * 根据条件来查询用户
 	 * @return User
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public User queryBysql(String sql) {
 		// TODO Auto-generated method stub
 		Session session = getSession();
-		String message = "";
 		User user = null;
 		try {
 			tx = session.beginTransaction();

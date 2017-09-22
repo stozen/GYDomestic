@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <component name="ArtifactManager">
   <artifact type="exploded-war" name="GYForeign:war exploded">
     <output-path>$PROJECT_DIR$/target/GYForeign-0.0.1-SNAPSHOT</output-path>

@@ -2,20 +2,15 @@ package com.gy.model;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.GenericGenerators;
 
 /**
  * @author Chencongye
@@ -24,6 +19,7 @@ import org.hibernate.annotations.GenericGenerators;
  * @introduce 这是一个用户登录的游戏实体类
  */
 
+@SuppressWarnings("serial")
 @Entity
 @Table(name="tb_gygame",catalog="db_gyforeign")
 public class Game implements Serializable {

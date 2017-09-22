@@ -2,7 +2,6 @@ package com.gy.dao;
 
 import java.util.List;
 
-import com.gy.model.Goods;
 import com.gy.model.Order;
 
 /**

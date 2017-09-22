@@ -18,8 +18,8 @@ public class CompareDate {
 	       System.out.println("i=="+i);*/
 	    }
 
-	    public static int compare_date(Date DATE1, Date DATE2) {
-	        
+	    @SuppressWarnings("unused")
+		public static int compare_date(Date DATE1, Date DATE2) {
 	        
 	        DateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm");
 	        try {

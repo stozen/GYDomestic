@@ -11,11 +11,11 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     
     <title>My JSP 'client.jsp' starting page</title>
     
-	<meta http-equiv="pragma" content="no-cache">
+	<!-- <meta http-equiv="pragma" content="no-cache">
 	<meta http-equiv="cache-control" content="no-cache">
 	<meta http-equiv="expires" content="0">    
 	<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
-	<meta http-equiv="description" content="This is my page">
+	<meta http-equiv="description" content="This is my page"> -->
 	<!--
 	<link rel="stylesheet" type="text/css" href="styles.css">
 	-->
@@ -24,16 +24,16 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	$(function(){
 	    $("#send").click(function(){
 	    	var jsondata = $("#jsondata").val();
-	    	var jsonobj = JSON.parse(jsondata)
+	    	var jsonobj = JSON.parse(jsondata);
 	    	
 	    	var callback = function (data) {
-	    		$("#result").html(JSON.stringify(data))
-	    	}
+	    		$("#result").html(JSON.stringify(data));
+	    	};
 	    	
-			$.postJSON('<%=basePath%>user/test', jsonobj, callback)
+			$.postJSON('<%=basePath%>user/test', jsonobj, callback);
 	
 			});
-		})
+		});
 	
 		$.postJSON = function(url, data, callback) {
 			return jQuery.ajax({
@@ -57,6 +57,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	
 		<button id="send">POST</button><br>
 
-		<font color="red" id="result"></font>
+		<!-- <font id="result" color="red"></font> -->
 </body>
 </html>

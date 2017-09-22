@@ -3,7 +3,6 @@ package com.gy.dao;
 import java.util.List;
 
 import com.gy.model.Game;
-import com.gy.model.User;
 
 /**
  * @author Chencongye

@@ -25,6 +25,7 @@ import org.hibernate.annotations.GenericGenerator;
  * @date 2017.9.11
  */
 
+@SuppressWarnings("serial")
 @Entity
 @Table(name="tb_gyuser",catalog="db_gyforeign")
 public class User implements Serializable {
@@ -99,7 +100,7 @@ public class User implements Serializable {
 	 * 创建默认构造函数
 	 */
 	public User() {
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	/**

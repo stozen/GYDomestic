@@ -2,7 +2,6 @@ package com.gy.daoImpl;
 
 import static org.junit.Assert.*;
 
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -11,11 +10,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.gy.model.Account;
-import com.gy.model.Game;
-import com.gy.model.User;
 
 public class AccountDaoImplTest {
 
+	@SuppressWarnings("resource")
 	@Test
 	public void testQuery() {
 		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
@@ -28,6 +26,7 @@ public class AccountDaoImplTest {
 		System.err.println("<------------------------方法调用前,先查询用户结束------------------------>");
 	}
 
+	@SuppressWarnings("resource")
 	@Test
 	public void testQueryAll() {
 		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
@@ -50,6 +49,7 @@ public class AccountDaoImplTest {
 		fail("Not yet implemented");
 	}
 
+	@SuppressWarnings("resource")
 	@Test
 	public void testSave() {
 		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
@@ -89,6 +89,7 @@ public class AccountDaoImplTest {
 		fail("Not yet implemented");
 	}
 
+	@SuppressWarnings("resource")
 	@Test
 	public void testUpdate() {
 		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");

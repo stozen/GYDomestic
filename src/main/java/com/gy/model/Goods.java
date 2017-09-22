@@ -1,12 +1,15 @@
 package com.gy.model;
 
 import java.util.Date;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -14,7 +17,6 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.type.TrueFalseType;
 
 /**
  * @author Chencongye
@@ -23,6 +25,10 @@ import org.hibernate.type.TrueFalseType;
  * @introduce 这是商品实体类
  */
 
+/**
+ * @author Administrator
+ *
+ */
 @Entity
 @Table(name="tb_gygoods",catalog="db_gyforeign")
 public class Goods {
@@ -33,6 +39,11 @@ public class Goods {
 	private int goodsid;
 	
 	/**
+	 * 创建商品名称
+	 */
+	private String goodsname;
+	
+	/**
 	 * 创建商品数量
 	 */
 	private int goodsnumber;
@@ -41,6 +52,11 @@ public class Goods {
 	 * 创建商品价格
 	 */
 	private double goodsprice;
+	
+	/**
+	 * 创建商品总价
+	 */
+	private double goodstotal;
 	
 	/**
 	 * 创建商品生产地址
@@ -68,9 +84,14 @@ public class Goods {
 	private String goodsremark;
 	
 	/**
-	 * 创建商品和订单之间的管理管理，建立的是一对多关系
+	 * 创建商品图片地址
 	 */
-	private Order order;
+	private String goodspicture;
+	
+	/**
+	 * 创建商品和订单详情之间的管理管理，建立的是一对多关系
+	 */
+	private Set<OrderGoods> ordergoods;
 	
 	/**
 	 * 创建商品和用户之间的关联关系，建立的是一对多关系
@@ -87,8 +108,10 @@ public class Goods {
 	/**
 	 * 创建有参构造函数
 	 * @param goodsid
+	 * @param goodsname
 	 * @param goodsnumber
 	 * @param goodsprice
+	 * @param goodstotal
 	 * @param goodsaddress
 	 * @param goodsweight
 	 * @param goodsmakedate
@@ -96,23 +119,28 @@ public class Goods {
 	 * @param goodsremark
 	 * @param order
 	 * @param user
+	 * @param goodspicture
 	 */
-	public Goods(int goodsid, int goodsnumber, double goodsprice,
-			String goodsaddress, double goodsweight, Date goodsmakedate,
-			Date goodsvalidate, String goodsremark, Order order, User user) {
+	public Goods(int goodsid, String goodsname, int goodsnumber,
+			double goodsprice, double goodstotal, String goodsaddress,
+			double goodsweight, Date goodsmakedate, Date goodsvalidate,
+			String goodsremark, String goodspicture,
+			Set<OrderGoods> ordergoods, User user) {
 		super();
 		this.goodsid = goodsid;
+		this.goodsname = goodsname;
 		this.goodsnumber = goodsnumber;
 		this.goodsprice = goodsprice;
+		this.goodstotal = goodstotal;
 		this.goodsaddress = goodsaddress;
 		this.goodsweight = goodsweight;
 		this.goodsmakedate = goodsmakedate;
 		this.goodsvalidate = goodsvalidate;
 		this.goodsremark = goodsremark;
-		this.order = order;
+		this.goodspicture = goodspicture;
+		this.ordergoods = ordergoods;
 		this.user = user;
 	}
-
 	/**
 	 * 生成属性对应的set和get方法
 	 */
@@ -128,7 +156,7 @@ public class Goods {
 	public int getGoodsid() {
 		return goodsid;
 	}
-
+	
 	public void setGoodsid(int goodsid) {
 		this.goodsid = goodsid;
 	}
@@ -158,6 +186,32 @@ public class Goods {
 
 	public void setGoodsprice(double goodsprice) {
 		this.goodsprice = goodsprice;
+	}
+	
+	/**
+	 * 创建生成商品的名称
+	 * @return
+	 */
+	@Column(name="goodsname",length=50,nullable=true,insertable=true,updatable=true)
+	public String getGoodsname() {
+		return goodsname;
+	}
+
+	public void setGoodsname(String goodsname) {
+		this.goodsname = goodsname;
+	}
+	
+	/**
+	 * 创建生成商品的总价
+	 * @return
+	 */
+	@Column(name="goodstotal",precision=16,scale=2,nullable=true,insertable=true,updatable=true)
+	public double getGoodstotal() {
+		return goodstotal;
+	}
+
+	public void setGoodstotal(double goodstotal) {
+		this.goodstotal = goodstotal;
 	}
 
 	/**
@@ -226,22 +280,51 @@ public class Goods {
 	}
 
 	/**
+	 * 创建商品图片
+	 * @return
+	 */
+	@Column(name="goodspicture",length=200,nullable=true,insertable=true,updatable=true)
+	public String getGoodspicture() {
+		return goodspicture;
+	}
+
+	public void setGoodspicture(String goodspicture) {
+		this.goodspicture = goodspicture;
+	}
+
+	/**
 	 * 创建生成商品订单
 	 * @return
 	 */
 	/*@OneToMany
 	@Cascade(value={CascadeType.SAVE_UPDATE})
 	@JoinColumn(name="orderid")*/
-	@ManyToOne
-	@JoinColumn(name="orderid")
-	public Order getOrder() {
-		return order;
+	
+	
+	/*@ManyToMany
+	@Cascade(value={CascadeType.SAVE_UPDATE})
+	@JoinTable(
+			name="tb_gyorderitem",
+			joinColumns={@JoinColumn(name="goodsid")
+					    ,@JoinColumn(name="goodsnumber")
+						,@JoinColumn(name="goodsname")
+						,@JoinColumn(name="goodsprice")
+						,@JoinColumn(name="goodstotal")
+						,@JoinColumn(name="goodspicture")
+			},
+			inverseJoinColumns={@JoinColumn(name="orderid")}
+			)*/
+	@OneToMany(mappedBy="goods")
+	@Cascade(CascadeType.ALL)
+	/*@JoinColumn(name="goodsid")*/
+	public Set<OrderGoods> getOrdergoods() {
+		return ordergoods;
 	}
 
-	public void setOrder(Order order) {
-		this.order = order;
+	public void setOrdergoods(Set<OrderGoods> ordergoods) {
+		this.ordergoods = ordergoods;
 	}
-
+	
 	/**
 	 * 创建
 	 * @return
@@ -261,12 +344,14 @@ public class Goods {
 
 	@Override
 	public String toString() {
-		return "Goods [goodsid=" + goodsid + ", goodsnumber=" + goodsnumber
-				+ ", goodsprice=" + goodsprice + ", goodsaddress="
+		return "Goods [goodsid=" + goodsid + ", goodsname=" + goodsname
+				+ ", goodsnumber=" + goodsnumber + ", goodsprice=" + goodsprice
+				+ ", goodstotal=" + goodstotal + ", goodsaddress="
 				+ goodsaddress + ", goodsweight=" + goodsweight
 				+ ", goodsmakedate=" + goodsmakedate + ", goodsvalidate="
-				+ goodsvalidate + ", goodsremark=" + goodsremark + ", order="
-				+ order + ", user=" + user + "]";
+				+ goodsvalidate + ", goodsremark=" + goodsremark
+				+ ", goodspicture=" + goodspicture + ", ordergoods="
+				+ ordergoods + ", user=" + user + "]";
 	}
-	
+
 }

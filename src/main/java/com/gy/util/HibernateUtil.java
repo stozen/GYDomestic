@@ -11,6 +11,7 @@ import org.hibernate.cfg.Configuration;
  * @version 0.0.1
  * @introduce 这是Hibernate帮助类
  */
+@SuppressWarnings("deprecation")
 public class HibernateUtil {
 	
 	/**

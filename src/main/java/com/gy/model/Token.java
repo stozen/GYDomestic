@@ -1,12 +1,13 @@
 package com.gy.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
@@ -20,9 +21,10 @@ import org.hibernate.annotations.GenericGenerator;
  * @introduce 这是用户登录token时的·
  */
 
+@SuppressWarnings("serial")
 @Entity
 @Table(name="tb_gytoken",catalog="db_gyforeign")
-public class Token {
+public class Token implements Serializable {
 	
 	/**
 	 * 生成Token主键

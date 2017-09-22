@@ -88,6 +88,7 @@ public class UploadFile {
 	 * 文件上传的第三种方式
 	 * @return
 	 */
+	@SuppressWarnings("rawtypes")
 	@RequestMapping("upload3")
 	public String fileUploadThird(HttpServletRequest request) throws IllegalStateException, IOException{
 		// TODO Auto-generated method stub

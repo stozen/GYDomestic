@@ -63,6 +63,7 @@ public class GooglePlay {
 	 * 只是使用googlepay支付功能
 	 * @return
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value="pay",method=RequestMethod.POST)
 	public @ResponseBody Map<String, Object> googlepay(@RequestBody Map map,BindingResult bindingResult){
 		
@@ -84,6 +85,7 @@ public class GooglePlay {
 	 * @param request
 	 * @param response
 	 */
+	@SuppressWarnings({ "rawtypes", "unused" })
 	@RequestMapping("/recharge")
 	public void payPal(HttpServletRequest request,HttpServletResponse response,HttpSession session) throws IOException, ParseException {
 	    String itemNumber="";

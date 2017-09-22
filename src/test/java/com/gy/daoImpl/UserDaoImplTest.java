@@ -3,21 +3,18 @@ package com.gy.daoImpl;
 import static org.junit.Assert.*;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.gy.dao.UserDao;
 import com.gy.model.Game;
 import com.gy.model.User;
 
 public class UserDaoImplTest {
 
+	@SuppressWarnings("resource")
 	@Test
 	public void testQuery() {
 		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
@@ -29,6 +26,7 @@ public class UserDaoImplTest {
 		System.err.println("<------------------------方法调用前,先查询用户结束------------------------>");
 	}
 
+	@SuppressWarnings("resource")
 	@Test
 	public void testQueryAll() {
 		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
@@ -46,6 +44,7 @@ public class UserDaoImplTest {
 		}
 	}
 
+	@SuppressWarnings("resource")
 	@Test
 	public void testSave() {
 		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
@@ -82,6 +81,7 @@ public class UserDaoImplTest {
 		
 	}
 
+	@SuppressWarnings("resource")
 	@Test
 	public void testDelete() {
 		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
@@ -102,6 +102,7 @@ public class UserDaoImplTest {
 		fail("Not yet implemented");
 	}
 
+	@SuppressWarnings("resource")
 	@Test
 	public void testUpdate() {
 		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
@@ -120,6 +121,7 @@ public class UserDaoImplTest {
 		fail("Not yet implemented");
 	}
 
+	@SuppressWarnings("resource")
 	@Test
 	public void testQuerysql() {
 		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");

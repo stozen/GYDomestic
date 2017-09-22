@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 
 import com.gy.dao.AccountDao;
 import com.gy.model.Account;
-import com.gy.model.User;
 
 /**
  * @author Chencongye
@@ -38,6 +37,7 @@ public class AccountDaoImpl implements AccountDao {
 	/**
 	 * 创建查询语句
 	 */
+	@SuppressWarnings("unused")
 	private static Query query;
 	
 	/**
@@ -60,6 +60,7 @@ public class AccountDaoImpl implements AccountDao {
 	 * 创建获得Session对象
 	 * @return
 	 */
+	@SuppressWarnings("static-access")
 	private Session getSession(){
 		return this.getSessionFactory().openSession();
 	}
@@ -93,6 +94,7 @@ public class AccountDaoImpl implements AccountDao {
 	 * 实现查询所有账户
 	 * @return List集合
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Account> queryAll() {
 		// TODO Auto-generated method stub
@@ -124,11 +126,11 @@ public class AccountDaoImpl implements AccountDao {
 	 * @param sql
 	 * @return
 	 */
+	@SuppressWarnings({ "unchecked" })
 	@Override
 	public Account querysql(String sql) {
 		// TODO Auto-generated method stub
 		Session session = getSession();
-		String message = "";
 		Account account = null;
 		try {
 			tx = session.beginTransaction();
@@ -242,6 +244,7 @@ public class AccountDaoImpl implements AccountDao {
 	@Override
 	public boolean deleteAll(Account[] Account) {
 		// TODO Auto-generated method stub
+		@SuppressWarnings("unused")
 		boolean flag = false;
 		try {
 			getSession().delete(Account);

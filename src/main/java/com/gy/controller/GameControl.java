@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.gy.model.Game;
-import com.gy.model.Goods;
 
 /**
  * @author Chencongye

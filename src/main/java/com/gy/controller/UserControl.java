@@ -56,6 +56,7 @@ import com.gy.util.ResponseUtil;
  * @date 2017.9.11
  */
 
+@SuppressWarnings("unused")
 @Controller
 @RequestMapping(value="/user")
 public class UserControl {
@@ -173,6 +174,7 @@ public class UserControl {
 	 * 这是用户登录模块的使用
 	 * @return
 	 */
+	@SuppressWarnings("rawtypes")
 	/*@RequestMapping(value = "/login",headers={"Accept="+MediaType.APPLICATION_JSON_VALUE},method=RequestMethod.GET)*/
 	@RequestMapping(value="/login",method=RequestMethod.POST)
 	public @ResponseBody Map<String, Object> login(@RequestBody User user,BindingResult bindingResult,@RequestHeader String token) {
@@ -774,6 +776,7 @@ public class UserControl {
 	 * @return
 	 * @throws Exception 
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value="/register",method=RequestMethod.POST)
 	public @ResponseBody Map<String,Object> register(@RequestBody Map map,BindingResult bindingResult) throws Exception {
 		/*log.debug("register a new user");*/
@@ -954,6 +957,7 @@ public class UserControl {
 	 * 这是用户忘记密码模块，采用的方法是PUT方法，PUT方法一般用于更新数据
 	 * @return
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@RequestMapping(value="forgetpassone",method = RequestMethod.PUT)
 	public @ResponseBody Map<String, Object> forgetPassOne(@RequestBody Map map, BindingResult bindingResult){
 	        
@@ -1022,6 +1026,7 @@ public class UserControl {
 	 * 这是用户忘记密码模块，采用的方法是PUT方法，PUT方法一般用于更新数据
 	 * @return
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping(value="forgetpasstwo",method = RequestMethod.PUT)
 	public @ResponseBody Map<String, Object> forgetPassTwo(@RequestBody Map map,BindingResult bindingResult){
 		/*创建返回给客户端的json数据*/
