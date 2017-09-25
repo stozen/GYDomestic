@@ -29,13 +29,13 @@ public interface OrderDao {
 	 * 实现订单添加功能
 	 * @return true or false
 	 */
-	public boolean save(Order order);
+	public boolean create(Order order);
 	
 	/**
 	 * 增加一些订单
 	 * @return true or false
 	 */
-	public boolean saveAll(Order[] order);
+	public void saveAll(Order[] order);
 	
 	/**
 	 * 实现删除一个订单
@@ -53,7 +53,7 @@ public interface OrderDao {
 	 * 更新一个订单
 	 * @return
 	 */
-	public boolean update(int orderid);
+	public boolean update(Order order);
 		
 	/**
 	 * 更新所有订单
@@ -66,4 +66,18 @@ public interface OrderDao {
 	 * @return true or false
 	 */
 	public void flush();
+	
+	/**
+	 * 通过查询条件查询订单
+	 * @param sql
+	 * @return
+	 */
+	public Order queryBySql(String sql);
+	
+	/**
+	 * 取消订单
+	 * @param orderid
+	 * @return
+	 */
+	public boolean cancel(int orderid);
 }

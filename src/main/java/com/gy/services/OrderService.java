@@ -29,13 +29,13 @@ public interface OrderService {
 	 * 实现订单添加功能
 	 * @return true or false
 	 */
-	public boolean save(Order order);
+	public boolean create(Order order);
 	
 	/**
 	 * 增加一些订单
 	 * @return true or false
 	 */
-	public boolean saveAll(Order[] order);
+	public void saveAll(Order[] order);
 	
 	/**
 	 * 实现删除一个订单
@@ -53,7 +53,7 @@ public interface OrderService {
 	 * 更新一个订单
 	 * @return
 	 */
-	public boolean update(int orderid);
+	public boolean update(Order order);
 		
 	/**
 	 * 更新所有订单
@@ -61,9 +61,4 @@ public interface OrderService {
 	 */
 	public boolean updateAll(Order[] order);
 	
-	/**
-	 * 创建订单
-	 * @return
-	 */
-	public Order createOrder();
 }
