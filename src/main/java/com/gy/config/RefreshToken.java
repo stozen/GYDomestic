@@ -1,5 +1,6 @@
 package com.gy.config;
 
+import com.gy.model.Game;
 import com.gy.model.User;
 import com.gy.util.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -43,7 +44,8 @@ public class RefreshToken extends HttpServlet{
         	Claims claims = jwt.parseJWT(token);
      		String json = claims.getSubject();
      		User user = JSONObject.parseObject(json, User.class);
-     		String subject = JwtUtil.generalSubject(user);
+     		Game game = JSONObject.parseObject(json,Game.class);
+     		String subject = JwtUtil.generalSubject(user,game);
      		String refreshToken = jwt.createJWT(Constant.JWT_ID, subject, Constant.JWT_TTL);
             out.print("retry: "+Constant.JWT_REFRESH_INTERVAL+ "\n" );
      		out.print("data: "+refreshToken+"\n\n" );

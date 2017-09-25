@@ -6,11 +6,12 @@ import java.util.Map;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.gy.model.Order;
+import antlr.Token;
 
 /**
  * @author Chencongye
@@ -29,8 +30,9 @@ public class OrderControl {
 	 * @return
 	 */
 	@RequestMapping(value="/query",method=RequestMethod.GET)
-	public @ResponseBody Map<String,Object> queryOrder(@RequestBody Order order,BindingResult bindingResult){
+	public @ResponseBody Map<String,Object> queryOrder(@RequestBody com.gy.model.Order order){
 		Map<String, Object> map = new HashMap<String, Object>();
+			
 		return map;
 	}
 	
@@ -38,10 +40,10 @@ public class OrderControl {
 	 * 这是一个删除订单的功能，一般删除是DELETE请求，删除信息
 	 * @param order
 	 * @param bindingResult
-	 * @return
+	 * @return 
 	 */
 	@RequestMapping(value="/delete",method=RequestMethod.DELETE)
-	public @ResponseBody Map<String, Object> deleteOrder(@RequestBody Order order,BindingResult bindingResult){
+	public @ResponseBody Map<String, Object> deleteOrder(@RequestBody com.gy.model.Order order){
 		Map<String,Object> map = new HashMap<String,Object>();
 		
 		return map;
@@ -54,7 +56,7 @@ public class OrderControl {
 	 * @return
 	 */
 	@RequestMapping(value="/update",method=RequestMethod.PUT)
-	public @ResponseBody Map<String, Object> updateOrder(@RequestBody Order order,BindingResult bindingResult){
+	public @ResponseBody Map<String, Object> updateOrder(@RequestBody com.gy.model.Order order){
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		return map;
@@ -66,10 +68,13 @@ public class OrderControl {
 	 * @param bindingResult
 	 * @return
 	 */
-	@RequestMapping(value="/add",method=RequestMethod.POST)
-	public @ResponseBody Map<String, Object> addOrder(@RequestBody Order order,BindingResult bindingResult){
+	@RequestMapping(value="/crate",method=RequestMethod.POST)
+	public @ResponseBody Map<String, Object> createOrder(@RequestBody com.gy.model.Order order,@RequestHeader String token){
 		Map<String, Object> map = new HashMap<String, Object>();
 		
+		map.put("payment", order.getPayment());
+		map.put("ordergoods",order.getOrdergoods());
+		map.put("token", token);
 		return map;
 	}
 	

@@ -1,6 +1,7 @@
 package com.gy.services;
 
 import java.util.List;
+import java.util.Map;
 
 import com.gy.model.User;
 
@@ -81,4 +82,29 @@ public interface UserService {
 	 * @return true or false
 	 */
 	public boolean updateAll(User[] users);
+	
+	/**
+	 * 实现用户登录功能
+	 * @param user
+	 * @param map
+	 */
+	public void login(User user,Map map,String type);
+	
+	/**
+	 * 实现用户注册功能
+	 */
+	public void register(Map map);
+	
+	/**
+	 * 实现忘记密码一
+	 * @param map
+	 */
+	public void forgetpassone(Map map);
+	
+	/**
+	 * 实现忘记密码二
+	 * @param map
+	 */
+	public void forgetpasstwo(Map map);
+	
 }

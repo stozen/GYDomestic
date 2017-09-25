@@ -1,6 +1,7 @@
 package com.gy.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Set;
 
@@ -43,7 +44,7 @@ public class Order implements Serializable {
 	/**
 	 * 创建实付金额
 	 */
-	private double payment;
+	private BigDecimal payment;
 	
 	/**
 	 * 创建支付类型
@@ -106,7 +107,7 @@ public class Order implements Serializable {
 	/**
 	 * 创建带有参数的构造方法
 	 */
-	public Order(int orderid, double payment, int paytype, int status,
+	public Order(int orderid, BigDecimal payment, int paytype, int status,
 			Date createtime, Date updatetime, Date paytime, Date endtime,
 			Date closetime, String serialnumber, User user,
 			Set<OrderGoods> ordergoods) {
@@ -145,11 +146,11 @@ public class Order implements Serializable {
 	 * 创建实付金额
 	 */
 	@Column(name="payment",precision=18,scale=4,nullable=true,insertable=true,updatable=true)
-	public double getPayment() {
+	public BigDecimal getPayment() {
 		return payment;
 	}
 
-	public void setPayment(double payment) {
+	public void setPayment(BigDecimal payment) {
 		this.payment = payment;
 	}
 

@@ -1,5 +1,6 @@
 package com.gy.model;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -53,12 +54,12 @@ public class OrderGoods {
 	/**
 	 * 创建商品的单价
 	 */
-	private double price;
+	private BigDecimal price;
 	
 	/**
 	 * 创建购买商品的总价
 	 */
-	private double totalprice;
+	private BigDecimal totalprice;
 	
 	/**
 	 * 创建商品的图片路径
@@ -84,7 +85,7 @@ public class OrderGoods {
 	 * @param picpath
 	 */
 	public OrderGoods(int ogid, Order order, Goods goods, int number,
-			String title, double price, double totalprice, String picpath) {
+			String title, BigDecimal price, BigDecimal totalprice, String picpath) {
 		super();
 		this.ogid = ogid;
 		this.order = order;
@@ -173,11 +174,11 @@ public class OrderGoods {
 	 * @return
 	 */
 	@Column(name="price",precision=18,scale=4,nullable=true,insertable=true,updatable=true)
-	public double getPrice() {
+	public BigDecimal getPrice() {
 		return price;
 	}
 
-	public void setPrice(double price) {
+	public void setPrice(BigDecimal price) {
 		this.price = price;
 	}
 
@@ -186,11 +187,11 @@ public class OrderGoods {
 	 * @return
 	 */
 	@Column(name="totalprice",precision=18,scale=4,nullable=true,insertable=true,updatable=true)
-	public double getTotalprice() {
+	public BigDecimal getTotalprice() {
 		return totalprice;
 	}
 
-	public void setTotalprice(double totalprice) {
+	public void setTotalprice(BigDecimal totalprice) {
 		this.totalprice = totalprice;
 	}
 

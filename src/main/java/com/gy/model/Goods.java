@@ -1,5 +1,6 @@
 package com.gy.model;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Set;
 
@@ -51,12 +52,12 @@ public class Goods {
 	/**
 	 * 创建商品价格
 	 */
-	private double goodsprice;
+	private BigDecimal goodsprice;
 	
 	/**
 	 * 创建商品总价
 	 */
-	private double goodstotal;
+	private BigDecimal goodstotal;
 	
 	/**
 	 * 创建商品生产地址
@@ -66,7 +67,7 @@ public class Goods {
 	/**
 	 * 创建商品重量
 	 */
-	private double goodsweight;
+	private BigDecimal goodsweight;
 	
 	/**
 	 * 创建商品生产日期
@@ -122,8 +123,8 @@ public class Goods {
 	 * @param goodspicture
 	 */
 	public Goods(int goodsid, String goodsname, int goodsnumber,
-			double goodsprice, double goodstotal, String goodsaddress,
-			double goodsweight, Date goodsmakedate, Date goodsvalidate,
+			BigDecimal goodsprice, BigDecimal goodstotal, String goodsaddress,
+			BigDecimal goodsweight, Date goodsmakedate, Date goodsvalidate,
 			String goodsremark, String goodspicture,
 			Set<OrderGoods> ordergoods, User user) {
 		super();
@@ -180,11 +181,11 @@ public class Goods {
 	 */
 	/*scale:代表小数点右边有几位，precision:代表有效数字是多少位*/
 	@Column(name="goodsprice",precision=16,scale=2,nullable=true,insertable=true,updatable=true)
-	public double getGoodsprice() {
+	public BigDecimal getGoodsprice() {
 		return goodsprice;
 	}
 
-	public void setGoodsprice(double goodsprice) {
+	public void setGoodsprice(BigDecimal goodsprice) {
 		this.goodsprice = goodsprice;
 	}
 	
@@ -206,11 +207,11 @@ public class Goods {
 	 * @return
 	 */
 	@Column(name="goodstotal",precision=16,scale=2,nullable=true,insertable=true,updatable=true)
-	public double getGoodstotal() {
+	public BigDecimal getGoodstotal() {
 		return goodstotal;
 	}
 
-	public void setGoodstotal(double goodstotal) {
+	public void setGoodstotal(BigDecimal goodstotal) {
 		this.goodstotal = goodstotal;
 	}
 
@@ -232,11 +233,11 @@ public class Goods {
 	 * @return
 	 */
 	@Column(name="goodsweight",precision=12,scale=2,nullable=true,insertable=true,updatable=true)
-	public double getGoodsweight() {
+	public BigDecimal getGoodsweight() {
 		return goodsweight;
 	}
 
-	public void setGoodsweight(double goodsweight) {
+	public void setGoodsweight(BigDecimal goodsweight) {
 		this.goodsweight = goodsweight;
 	}
 

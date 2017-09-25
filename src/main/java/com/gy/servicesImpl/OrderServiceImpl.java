@@ -14,6 +14,10 @@ import com.gy.services.OrderService;
  * @date 2017.9.12
  */
 
+/**
+ * @author Administrator
+ *
+ */
 @Service
 public class OrderServiceImpl implements OrderService {
 
@@ -63,6 +67,18 @@ public class OrderServiceImpl implements OrderService {
 	public boolean updateAll(Order[] order) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	/**
+	 * 创建一个订单 
+	 */
+	@Override
+	public Order createOrder() {
+		// TODO Auto-generated method stub
+		
+		
+		
+		return null;
 	}
 
 }

@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.gy.config.Constant;
+import com.gy.model.Game;
 import com.gy.model.User;
 
 public class JwtUtilTest {
@@ -32,8 +33,10 @@ public class JwtUtilTest {
 		user.setUsername("zhangsan");
 		user.setPassword("123456");
 		
-		String subject = jwtUtil.generalSubject(user);
-		jwtUtil.createJWT(Constant.JWT_ID, subject, Constant.JWT_TTL);
+		Game game = new Game();
+		game.setGamename("wangzherognyao");
+		
+		String subject = jwtUtil.generalSubject(user,game);
 		
 		/*Claims claim = jwtUtil.parseJWT(token);
 		System.err.println(claim);*/

@@ -228,7 +228,7 @@ public class User implements Serializable {
 	@OneToMany(mappedBy="user",cascade=CascadeType.ALL,fetch=FetchType.EAGER)
 	@JoinColumn(name="userid")*/
 	@OneToMany
-	@Cascade(value={CascadeType.SAVE_UPDATE})
+	@Cascade(value={CascadeType.ALL})
 	@JoinColumn(name="userid")
 	public Set<Game> getGames() {
 		return games;
@@ -245,7 +245,7 @@ public class User implements Serializable {
 	/*@Column(name="order",length=30,nullable=false)
 	@OneToMany(mappedBy="user",cascade=javax.persistence.CascadeType.ALL)*/
 	@OneToMany
-	@Cascade(value={CascadeType.SAVE_UPDATE})
+	@Cascade(value={CascadeType.ALL})
 	@JoinColumn(name="userid")
 	public Set<Order> getOrders() {
 		return orders;
@@ -265,7 +265,7 @@ public class User implements Serializable {
 	}
 
 	@OneToMany
-	@Cascade(value={CascadeType.SAVE_UPDATE})
+	@Cascade(value={CascadeType.ALL})
 	@JoinColumn(name="userid")
 	public Set<Account> getAccounts() {
 		return accounts;
@@ -280,7 +280,7 @@ public class User implements Serializable {
 	 * @return
 	 */
 	@OneToOne
-	@Cascade(value={CascadeType.SAVE_UPDATE})
+	@Cascade(value={CascadeType.ALL})
 	@JoinColumn(name="userid")
 	public Token getToken() {
 		return token;

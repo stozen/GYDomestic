@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONObject;
 
+import com.gy.model.Game;
 import com.gy.model.User;
 import com.gy.config.Constant;
 import io.jsonwebtoken.Claims;
@@ -80,11 +81,12 @@ public class JwtUtil {
 	 * @param user
 	 * @return
 	 */
-	public static String generalSubject(User user){
+	public static String generalSubject(User user,Game game){
 		JSONObject jo = new JSONObject();
 		jo.put("userid", user.getUserid());
 		jo.put("username", user.getUsername());
 		jo.put("password", user.getPassword());
+		jo.put("gameid", game.getGameid());
 		return jo.toJSONString();
 	}
 }

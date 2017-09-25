@@ -60,4 +60,10 @@ public interface OrderService {
 	 * @return true or false
 	 */
 	public boolean updateAll(Order[] order);
+	
+	/**
+	 * 创建订单
+	 * @return
+	 */
+	public Order createOrder();
 }
