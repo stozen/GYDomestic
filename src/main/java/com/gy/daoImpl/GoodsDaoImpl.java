@@ -2,6 +2,10 @@ package com.gy.daoImpl;
 
 import java.util.List;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.gy.dao.GoodsDao;
@@ -17,6 +21,33 @@ import com.gy.model.Goods;
 @Repository
 public class GoodsDaoImpl implements GoodsDao {
 
+	/**
+	 * 创建Hibernate的会话工厂类
+	 */
+	@Autowired
+	private SessionFactory sessionFactory;
+	
+	/**
+	 * 创建事务
+	 */
+	private Transaction tx;
+	
+	public SessionFactory getSessionFactory() {
+		return sessionFactory;
+	}
+
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
+
+	/**
+	 * 创建获得Session对象
+	 * @return
+	 */
+	private Session getSession(){
+		return this.getSessionFactory().openSession();
+	}
+	
 	/**
 	 * 创建查询商品的功能
 	 */
