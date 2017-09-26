@@ -205,5 +205,5 @@
  	<bean id="goodsService" parent="transactionBese"> 
     	<property name="target" ref="goodsServiceBase"></property> 
 	</bean>
- 	
+	
  </beans>

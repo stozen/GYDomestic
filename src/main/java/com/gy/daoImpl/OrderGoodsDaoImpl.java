@@ -21,7 +21,7 @@ import com.gy.model.OrderGoods;
  * @introduce 这是订单商品详情的实现类
  */
 
-@Repository
+@Repository(value="OrderGoodsDaoImpl")
 public class OrderGoodsDaoImpl implements OrderGoodsDao {
 
 	/**

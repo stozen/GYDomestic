@@ -1,5 +1,6 @@
 package com.gy.daoImpl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Repository;
 
 import com.gy.dao.GoodsDao;
 import com.gy.model.Goods;
+import com.gy.model.Order;
+import com.gy.model.OrderGoods;
 
 /**
  * @author Chencongye
@@ -54,7 +57,22 @@ public class GoodsDaoImpl implements GoodsDao {
 	@Override
 	public Goods query(int goodsid) {
 		// TODO Auto-generated method stub
-		return null;
+		Session session = getSession();
+		Goods goods = null;
+		try {
+			goods = (Goods)session.get(Goods.class, goodsid);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if(session!=null){
+				session.close();
+			}
+			/*if(sessionFactory!=null){
+				sessionFactory.close();
+			}*/
+		}
+		return goods;
 	}
 
 	/**
@@ -63,7 +81,27 @@ public class GoodsDaoImpl implements GoodsDao {
 	@Override
 	public List<Goods> queryAll() {
 		// TODO Auto-generated method stub
-		return null;
+		List<Goods> goods = new ArrayList<Goods>();
+		Session session = getSession();
+		try {
+			tx = session.beginTransaction();
+			goods = session.createQuery("from Goods").list();
+			tx.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			if(tx!=null)
+			{
+				tx.rollback();
+			}
+			e.printStackTrace();
+		} finally {
+			if(session!=null)
+			{
+				session.close();
+			}
+		}
+		
+		return goods;
 	}
 
 	/**
@@ -72,7 +110,32 @@ public class GoodsDaoImpl implements GoodsDao {
 	@Override
 	public boolean save(Goods goods) {
 		// TODO Auto-generated method stub
-		return false;
+		Session session = getSession();
+		boolean flag = false;
+		try { 
+			tx = session.beginTransaction();
+			int i = (Integer) session.save(goods);
+			if(i>0)
+			{
+				flag = true;
+			}
+			else{
+				flag = false;
+			}
+			tx.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			if(tx!=null)
+			{
+				tx.rollback();
+			}
+			e.printStackTrace();
+		} finally {
+			if(session!=null) {
+				session.close();
+			}
+		}
+		return flag;
 	}
 
 	/**
@@ -81,6 +144,7 @@ public class GoodsDaoImpl implements GoodsDao {
 	@Override
 	public boolean saveAll(Goods[] goods) {
 		// TODO Auto-generated method stub
+		getSession().saveOrUpdate(goods);
 		return false;
 	}
 
@@ -90,7 +154,27 @@ public class GoodsDaoImpl implements GoodsDao {
 	@Override
 	public boolean delete(int goodsid) {
 		// TODO Auto-generated method stub
-		return false;
+		Goods goods = query(goodsid);
+		Session session = getSession();
+		boolean flag = false;
+		try {
+			tx = session.beginTransaction();
+			session.delete(goods);
+			flag = true;
+			tx.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			if(tx!=null)
+			{
+				tx.rollback();
+			}
+			e.printStackTrace();
+		} finally {
+			if(session!=null) {
+				session.close(); 
+			}
+		}
+		return flag;
 	}
 
 	/**
@@ -99,6 +183,14 @@ public class GoodsDaoImpl implements GoodsDao {
 	@Override
 	public boolean deleteAll(Goods[] goods) {
 		// TODO Auto-generated method stub
+		boolean flag = false;
+		try {
+			getSession().delete(goods);
+			flag = true;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return false;
 	}
 
@@ -108,7 +200,26 @@ public class GoodsDaoImpl implements GoodsDao {
 	@Override
 	public boolean modify(int goodsid) {
 		// TODO Auto-generated method stub
-		return false;
+		Session session = getSession();
+		boolean flag = false;
+		try {
+			tx = session.beginTransaction();
+			Goods goods = this.query(goodsid);
+			session.update(goods);
+			flag = true;
+			tx.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			if (tx!=null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+		} finally {
+			if(session!=null) {
+				session.close();
+			}
+		}
+		return flag;
 	}
 
 	/**
