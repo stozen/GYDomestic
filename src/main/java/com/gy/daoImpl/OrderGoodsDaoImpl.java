@@ -3,24 +3,26 @@ package com.gy.daoImpl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import com.gy.dao.UserDao;
-import com.gy.model.User;
+
+import com.gy.dao.OrderGoodsDao;
+import com.gy.model.Order;
+import com.gy.model.OrderGoods;
 
 /**
  * @author Chencongye
  * @version 0.0.1
- * @introduce 这是用户数据实现的持久层
- * @date 2017.9.12
+ * @date 2017-9-22
+ * @introduce 这是订单商品详情的实现类
  */
+
 @Repository
-public class UserDaoImpl implements UserDao{	
+public class OrderGoodsDaoImpl implements OrderGoodsDao {
 
 	/**
 	 * 创建Hibernate的会话工厂类
@@ -48,21 +50,14 @@ public class UserDaoImpl implements UserDao{
 	private Session getSession(){
 		return this.getSessionFactory().openSession();
 	}
-
 	
-	/*private HibernateTemplate hibernateTemplate;*/
-	
-	/**
-	 * 创建获得查询功能
-	 * @return User
-	 */
 	@Override
-	public User query(int userid) {
+	public OrderGoods query(int orderid) {
 		// TODO Auto-generated method stub
 		Session session = getSession();
-		User user = null;
+		OrderGoods ordergoods = null;
 		try {
-			user = (User)session.get(User.class, userid);
+			ordergoods = (OrderGoods)session.get(OrderGoods.class, orderid);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -74,22 +69,17 @@ public class UserDaoImpl implements UserDao{
 				sessionFactory.close();
 			}*/
 		}
-		return user;
+		return ordergoods;
 	}
 
-	/**
-	 * 创建获得查询所有用户功能
-	 * @return User
-	 */
-	@SuppressWarnings("unchecked")
 	@Override
-	public List<User> queryAll() {
+	public List<OrderGoods> queryAll() {
 		// TODO Auto-generated method stub
-		List<User> users = new ArrayList<User>();
+		List<OrderGoods> ordergoods = new ArrayList<OrderGoods>();
 		Session session = getSession();
 		try {
 			tx = session.beginTransaction();
-			users = session.createQuery("from User").list();
+			ordergoods = session.createQuery("from OrderGoods").list();
 			tx.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -105,22 +95,17 @@ public class UserDaoImpl implements UserDao{
 			}
 		}
 		
-		return users;
+		return ordergoods;
 	}
 
-	/**
-	 * 创建添加用户功能
-	 * @return User
-	 */
 	@Override
-	public boolean save(User user) {
+	public boolean create(OrderGoods ordergoods) {
 		// TODO Auto-generated method stub
-		/*System.err.println("得到的Session---->"+sessionFactory);*/
 		Session session = getSession();
 		boolean flag = false;
-		try {
+		try { 
 			tx = session.beginTransaction();
-			int i = (Integer) session.save(user);
+			int i = (Integer) session.save(ordergoods);
 			if(i>0)
 			{
 				flag = true;
@@ -144,28 +129,21 @@ public class UserDaoImpl implements UserDao{
 		return flag;
 	}
 
-	/**
-	 * 创建批量添加用户功能
-	 */
 	@Override
-	public void saveAll(User[] users) {
+	public void saveAll(OrderGoods[] ordergoods) {
 		// TODO Auto-generated method stub
-		getSession().saveOrUpdate(users);
+		getSession().saveOrUpdate(ordergoods);
 	}
 
-	/**
-	 * 创建删除用户功能
-	 * @return User
-	 */
 	@Override
-	public boolean delete(int userid) {
+	public boolean delete(int orderid) {
 		// TODO Auto-generated method stub
-		User user = query(userid);
+		OrderGoods ordergoods = query(orderid);
 		Session session = getSession();
 		boolean flag = false;
 		try {
 			tx = session.beginTransaction();
-			session.delete(user);
+			session.delete(ordergoods);
 			flag = true;
 			tx.commit();
 		} catch (Exception e) {
@@ -183,17 +161,12 @@ public class UserDaoImpl implements UserDao{
 		return flag;
 	}
 
-	/**
-	 * 创建删除所有用户功能
-	 * @return User
-	 */
-	@SuppressWarnings("unused")
 	@Override
-	public boolean deleteAll(User[] User) {
+	public boolean deleteAll(OrderGoods[] ordergoods) {
 		// TODO Auto-generated method stub
 		boolean flag = false;
 		try {
-			getSession().delete(User);
+			getSession().delete(ordergoods);
 			flag = true;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -202,18 +175,14 @@ public class UserDaoImpl implements UserDao{
 		return false;
 	}
 
-	/**
-	 * 创建更新用户功能
-	 * @return User
-	 */
 	@Override
-	public boolean update(User user) {
+	public boolean modify(OrderGoods ordergoods) {
 		// TODO Auto-generated method stub
 		Session session = getSession();
 		boolean flag = false;
 		try {
 			tx = session.beginTransaction();
-			session.update(user);
+			session.update(ordergoods);
 			flag = true;
 			tx.commit();
 		} catch (Exception e) {
@@ -230,40 +199,31 @@ public class UserDaoImpl implements UserDao{
 		return flag;
 	}
 
-	/**
-	 * 创建批量更新用户功能
-	 * @return User
-	 */
 	@Override
-	public boolean updateAll(User[] users) {
+	public boolean modifyAll(OrderGoods[] ordergoods) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
-	/**
-	 * 根据条件来查询用户
-	 * @return User
-	 */
-	@SuppressWarnings("unchecked")
 	@Override
-	public User querysql(String sql) {
+	public OrderGoods queryBySql(String sql) {
 		// TODO Auto-generated method stub
 		Session session = getSession();
-		User user = null;
+		OrderGoods ordergoods = null;
 		try {
 			tx = session.beginTransaction();
 			Query query = session.createQuery(sql);
-			List<User> list = new ArrayList<User>();
+			List<OrderGoods> list = new ArrayList<OrderGoods>();
 			list = query.list();
 			if(list!=null && list.size()>0){
-				user = (User)list.get(0);
+				ordergoods = (OrderGoods)list.get(0);
 			}
 			else
 			{
 				System.err.println("数组越界,用户输入的内容有空值！！！");
 			}
 			tx.commit();
-			return user;
+			return ordergoods;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			if(tx!=null)
@@ -272,80 +232,15 @@ public class UserDaoImpl implements UserDao{
 			}
 			e.printStackTrace();
 		} finally {
-			/*if(session!=null)
-			{
-				session.close();
-			}*/
+	
 		}
-		return user;
+		return ordergoods;
+	}
+
+	@Override
+	public boolean cancel(int orderid) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
-	/**
-	 * 根据条件来查询用户
-	 * @return User
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public User queryBysql(String sql) {
-		// TODO Auto-generated method stub
-		Session session = getSession();
-		User user = null;
-		try {
-			tx = session.beginTransaction();
-			Query query = session.createQuery(sql);
-			List<User> list = new ArrayList<User>();
-			list = query.list();
-			if(list!=null && list.size()>0){
-				user = (User)list.get(0);
-			}
-			else
-			{
-				System.err.println("数组越界,用户输入的内容有空值！！！");
-			}
-			tx.commit();
-			return user;
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			if(tx!=null)
-			{
-				tx.rollback();
-			}
-			e.printStackTrace();
-		} finally {
-			if(session!=null)
-			{
-				session.close();
-			}
-		}
-		return user;
-	}
-	
-	/**
-	 * 实现更新或者添加用户
-	 * @return User
-	 */
-	@Override
-	public boolean saveorupdate(User user) {
-		// TODO Auto-generated method stub
-		Session session = getSession();
-		boolean flag = false;
-		try {
-			tx = session.beginTransaction();
-			session.saveOrUpdate(user);
-			flag = true;
-			tx.commit();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			if(tx!=null)
-			{
-				tx.rollback();
-			}
-			e.printStackTrace();
-		} finally {
-			if(session!=null) {
-				session.close();
-			}
-		}
-		return flag;
-	}
 }

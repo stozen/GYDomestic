@@ -55,7 +55,7 @@ public class GoodsControl {
 	 * @param bindingResult
 	 * @return
 	 */
-	@RequestMapping(value="/update",method=RequestMethod.PUT)
+	@RequestMapping(value="/modify",method=RequestMethod.PUT)
 	public @ResponseBody Map<String, Object> updateGoods(@RequestBody Goods goods,BindingResult bindingResult){
 		Map<String, Object> map = new HashMap<String, Object>();
 		

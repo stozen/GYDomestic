@@ -53,7 +53,7 @@ public interface GoodsDao {
 	 * 更新一个商品
 	 * @return
 	 */
-	public boolean update(int goodsid);
+	public boolean modify(int goodsid);
 		
 	/**
 	 * 更新所有商品
@@ -61,9 +61,4 @@ public interface GoodsDao {
 	 */
 	public boolean updateAll(Goods[] goods);
 
-	/**
-	 * 刷新Session
-	 * @return true or false
-	 */
-	public void flush();
 }

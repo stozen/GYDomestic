@@ -37,34 +37,58 @@ public class OrderServiceImpl implements OrderService {
 		return orderDao;
 	}
 
+	/**
+	 * 创建获取orderdao的set方法
+	 * @return
+	 */
 	public void setOrderDao(OrderDao orderDao) {
 		this.orderDao = orderDao;
 	}
 
+	/**
+	 * 创建查询订单根据id来查询
+	 * @return
+	 */
 	@Override
 	public Order query(int orderid) {
 		// TODO Auto-generated method stub
 		return orderDao.query(orderid);
 	}
 
+	/**
+	 * 创建查询所有订单
+	 * @return
+	 */
 	@Override
 	public List<Order> queryAll() {
 		// TODO Auto-generated method stub
 		return orderDao.queryAll();
 	}
 
+	/**
+	 * 生成订单信息
+	 * @return
+	 */
 	@Override
 	public boolean create(Order order) {
 		// TODO Auto-generated method stub
 		return orderDao.create(order);
 	}
 
+	/**
+	 * 创建保存所有订单
+	 * @return
+	 */
 	@Override
 	public void saveAll(Order[] order) {
 		// TODO Auto-generated method stub
 		orderDao.saveAll(order);
 	}
 
+	/**
+	 * 创建删除订单
+	 * @return
+	 */
 	@Override
 	public boolean delete(int orderid) {
 		// TODO Auto-generated method stub

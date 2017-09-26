@@ -53,6 +53,6 @@ public class PrimaryGenerater {
 	
 	public static void main(String[] args) {
 		PrimaryGenerater generater = new PrimaryGenerater();
-		generater.generaterNextNumber("123456");
+		generater.generaterNextNumber("1234562455458754");
 	}
 }

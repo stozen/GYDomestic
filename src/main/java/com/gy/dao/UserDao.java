@@ -81,9 +81,4 @@ public interface UserDao {
 	 */
 	public boolean updateAll(User[] users);
 
-	/**
-	 * 刷新Session
-	 * @return true or false
-	 */
-	public void flush();
 }

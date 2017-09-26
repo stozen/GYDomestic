@@ -237,5 +237,4 @@ public class UserControl {
 		
         return map;
 	}
-	
 }

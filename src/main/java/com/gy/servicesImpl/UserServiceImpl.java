@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User query(int userid) {
 		// TODO Auto-generated method stub
-		return null;
+		return userDao.query(userid);
 	}
 
 	/**

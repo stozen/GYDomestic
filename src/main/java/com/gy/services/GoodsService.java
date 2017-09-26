@@ -2,6 +2,7 @@ package com.gy.services;
 
 import java.util.List;
 
+import com.gy.dao.GoodsDao;
 import com.gy.model.Goods;
 
 /**
@@ -53,7 +54,7 @@ public interface GoodsService {
 	 * 更新一个商品
 	 * @return
 	 */
-	public boolean update(int goodsid);
+	public boolean modify(int goodsid);
 		
 	/**
 	 * 更新所有商品

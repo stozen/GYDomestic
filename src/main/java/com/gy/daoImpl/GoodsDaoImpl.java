@@ -17,58 +17,75 @@ import com.gy.model.Goods;
 @Repository
 public class GoodsDaoImpl implements GoodsDao {
 
+	/**
+	 * 创建查询商品的功能
+	 */
 	@Override
 	public Goods query(int goodsid) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	/**
+	 * 创建查询所有商品的功能
+	 */
 	@Override
 	public List<Goods> queryAll() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	/**
+	 * 创建商品的功能
+	 */
 	@Override
 	public boolean save(Goods goods) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
+	/**
+	 * 创建保存所有商品的功能
+	 */
 	@Override
 	public boolean saveAll(Goods[] goods) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
+	/**
+	 * 创建删除商品的功能
+	 */
 	@Override
 	public boolean delete(int goodsid) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
+	/**
+	 * 创建删除所有商品的功能
+	 */
 	@Override
 	public boolean deleteAll(Goods[] goods) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
+	/**
+	 * 创建更新或者修改商品的功能
+	 */
 	@Override
-	public boolean update(int goodsid) {
+	public boolean modify(int goodsid) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
+	/**
+	 * 创建更新所有商品的功能
+	 */
 	@Override
 	public boolean updateAll(Goods[] goods) {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
-	@Override
-	public void flush() {
-		// TODO Auto-generated method stub
-		
-	}
-
 }
