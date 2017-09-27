@@ -74,4 +74,10 @@ public interface OrderGoodsService {
 	 */
 	public boolean cancel(int orderid);
 	
+	/**
+	 * 保存或者更新订单详情
+	 * @param orderid
+	 * @return
+	 */
+	public boolean saveorupdate(OrderGoods ordergoods);
 }

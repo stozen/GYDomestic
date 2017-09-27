@@ -283,7 +283,10 @@ public class OrderDaoImpl implements OrderDao {
 			}
 			e.printStackTrace();
 		} finally {
-	
+			if(session!=null)
+			{
+				session.close();
+			}
 		}
 		return order;
 	}

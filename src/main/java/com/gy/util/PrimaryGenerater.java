@@ -46,7 +46,7 @@ public class PrimaryGenerater {
 			}
 			DecimalFormat df = new DecimalFormat("0000");
 			id = formatter.format(date)
-					+ df.format(1 + Integer.parseInt(sno.substring(8, 12)));
+					+ df.format(1 + Integer.parseInt(sno.substring(0, 8)));
 		}
 		return id;
 	}

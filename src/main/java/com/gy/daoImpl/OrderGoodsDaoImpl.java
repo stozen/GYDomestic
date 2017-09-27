@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import com.gy.dao.OrderGoodsDao;
+import com.gy.model.Game;
 import com.gy.model.Order;
 import com.gy.model.OrderGoods;
 
@@ -201,6 +202,30 @@ public class OrderGoodsDaoImpl implements OrderGoodsDao {
 		return flag;
 	}
 
+	public boolean saveorupdate(OrderGoods ordergoods) {
+		// TODO Auto-generated method stub
+		Session session = getSession();
+		boolean flag = false;
+		try {
+			tx = session.beginTransaction();
+			session.saveOrUpdate(ordergoods);
+			flag = true;
+			tx.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			if(tx!=null)
+			{
+				tx.rollback();
+			}
+			e.printStackTrace();
+		} finally {
+			if(session!=null) {
+				session.close();
+			}
+		}
+		return flag;
+	}
+	
 	@Override
 	public boolean modifyAll(OrderGoods[] ordergoods) {
 		// TODO Auto-generated method stub

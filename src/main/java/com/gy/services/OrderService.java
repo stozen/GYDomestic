@@ -3,6 +3,7 @@ package com.gy.services;
 import java.util.List;
 
 import com.gy.model.Order;
+import com.gy.model.User;
 
 /**
  * @author Chencongye
@@ -60,5 +61,12 @@ public interface OrderService {
 	 * @return true or false
 	 */
 	public boolean updateAll(Order[] order);
+	
+	/**
+	 * 根据条件来查询订单数据
+	 * @param sql
+	 * @return
+	 */
+	public Order queryBysql(String sql);
 	
 }

@@ -94,7 +94,7 @@ public class Order implements Serializable {
 	/**
 	 * 创建订单和游戏之间的关联关系 
 	 */
-	private Game game;
+	private Game games;
 	
 	/**
 	 * 创建对应的订单详情的一对多关系
@@ -127,7 +127,7 @@ public class Order implements Serializable {
 	public Order(int orderid, BigDecimal payment, int paytype, int paystatus,
 			Date createtime, Date updatetime, Date paytime, Date endtime,
 			Date closetime, String serialnumber, User user,
-			Set<OrderGoods> ordergoods, Game game) {
+			Set<OrderGoods> ordergoods, Game games) {
 		super();
 		this.orderid = orderid;
 		this.payment = payment;
@@ -141,7 +141,7 @@ public class Order implements Serializable {
 		this.serialnumber = serialnumber;
 		this.user = user;
 		this.ordergoods = ordergoods;
-		this.game = game;
+		this.games = games;
 	}
 	
 	/**
@@ -188,11 +188,11 @@ public class Order implements Serializable {
 	 * 创建支付状态
 	 */
 	@Column(name="paystatus",length=12,nullable=true,insertable=true,updatable=true)
-	public int getStatus() {
+	public int getPaystatus() {
 		return paystatus;
 	}
 
-	public void setStatus(int paystatus) {
+	public void setPaystatus(int paystatus) {
 		this.paystatus = paystatus;
 	}
 
@@ -278,12 +278,12 @@ public class Order implements Serializable {
 	 */
 	@ManyToOne
 	@JoinColumn(name="gameid")
-	public Game getGame() {
-		return game;
+	public Game getGames() {
+		return games;
 	}
 
-	public void setGame(Game game) {
-		this.game = game;
+	public void setGames(Game games) {
+		this.games = games;
 	}
 	
 	/**
@@ -294,7 +294,6 @@ public class Order implements Serializable {
 	public String getSerialnumber() {
 		return serialnumber;
 	}
-	
 
 	public void setSerialnumber(String serialnumber) {
 		this.serialnumber = serialnumber;

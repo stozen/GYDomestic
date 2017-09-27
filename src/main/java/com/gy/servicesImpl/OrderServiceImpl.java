@@ -121,6 +121,12 @@ public class OrderServiceImpl implements OrderService {
 		// TODO Auto-generated method stub
 		return orderDao.updateAll(order);
 	}
+
+	@Override
+	public Order queryBysql(String sql) {
+		// TODO Auto-generated method stub
+		return orderDao.queryBySql(sql);
+	}
 	
 
 }

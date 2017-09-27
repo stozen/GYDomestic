@@ -75,4 +75,10 @@ public interface OrderGoodsDao {
 	 */
 	public boolean cancel(int orderid);
 	
+	/**
+	 * 保存或者订单详情
+	 * @param orderid
+	 * @return
+	 */
+	public boolean saveorupdate(OrderGoods ordergoods);
 }

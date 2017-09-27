@@ -104,4 +104,10 @@ public class OrderGoodsServiceImpl implements OrderGoodsService {
 		// TODO Auto-generated method stub
 		return orderGoodsDao.cancel(orderid);
 	}
+
+	@Override
+	public boolean saveorupdate(OrderGoods ordergoods) {
+		// TODO Auto-generated method stub
+		return orderGoodsDao.saveorupdate(ordergoods);
+	}
 }
