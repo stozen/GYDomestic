@@ -127,6 +127,7 @@ public class OrderControl {
 
 	/**
 	 * 实现用户服务层的set方法
+	 * 
 	 * @return
 	 */
 	public void setUserService(UserService userService) {
@@ -172,9 +173,24 @@ public class OrderControl {
 	 * @return
 	 */
 	@RequestMapping(value="/query",method=RequestMethod.GET)
-	public @ResponseBody Map<String,Object> queryOrder(@RequestBody Order order){
+	public @ResponseBody Map<String,Object> queryOrder(@RequestHeader String orderid){
 		Map<String, Object> map = new HashMap<String, Object>();
-			
+		
+		int oid = Integer.parseInt(orderid.trim());
+		/*int orderid = order.getOrderid();*/
+		System.err.println(oid);
+		
+		/*String sql = "from OrderGoods where orderid="+"'"+orderid+"'";*/
+		OrderGoods ordergoods = orderGoodsService.query(oid);
+		System.out.println("订单详情："+ordergoods.getPrice());
+		int goodsid = ordergoods.getGoods().getGoodsid();
+		Goods goods = goodsService.query(goodsid);
+		map.put("goodsname", goods.getGoodsname());
+		/*Goods goods = ordergoods.getGoods();
+		Order order = ordergoods.getOrder();*/
+		map.put("title", ordergoods.getTitle());
+		/*map.put("goods",goods);*/
+		/*map.put("order",order.getCreatetime());*/
 		return map;
 	}
 	
@@ -252,6 +268,90 @@ public class OrderControl {
 	@RequestMapping(value="/modify",method=RequestMethod.PUT)
 	public @ResponseBody Map<String, Object> modifyOrder(@RequestBody Order order){
 		Map<String, Object> map = new HashMap<String, Object>();
+		
+		/*1.首先创建订单包含用户信息，商品信息，游戏信息，订单详情信息*/
+		/*2.先获得用户信息*/
+		User user = order.getUser();
+		Game game = order.getGames();
+		/*String sql = "from Game where userid="+"'"+user.getUserid()+"'"+"and gameid="+"'"+game.getGameid()+"'";
+		game = gameService.queryBysql(sql);*/
+		user = userService.query(user.getUserid());
+		/*System.out.println(game);*/
+		
+		if(user == null)
+		{
+			status = "0404";
+			message = "修改订单失败，不存在该用户！";
+			orderid = 0;
+			map.put("status", status);
+			map.put("message", message);
+			map.put("orderid", orderid);
+		}
+		else
+		{
+			/*3.再获得商品信息*/
+			Set<OrderGoods> ordergoods = order.getOrdergoods();
+			OrderGoods ordergood = new OrderGoods();
+			Iterator it = ordergoods.iterator();
+			while (it.hasNext()) {
+				ordergood = (OrderGoods) it.next();
+				/*ordergood.setOrder(order);*/
+			}
+			
+			Goods goods = new Goods();
+			goods.setGoodsname(ordergood.getTitle());
+			goods.setGoodsnumber(ordergood.getNumber());
+			goods.setGoodsprice(ordergood.getPrice());
+			goods.setGoodstotal(ordergood.getTotalprice());
+			goods.setGoodspicture(ordergood.getPicpath());
+			goods.setUser(user);
+			goodsService.save(goods);
+
+			/*4.最后保存订单信息，用户信息，订单详情信息*/
+			order.setClosetime(new Date());
+			order.setCreatetime(new Date());
+			order.setEndtime(new Date());
+			order.setOrdergoods(order.getOrdergoods());
+			order.setPayment(order.getPayment());
+			order.setPaytype(order.getPaytype());
+			order.setPaytime(new Date());
+			PrimaryGenerater Serialnumber = PrimaryGenerater.getInstance();
+			int randomcode = RandomCode.getRandNum();
+			String liqud = Serialnumber.generaterNextNumber(String.valueOf(randomcode));
+			order.setSerialnumber(liqud);
+			order.setPaystatus(order.getPaystatus());
+			order.setUpdatetime(new Date());
+			
+			ordergood.setGoods(goods);
+			/*5.保存订单详情里面的orderid*/
+			System.err.println("获得的orderid："+orderService.query(order.getOrderid()));
+			orderService.create(order);
+			
+			String orderid_sql = "from Order where userid= "+"'"+user.getUserid()+"'"+" and gameid="+"'"+game.getGameid()+"'"+"and serialnumber="+"'"+liqud+"'";
+			Order orderdata = orderService.queryBysql(orderid_sql);
+			
+			
+			if(orderdata == null)
+			{
+				status = "0404";
+				message = "修改订单失败，没有修改成功！";
+				orderid = 0;
+			}
+			else
+			{
+				status = "0200";
+				message = "修改订单成功！";
+				orderid = orderdata.getOrderid();
+				
+				ordergood.setOrder(orderdata);
+				orderGoodsService.saveorupdate(ordergood);
+			}
+			
+			map.put("status", status);
+			map.put("message", message);
+			map.put("orderid", orderid);
+			map.put("serialnumber",liqud);
+		}
 		
 		return map;
 	}
@@ -338,6 +438,9 @@ public class OrderControl {
 				status = "0200";
 				message = "取消订单成功！";
 				orderid = orderdata.getOrderid();
+				
+				ordergood.setOrder(orderdata);
+				orderGoodsService.saveorupdate(ordergood);
 			}
 			
 			map.put("status", status);

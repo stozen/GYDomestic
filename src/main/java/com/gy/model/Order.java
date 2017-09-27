@@ -7,6 +7,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -20,6 +21,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.type.TrueFalseType;
 
 /**
  * @author Chencongye
@@ -277,6 +279,7 @@ public class Order implements Serializable {
 	 * @return
 	 */
 	@ManyToOne
+	@Cascade(CascadeType.ALL)
 	@JoinColumn(name="gameid")
 	public Game getGames() {
 		return games;
