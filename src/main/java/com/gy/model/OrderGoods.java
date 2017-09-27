@@ -214,7 +214,7 @@ public class OrderGoods {
 	 */
 	@Override
 	public String toString() {
-		return "OrderGoods [ogid=" + ogid + ", order=" + order + ", goods="
+		return "OG [ogid=" + ogid + ", order=" + order + ", goods="
 				+ goods + ", number=" + number + ", title=" + title
 				+ ", price=" + price + ", totalprice=" + totalprice
 				+ ", picpath=" + picpath + "]";

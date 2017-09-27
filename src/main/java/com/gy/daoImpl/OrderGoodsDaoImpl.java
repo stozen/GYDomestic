@@ -8,6 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import com.gy.dao.OrderGoodsDao;
@@ -21,7 +22,7 @@ import com.gy.model.OrderGoods;
  * @introduce 这是订单商品详情的实现类
  */
 
-@Repository(value="OrderGoodsDaoImpl")
+@Repository
 public class OrderGoodsDaoImpl implements OrderGoodsDao {
 
 	/**
@@ -100,6 +101,7 @@ public class OrderGoodsDaoImpl implements OrderGoodsDao {
 
 	@Override
 	public boolean create(OrderGoods ordergoods) {
+		System.err.println("这是初始化创建商品订单详情");
 		// TODO Auto-generated method stub
 		Session session = getSession();
 		boolean flag = false;

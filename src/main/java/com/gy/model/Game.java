@@ -1,6 +1,7 @@
 package com.gy.model;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,8 +9,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 
 /**
@@ -44,7 +48,15 @@ public class Game implements Serializable {
 	 */
 	private String gamepackage;
 	
+	/**
+	 * 创建用户对应关系
+	 */
 	private User user;
+	
+	/**
+	 * 创建游戏和订单之间的一对多关系
+	 */
+	private Set<Order> order;
 	
 	/**
 	 * 创建默认构造函数
@@ -53,14 +65,24 @@ public class Game implements Serializable {
 		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * 创建带有参数的构造函数
+	 * @param gameid
+	 * @param gamename
+	 * @param remark
+	 * @param gamepackage
+	 * @param user
+	 * @param order
+	 */
 	public Game(int gameid, String gamename, String remark, String gamepackage,
-			User user) {
+			User user ,Set<Order> order) {
 		super();
 		this.gameid = gameid;
 		this.gamename = gamename;
 		this.remark = remark;
 		this.gamepackage = gamepackage;
 		this.user = user;
+		this.order = order;
 	}
 
 	@Id
@@ -104,6 +126,10 @@ public class Game implements Serializable {
 
 	/*@ManyToOne(cascade=CascadeType.ALL,optional=false,fetch=FetchType.EAGER)
 	@JoinColumn(name="userid",referencedColumnName="userid")*/
+	/**
+	 * 创建用户和游戏之间的关联关系
+	 * @return
+	 */
 	@ManyToOne
 	@JoinColumn(name="userid")
 	public User getUser() {
@@ -112,5 +138,27 @@ public class Game implements Serializable {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	/**
+	 * 创建游戏和订单之间的管理关系
+	 * @return
+	 */
+	@OneToMany
+	@Cascade(value={CascadeType.ALL})
+	@JoinColumn(name="gameid")
+	public Set<Order> getOrder() {
+		return order;
+	}
+
+	public void setOrder(Set<Order> order) {
+		this.order = order;
+	}
+
+	@Override
+	public String toString() {
+		return "Game [gameid=" + gameid + ", gamename=" + gamename
+				+ ", remark=" + remark + ", gamepackage=" + gamepackage
+				+ ", user=" + user + ", order=" + order + "]";
 	}
 }

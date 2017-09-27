@@ -3,9 +3,12 @@ package com.gy.servicesImpl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 
 import com.gy.dao.OrderGoodsDao;
+import com.gy.daoImpl.OrderGoodsDaoImpl;
 import com.gy.model.OrderGoods;
 import com.gy.services.OrderGoodsService;
 
@@ -56,6 +59,7 @@ public class OrderGoodsServiceImpl implements OrderGoodsService {
 	@Override
 	public boolean create(OrderGoods ordergoods) {
 		// TODO Auto-generated method stub
+		System.err.println("数据库操作层orderGoodsDao："+orderGoodsDao);
 		return orderGoodsDao.create(ordergoods);
 	}
 

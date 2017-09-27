@@ -206,4 +206,19 @@
     	<property name="target" ref="goodsServiceBase"></property> 
 	</bean>
 	
+	<!-- 配置OrderGoodsDaoImpl实现类 -->
+ 	<bean id="orderGoodsDao" class="com.gy.daoImpl.OrderGoodsDaoImpl">
+ 		<property name="sessionFactory" ref="sessionFactory"></property>
+ 	</bean>
+	
+	<!-- 配置OrderGoodsServiceImpl实现类 -->
+ 	<bean id="orderGoodsServiceBase" class="com.gy.servicesImpl.OrderGoodsServiceImpl">
+ 		<property name="orderGoodsDao" ref="orderGoodsDao"></property>
+ 	</bean>
+	
+	<!-- parent为transactionBese，表示支持事务 -->
+ 	<bean id="orderGoodsService" parent="transactionBese"> 
+    	<property name="target" ref="orderGoodsServiceBase"></property> 
+	</bean>
+	
  </beans>

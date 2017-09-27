@@ -234,7 +234,6 @@ public class UserControl {
 		/*创建返回给客户端的json数据*/
 		/*Map<String, Object> map = new HashMap<String, Object>(); */   
 		userService.forgetpasstwo(map);
-		
         return map;
 	}
 }

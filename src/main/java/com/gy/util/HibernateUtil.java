@@ -23,7 +23,7 @@ public class HibernateUtil {
 	 * 创建一个静态类用来获取Hibernate的配置
 	 */
 	static{
-		Configuration cfg = new Configuration().configure();
+		Configuration cfg = new Configuration().configure("config/spring-hibernate.xml");
 		sessionFactory = cfg.buildSessionFactory();
 	}
 	

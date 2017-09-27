@@ -22,7 +22,7 @@ import com.gy.model.User;
  * @date 2017.9.12
  */
 
-@Repository(value="OrderDaoImpl")
+@Repository
 public class OrderDaoImpl implements OrderDao {
 
 	/**

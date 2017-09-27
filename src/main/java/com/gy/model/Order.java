@@ -54,7 +54,7 @@ public class Order implements Serializable {
 	/**
 	 * 支付状态
 	 */
-	private int status;
+	private int paystatus;
 	
 	/**
 	 * 订单创建时间
@@ -92,6 +92,11 @@ public class Order implements Serializable {
 	private User user;
 	
 	/**
+	 * 创建订单和游戏之间的关联关系 
+	 */
+	private Game game;
+	
+	/**
 	 * 创建对应的订单详情的一对多关系
 	 */
 	private Set<OrderGoods> ordergoods;
@@ -103,19 +108,31 @@ public class Order implements Serializable {
 		// TODO Auto-generated constructor stub
 	}
 	
-	
 	/**
 	 * 创建带有参数的构造方法
+	 * @param orderid
+	 * @param payment
+	 * @param paytype
+	 * @param status
+	 * @param createtime
+	 * @param updatetime
+	 * @param paytime
+	 * @param endtime
+	 * @param closetime
+	 * @param serialnumber
+	 * @param user
+	 * @param ordergoods
+	 * @param game
 	 */
-	public Order(int orderid, BigDecimal payment, int paytype, int status,
+	public Order(int orderid, BigDecimal payment, int paytype, int paystatus,
 			Date createtime, Date updatetime, Date paytime, Date endtime,
 			Date closetime, String serialnumber, User user,
-			Set<OrderGoods> ordergoods) {
+			Set<OrderGoods> ordergoods, Game game) {
 		super();
 		this.orderid = orderid;
 		this.payment = payment;
 		this.paytype = paytype;
-		this.status = status;
+		this.paystatus = paystatus;
 		this.createtime = createtime;
 		this.updatetime = updatetime;
 		this.paytime = paytime;
@@ -124,6 +141,7 @@ public class Order implements Serializable {
 		this.serialnumber = serialnumber;
 		this.user = user;
 		this.ordergoods = ordergoods;
+		this.game = game;
 	}
 	
 	/**
@@ -169,13 +187,13 @@ public class Order implements Serializable {
 	/**
 	 * 创建支付状态
 	 */
-	@Column(name="status",length=12,nullable=true,insertable=true,updatable=true)
+	@Column(name="paystatus",length=12,nullable=true,insertable=true,updatable=true)
 	public int getStatus() {
-		return status;
+		return paystatus;
 	}
 
-	public void setStatus(int status) {
-		this.status = status;
+	public void setStatus(int paystatus) {
+		this.paystatus = paystatus;
 	}
 
 	/**
@@ -255,6 +273,20 @@ public class Order implements Serializable {
 	}
 
 	/**
+	 * 创建游戏和订单之间的关联关系
+	 * @return
+	 */
+	@ManyToOne
+	@JoinColumn(name="gameid")
+	public Game getGame() {
+		return game;
+	}
+
+	public void setGame(Game game) {
+		this.game = game;
+	}
+	
+	/**
 	 * 创建对账用的流水账号
 	 * @return
 	 */
@@ -263,6 +295,7 @@ public class Order implements Serializable {
 		return serialnumber;
 	}
 	
+
 	public void setSerialnumber(String serialnumber) {
 		this.serialnumber = serialnumber;
 	}
