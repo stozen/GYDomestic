@@ -3,6 +3,7 @@ package com.gy.dao;
 import java.util.List;
 
 import com.gy.model.Account;
+import com.gy.model.User;
 
 /**
  * @author Chencongye
@@ -36,6 +37,13 @@ public interface AccountDao {
 	 * @return true or false
 	 */
 	public boolean save(Account account);
+	
+	/**
+	 * 实现用户添加或者更新功能
+	 * @param user
+	 * @return
+	 */
+	public boolean saveorupdate(Account account);
 	
 	/**
 	 * 增加一些账户

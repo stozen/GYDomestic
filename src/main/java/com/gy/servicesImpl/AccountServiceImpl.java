@@ -132,5 +132,11 @@ public class AccountServiceImpl implements AccountService {
 		return accountDao.updateAll(accounts);
 	}
 
+	@Override
+	public boolean saveorupdate(Account account) {
+		// TODO Auto-generated method stub
+		return accountDao.saveorupdate(account);
+	}
+
 	
 }

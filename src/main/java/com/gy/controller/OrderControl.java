@@ -3,6 +3,7 @@ package com.gy.controller;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -177,20 +178,53 @@ public class OrderControl {
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		int oid = Integer.parseInt(orderid.trim());
-		/*int orderid = order.getOrderid();*/
-		System.err.println(oid);
 		
 		/*String sql = "from OrderGoods where orderid="+"'"+orderid+"'";*/
 		OrderGoods ordergoods = orderGoodsService.query(oid);
-		System.out.println("订单详情："+ordergoods.getPrice());
-		int goodsid = ordergoods.getGoods().getGoodsid();
-		Goods goods = goodsService.query(goodsid);
-		map.put("goodsname", goods.getGoodsname());
-		/*Goods goods = ordergoods.getGoods();
-		Order order = ordergoods.getOrder();*/
-		map.put("title", ordergoods.getTitle());
-		/*map.put("goods",goods);*/
-		/*map.put("order",order.getCreatetime());*/
+		if(ordergoods!=null)
+		{
+			Order order = orderService.query(oid);
+			Order ordernew = new Order();
+			ordernew.setOrderid(order.getOrderid());
+			OrderGoods ordergoodsnew = new OrderGoods();
+			int goodsid = ordergoods.getGoods().getGoodsid();
+			Goods goods = goodsService.query(goodsid);
+			Goods goodsnew = new Goods();
+			goodsnew.setGoodsid(goodsid);
+			User user = new User();
+			user = goods.getUser();
+			User usernew = new User();
+			/*goodsnew.setUser(usernew);
+			usernew.setUserid(user.getUserid());*/
+			
+			/*ordergoodsnew.setGoods(goodsnew);*/
+			ordergoodsnew.setNumber(ordergoods.getNumber());
+			ordergoodsnew.setOgid(ordergoods.getOgid());
+			ordergoodsnew.setPicpath(ordergoods.getPicpath());
+			ordergoodsnew.setPrice(ordergoods.getPrice());
+			ordergoodsnew.setTitle(ordergoods.getTitle());
+			ordergoodsnew.setTotalprice(ordergoods.getTotalprice());
+			map.remove("order");
+			map.remove("goods");
+			map.put("ordergoods", ordergoodsnew);
+			map.put("goodid", goodsnew.getGoodsid());
+			map.put("userid", user.getUserid());
+			
+			status = "0200";
+			message = "查询成功！";
+			
+			map.put("status", status);
+			map.put("message", message);
+			map.put("orderid", orderid);
+		}
+		else
+		{
+			status = "0404";
+			message = "查询失败，不存在这笔订单！";
+			map.put("status", status);
+			map.put("message", message);
+			map.put("orderid", 0);
+		}
 		return map;
 	}
 	
@@ -369,6 +403,7 @@ public class OrderControl {
 		/*2.先获得用户信息*/
 		User user = order.getUser();
 		Game game = order.getGames();
+		game = gameService.query(game.getGameid());
 		/*String sql = "from Game where userid="+"'"+user.getUserid()+"'"+"and gameid="+"'"+game.getGameid()+"'";
 		game = gameService.queryBysql(sql);*/
 		user = userService.query(user.getUserid());
@@ -418,7 +453,7 @@ public class OrderControl {
 			/*paytype:1代表paypal支付2代表googlepay支付 paystatus:1未付款2已付款3交易成功4取消订单*/
 			order.setPaystatus(4);
 			order.setUpdatetime(new Date());
-			
+			order.setGames(game);
 			ordergood.setGoods(goods);
 			/*5.保存订单详情里面的orderid*/
 			orderService.create(order);
@@ -465,8 +500,8 @@ public class OrderControl {
 		/*2.先获得用户信息*/
 		User user = order.getUser();
 		Game game = order.getGames();
-		/*String sql = "from Game where userid="+"'"+user.getUserid()+"'"+"and gameid="+"'"+game.getGameid()+"'";
-		game = gameService.queryBysql(sql);*/
+		String sql = "from Game where userid="+"'"+user.getUserid()+"'"+"and gameid="+"'"+game.getGameid()+"'";
+		game = gameService.queryBysql(sql);
 		user = userService.query(user.getUserid());
 		/*System.out.println(game);*/
 		
@@ -517,16 +552,21 @@ public class OrderControl {
 			String liqud = Serialnumber.generaterNextNumber(String.valueOf(randomcode));
 			order.setSerialnumber(liqud);
 			order.setPaystatus(order.getPaystatus());
+			order.setGames(game);
 			order.setUpdatetime(new Date());
+			
+			System.err.println("用户id:"+user.getUserid());
+			System.err.println("游戏id:"+game.getGameid());
+			System.err.println("流水号:"+liqud);
 			
 			ordergood.setGoods(goods);
 			/*5.保存订单详情里面的orderid*/
-			System.err.println("获得的orderid："+orderService.query(order.getOrderid()));
 			orderService.create(order);
 			
 			String orderid_sql = "from Order where userid= "+"'"+user.getUserid()+"'"+" and gameid="+"'"+game.getGameid()+"'"+"and serialnumber="+"'"+liqud+"'";
 			Order orderdata = orderService.queryBysql(orderid_sql);
 			
+			System.err.println("获取创建的订单orderdata："+orderdata);
 			
 			if(orderdata == null)
 			{

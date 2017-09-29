@@ -15,12 +15,25 @@ public class JwtUtilTest {
 	
 	@Test
 	public void testGeneralKey() {
-		fail("Not yet implemented");
+	
+		System.err.println(RandomCode.getRandNum(0,999));
 	}
 
 	@Test
-	public void testCreateJWT() {
-		fail("Not yet implemented");
+	public void testCreateJWT() throws Exception {
+		User user = new User();
+		
+		user.setUserid(1);
+		user.setUsername("zhangsan");
+		user.setPassword("123456");
+		
+		Game game = new Game();
+		game.setGamename("wangzherognyao");
+		String subject = jwtUtil.generalSubject(user, game);
+		
+		long ttlMillis = System.currentTimeMillis();
+		String token = jwtUtil.createJWT("1", subject, ttlMillis);
+		System.out.println(token);
 	}
 
 	@SuppressWarnings({ "unused", "static-access" })

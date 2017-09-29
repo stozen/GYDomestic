@@ -20,6 +20,11 @@ public class RandomCode {
 	    return randNum;
 	}
 
+	public static int getRandNum(int min,int max) {
+	    int randNum = min + (int)(Math.random() * ((max - min) + 1));
+	    return randNum;
+	}
+	
 	//测试生成的随机数字
 	public static void rand(){
 	    System.out.println(getRandNum());

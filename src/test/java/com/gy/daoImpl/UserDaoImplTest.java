@@ -20,10 +20,13 @@ public class UserDaoImplTest {
 		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
 		UserDaoImpl userdao = (UserDaoImpl) context.getBean("userDao");
 		
-		System.err.println("<------------------------方法调用前,先查询用户开始------------------------>");
+		/*System.err.println("<------------------------方法调用前,先查询用户开始------------------------>");
 		User user = userdao.query(2);
 		System.err.println(user);
-		System.err.println("<------------------------方法调用前,先查询用户结束------------------------>");
+		System.err.println("<------------------------方法调用前,先查询用户结束------------------------>");*/
+		
+		User userdata = userdao.queryBysql("from User where username='GooglePlay6' and type = '4'");
+		System.err.println(userdata.getUserid());
 	}
 
 	@SuppressWarnings("resource")

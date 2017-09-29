@@ -1,5 +1,13 @@
 package com.gy.pay;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSONObject;
 import com.gy.services.OrderService;
 import com.paypal.api.payments.CreditCard;
 import com.paypal.base.rest.APIContext;
@@ -91,5 +100,63 @@ public class PayPal {
         }
         
 		return map;
+	}
+	
+	@RequestMapping(value="/check",method=RequestMethod.POST)
+	public void checkOrder() {
+		// TODO Auto-generated method stub
+		final String ADD_URL = "https://api.sandbox.paypal.com/v1/payments/orders/O-3SP845109F051535C";
+		try {
+            //创建连接
+            URL url = new URL(ADD_URL);
+            HttpURLConnection connection = (HttpURLConnection) url
+                    .openConnection();
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Authorization", "Bearer");
+            connection.setUseCaches(false);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestProperty("Content-Type",
+                    "application/json");
+            connection.connect();
+
+            //POST请求
+            DataOutputStream out = new DataOutputStream(
+                    connection.getOutputStream());
+            JSONObject obj = new JSONObject();
+            obj.put("amount", "asdf");
+            obj.put("app_ip", "10.21.243.234");
+            obj.put("app_port", 8080);
+            obj.put("is_final_capture", true);
+            obj.put("app_area", "asd");
+
+            out.writeBytes(obj.toString());
+            out.flush();
+            out.close();
+
+            //读取响应
+            BufferedReader reader = new BufferedReader(new InputStreamReader(
+                    connection.getInputStream()));
+            String lines;
+            StringBuffer sb = new StringBuffer("");
+            while ((lines = reader.readLine()) != null) {
+                lines = new String(lines.getBytes(), "utf-8");
+                sb.append(lines);
+            }
+            System.out.println(sb);
+            reader.close();
+            // 断开连接
+            connection.disconnect();
+        } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 	}
 }

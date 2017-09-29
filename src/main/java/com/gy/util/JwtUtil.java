@@ -23,13 +23,13 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JwtUtil {
 	
-    private String profiles="develop";
+    private static String profiles="develop";
 	
 	/**
 	 * 由字符串生成加密key
 	 * @return
 	 */
-	public SecretKey generalKey(){
+	public static SecretKey generalKey(){
 		String stringKey = profiles+Constant.JWT_SECRET;
 		byte[] encodedKey = Base64.decodeBase64(stringKey);
 	    SecretKey key = new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
@@ -40,11 +40,11 @@ public class JwtUtil {
 	 * 创建jwt
 	 * @param id
 	 * @param subject
-	 * @param ttlMillis
+	 * @param ttlMillisx
 	 * @return
 	 * @throws Exception
 	 */
-	public String createJWT(String id, String subject, long ttlMillis) throws Exception {
+	public static String createJWT(String id, String subject, long ttlMillis) throws Exception {
 		SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 		long nowMillis = System.currentTimeMillis();
 		Date now = new Date(nowMillis);

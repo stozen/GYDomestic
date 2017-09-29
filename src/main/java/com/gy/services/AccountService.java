@@ -39,6 +39,13 @@ public interface AccountService {
 	public boolean save(Account account);
 	
 	/**
+	 * 实现用户添加或者更新功能
+	 * @param account
+	 * @return
+	 */
+	public boolean saveorupdate(Account account);
+	
+	/**
 	 * 增加一些账户
 	 * @return true or false
 	 */

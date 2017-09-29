@@ -154,10 +154,10 @@ public class AccountDaoImpl implements AccountDao {
 			}
 			e.printStackTrace();
 		} finally {
-			/*if(session!=null)
+			if(session!=null)
 			{
 				session.close();
-			}*/
+			}
 		}
 		return account;
 	}
@@ -293,6 +293,31 @@ public class AccountDaoImpl implements AccountDao {
 	public boolean updateAll(Account[] accounts) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public boolean saveorupdate(Account account) {
+		// TODO Auto-generated method stub
+		Session session = getSession();
+		boolean flag = false;
+		try {
+			tx = session.beginTransaction();
+			session.saveOrUpdate(account);
+			flag = true;
+			tx.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			if(tx!=null)
+			{
+				tx.rollback();
+			}
+			e.printStackTrace();
+		} finally {
+			if(session!=null) {
+				session.close();
+			}
+		}
+		return flag;
 	}
 	
 }

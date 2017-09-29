@@ -6,8 +6,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
+import org.apache.commons.lang.math.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,8 @@ import com.gy.model.User;
 import com.gy.services.AccountService;
 import com.gy.services.GameService;
 import com.gy.services.UserService;
+import com.gy.util.JwtUtil;
+import com.gy.util.RandomCode;
 import com.gy.util.SplitString;
 
 /**
@@ -177,10 +181,8 @@ public class UserServiceImpl implements UserService {
 				
 				if(!(user.getUsername().equals("") || "".equals(user.getUsername())) && !(user.getPassword().equals("") || "".equals(user.getPassword())))
 				{
-					userdata = this.querysql(sql);
 					try {
 						userdata = this.querysql(sql);
-						
 						/*4.先判断用户输入的数据是否为空*/
 						
 						if(userdata!=null)
@@ -196,6 +198,9 @@ public class UserServiceImpl implements UserService {
 								if(games.size()<=0)
 								{
 									System.err.println("登录时不保存游戏，游戏数据为空！");
+									status = "0405";
+									message = "传入的游戏为空！";
+									userid = 0;
 								}
 								else
 								{
@@ -212,6 +217,16 @@ public class UserServiceImpl implements UserService {
 									gamedata.setUser(userdata);
 									
 									gameService.saveorupdate(gamedata);
+									
+									String subject = JwtUtil.generalSubject(user, gamedata);
+									long ttlMillis = System.currentTimeMillis();
+									try {
+										String token = JwtUtil.createJWT(String.valueOf(RandomCode.getRandNum(1, 9999)), subject, ttlMillis);
+										map.put("token", token);
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
 								}
 							}
 							else
@@ -244,7 +259,6 @@ public class UserServiceImpl implements UserService {
 			case "2":
 				if(!(user.getEmail().equals("") || "".equals(user.getEmail())) && !(user.getPassword().equals("") || "".equals(user.getPassword())))
 				{
-					userdata = this.querysql(sql);
 					try {
 						userdata = this.querysql(sql);
 						
@@ -257,6 +271,7 @@ public class UserServiceImpl implements UserService {
 								status = "0200";
 								message = "普通邮箱模式登录成功！";
 								userid = userdata.getUserid();
+								
 								
 								Set<Game> games = new HashSet<Game>();
 								games = user.getGames();
@@ -279,6 +294,19 @@ public class UserServiceImpl implements UserService {
 									gamedata.setUser(userdata);
 									
 									gameService.saveorupdate(gamedata);
+									
+									String subject = JwtUtil.generalSubject(user, gamedata);
+									long ttlMillis = System.currentTimeMillis();
+									try {
+										String token = JwtUtil.createJWT(String.valueOf(RandomCode.getRandNum(1, 9999)), subject, ttlMillis);
+										map.put("token", token);
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+									/*Date logintime = user.getLogintime();
+									String subject = JwtUtil.generalSubject(user, gamedata);
+									String token = JwtUtil.createJWT(id, subject, ttlMillis);*/
 								}
 							}
 							else
@@ -310,7 +338,6 @@ public class UserServiceImpl implements UserService {
 			case "3":
 				if(!(user.getMobile().equals("") || "".equals(user.getMobile())) && !(user.getPassword().equals("") || "".equals(user.getPassword())))
 				{
-					userdata = this.querysql(sql);
 					try {
 						userdata = this.querysql(sql);
 						
@@ -345,6 +372,16 @@ public class UserServiceImpl implements UserService {
 									gamedata.setUser(userdata);
 									
 									gameService.saveorupdate(gamedata);
+									
+									String subject = JwtUtil.generalSubject(user, gamedata);
+									long ttlMillis = System.currentTimeMillis();
+									try {
+										String token = JwtUtil.createJWT(String.valueOf(RandomCode.getRandNum(1, 9999)), subject, ttlMillis);
+										map.put("token", token);
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
 								}
 							}
 							else
@@ -401,7 +438,7 @@ public class UserServiceImpl implements UserService {
 					{
 						String accsql = "from Account where accountname="+"'"+account.getAccountname().trim()+"'"+"and accounttype="+"'"+user.getType()+"'";
 						Account accountdata = accountService.querysql(accsql);
-						System.err.println(accountdata);
+						System.err.println("打印账户数据:"+accountdata);
 						if(accountdata==null)
 						{
 							status = "0200";
@@ -416,9 +453,16 @@ public class UserServiceImpl implements UserService {
 							user.setUsername(account.getAccountname());
 							user.setPassword("");
 							user.setType(type);
-							
-							System.err.println("保存数据");
 							this.save(user);
+							
+							
+							
+							User udata = this.querysql("from User where username="+"'"+account.getAccountname().trim()+"'"+"and type="+"'"+user.getType()+"'");
+							User usernew  = new User();
+							usernew.setUserid(udata.getUserid());
+							System.err.println("打印用户数据:"+usernew);
+							account.setUser(usernew);
+							accountService.saveorupdate(account);
 							
 							String idsql = "from Account where accountname="+"'"+account.getAccountname().trim()+"'"+"and accounttype="+"'"+user.getType()+"'";
 							Account accountdatanew = accountService.querysql(idsql);
@@ -454,6 +498,16 @@ public class UserServiceImpl implements UserService {
 								gamedata.setUser(user);
 								
 								gameService.saveorupdate(gamedata);
+								
+								String subject = JwtUtil.generalSubject(user, gamedata);
+								long ttlMillis = System.currentTimeMillis();
+								try {
+									String token = JwtUtil.createJWT(String.valueOf(RandomCode.getRandNum(1, 9999)), subject, ttlMillis);
+									map.put("token", token);
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 							}
 							
 						}
@@ -485,6 +539,16 @@ public class UserServiceImpl implements UserService {
 									}
 									gamedata.setUser(accountdata.getUser());
 									gameService.saveorupdate(gamedata);
+									
+									String subject = JwtUtil.generalSubject(user, gamedata);
+									long ttlMillis = System.currentTimeMillis();
+									try {
+										String token = JwtUtil.createJWT(String.valueOf(RandomCode.getRandNum(1, 9999)), subject, ttlMillis);
+										map.put("token", token);
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
 								}
 							}
 						}
@@ -541,6 +605,14 @@ public class UserServiceImpl implements UserService {
 							user.setType(type);
 							System.err.println("保存数据");
 							this.save(user);
+							
+							User udata = this.querysql("from User where username="+"'"+account1.getAccountname().trim()+"'"+"and type="+"'"+user.getType()+"'");
+							User usernew  = new User();
+							usernew.setUserid(udata.getUserid());
+							System.err.println("打印用户数据:"+usernew);
+							account1.setUser(usernew);
+							accountService.saveorupdate(account1);
+							
 							String idsql = "from Account where accountname="+"'"+account1.getAccountname().trim()+"'"+"and accounttype="+"'"+user.getType()+"'";
 							Account accountdatanew1 = accountService.querysql(idsql);
 							if(accountdatanew1==null)
@@ -574,6 +646,15 @@ public class UserServiceImpl implements UserService {
 								gamedata.setUser(user);
 								
 								gameService.saveorupdate(gamedata);
+								String subject = JwtUtil.generalSubject(user, gamedata);
+								long ttlMillis = System.currentTimeMillis();
+								try {
+									String token = JwtUtil.createJWT(String.valueOf(RandomCode.getRandNum(1, 9999)), subject, ttlMillis);
+									map.put("token", token);
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 							}
 							
 						}
@@ -605,6 +686,16 @@ public class UserServiceImpl implements UserService {
 									}
 									gamedata.setUser(accountdata1.getUser());
 									gameService.saveorupdate(gamedata);
+									
+									String subject = JwtUtil.generalSubject(user, gamedata);
+									long ttlMillis = System.currentTimeMillis();
+									try {
+										String token = JwtUtil.createJWT(String.valueOf(RandomCode.getRandNum(1, 9999)), subject, ttlMillis);
+										map.put("token", token);
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
 								}
 							}
 						}
@@ -660,6 +751,14 @@ public class UserServiceImpl implements UserService {
 							user.setType(type);
 							/*System.err.println("保存数据");*/
 							this.save(user);
+							
+							User udata = this.querysql("from User where username="+"'"+account2.getAccountname().trim()+"'"+"and type="+"'"+user.getType()+"'");
+							User usernew  = new User();
+							usernew.setUserid(udata.getUserid());
+							System.err.println("打印用户数据:"+usernew);
+							account2.setUser(usernew);
+							accountService.saveorupdate(account2);
+							
 							String idsql = "from Account where accountname="+"'"+account2.getAccountname().trim()+"'"+"and accounttype="+"'"+user.getType()+"'";
 							Account accountdatanew2 = accountService.querysql(idsql);
 							if(accountdatanew2==null)
@@ -693,6 +792,16 @@ public class UserServiceImpl implements UserService {
 								gamedata.setUser(user);
 								
 								gameService.saveorupdate(gamedata);
+								
+								String subject = JwtUtil.generalSubject(user, gamedata);
+								long ttlMillis = System.currentTimeMillis();
+								try {
+									String token = JwtUtil.createJWT(String.valueOf(RandomCode.getRandNum(1, 9999)), subject, ttlMillis);
+									map.put("token", token);
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 							}
 						}
 						else
@@ -722,6 +831,16 @@ public class UserServiceImpl implements UserService {
 									}
 									gamedata.setUser(accountdata2.getUser());
 									gameService.saveorupdate(gamedata);
+									
+									String subject = JwtUtil.generalSubject(user, gamedata);
+									long ttlMillis = System.currentTimeMillis();
+									try {
+										String token = JwtUtil.createJWT(String.valueOf(RandomCode.getRandNum(1, 9999)), subject, ttlMillis);
+										map.put("token", token);
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
 								}
 							}
 						}
@@ -793,6 +912,7 @@ public class UserServiceImpl implements UserService {
 							user.setMobile("");
 							user.setUsername(username);
 							user.setPassword(password);
+							
 							Game game = SplitString.getGame(map);
 							Set<Game> gameset = new HashSet<Game>();
 							gameset.add(game);

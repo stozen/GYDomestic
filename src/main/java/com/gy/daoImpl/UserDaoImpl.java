@@ -272,10 +272,10 @@ public class UserDaoImpl implements UserDao{
 			}
 			e.printStackTrace();
 		} finally {
-			/*if(session!=null)
+			if(session!=null)
 			{
 				session.close();
-			}*/
+			}
 		}
 		return user;
 	}
