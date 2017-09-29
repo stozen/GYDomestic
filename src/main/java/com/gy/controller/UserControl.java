@@ -62,34 +62,9 @@ import com.gy.util.ResponseUtil;
 public class UserControl {
 	
 	/**
-	 * 创建一个返回给客户端的状态量
-	 */
-	private String status;
-	
-	/**
-	 * 创建一个返回给客户端的状态信息提示
-	 */
-	private String message;
-	
-	/**
-	 * 创建一个返回给客户端的userid
-	 */
-	private int userid;
-	
-	/**
-	 * 创建一个标签用来表示检索的条件真与假
-	 */
-	private boolean flag = false;
-	
-	/**
 	 * 创建一个短信验证码
 	 */
 	private String validatecode = "123456";
-	
-	/**
-	 * 创建Token的User对象
-	 */
-	private String subject = "";
 	
 	/**
 	 * 生成返回给客户端的Token
@@ -120,52 +95,6 @@ public class UserControl {
 	}
 	
 	/**
-	 * 自动注入账户的服务层
-	 * @return
-	 */
-	@Autowired
-	private AccountService accountService;
-	
-	/**
-	 * 生成对应的set和get方法
-	 * @return
-	 */
-	public AccountService getAccountService() {
-		return accountService;
-	}
-
-	public void setAccountService(AccountService accountService) {
-		this.accountService = accountService;
-	}
-
-	/**
-	 * 实现自动装配
-	 */
-	@Autowired
-	private GameService gameService;
-	
-	/**
-	 * 生成对应的set和get方法
-	 * @return
-	 */
-	public GameService getGameService() {
-		return gameService;
-	}
-
-	public void setGameService(GameService gameService) {
-		this.gameService = gameService;
-	}
-
-	/*@RequestMapping(value = "/hello", produces = "text/json;charset=UTF-8")
-	public @ResponseBody String hello() {
-		
-		return "你好！hello";
-	}*/
-	
-	@Autowired
-	private JwtUtil jwt;
-	
-	/**
 	 * 这是打印log的信息
 	 */
 	private static final Logger logger = LogManager.getLogger(UserControl.class);
@@ -177,7 +106,7 @@ public class UserControl {
 	@SuppressWarnings("rawtypes")
 	/*@RequestMapping(value = "/login",headers={"Accept="+MediaType.APPLICATION_JSON_VALUE},method=RequestMethod.GET)*/
 	@RequestMapping(value="/login",method=RequestMethod.POST)
-	public @ResponseBody Map<String, Object> login(@RequestBody User user,BindingResult bindingResult,@RequestHeader String token) {
+	public @ResponseBody Map<String, Object> login(@RequestBody User user,BindingResult bindingResult) {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		

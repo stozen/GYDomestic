@@ -1,9 +1,13 @@
 package com.gy.pay;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.ParseException;
@@ -24,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSONObject;
 import com.gy.services.OrderService;
 
 /**
@@ -44,6 +49,17 @@ public class GooglePlay {
 	private OrderService orderService;
 	
 	/**
+	 * 创建返回给客户端的状态信息
+	 */
+	private String status;
+	
+	/**
+	 * 创建返回给客户端的信息提示
+	 */
+	private String message;
+	
+	
+	/**
 	 * 生成orderService的get方法
 	 * @return
 	 */
@@ -59,105 +75,103 @@ public class GooglePlay {
 		this.orderService = orderService;
 	}
 
-	/**
-	 * 只是使用googlepay支付功能
-	 * @return
-	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@RequestMapping(value="pay",method=RequestMethod.POST)
-	public @ResponseBody Map<String, Object> googlepay(@RequestBody Map map,BindingResult bindingResult){
+	@RequestMapping(value="/checkorder",method=RequestMethod.POST)
+	public @ResponseBody Map<String, Object> checkOrder(@RequestBody Map map) {
+		// TODO Auto-generated method stub
+		String packageName = (String) map.get("packageName");
+		String subscriptionId = (String) map.get("subscriptionId");
+		String token = (String) map.get("token");
 		
-		String reqprice = (String)map.get("price");
-		String reqnumber = (String)map.get("number");
-		
-		double price = Double.parseDouble(reqprice);
-		int number = Integer.parseInt(reqnumber);
-		double total = price*number;
-		
-		map.put("price", price);
-		map.put("number", number);
-		map.put("total", total);
-		return map;
-	}
+		/*String packageName = "com.youda.android.demo";
+		String subscriptionId = "com.youda.product0001";
+		String token = "cecgnionbjnlccillajbiggo.AO-J1Ox4ADyvYEdSkcUQxhhRZjePVu1weX7CoQHGW_2f3qWaft-QQAUFPXa_iL-0VZLTMrnyaCgQMppwmrTi_n7AT-bwsIt_8kdpn-uQm_dutXr6eLr1GWVKiwO1hmhmuWN9hMK8a2jf";*/
 	
-	/**
-	 * pay pal支付返回信息
-	 * @param request
-	 * @param response
-	 */
-	@SuppressWarnings({ "rawtypes", "unused" })
-	@RequestMapping("/recharge")
-	public void payPal(HttpServletRequest request,HttpServletResponse response,HttpSession session) throws IOException, ParseException {
-	    String itemNumber="";
-	    Enumeration en = request.getParameterNames();
-	    while (en.hasMoreElements()) {
-	        String paramName = (String) en.nextElement();
-	        String paramValue = request.getParameter(paramName);
-	        if(paramName.equals("item_number")){
-	            itemNumber=paramValue;
-	        }
-	    }
-	    String id[]=itemNumber.split(",");
-	    PrintWriter out=response.getWriter();
-	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	    String sDate = sdf.format(new Date());
-	    Date date = sdf.parse(sDate);
-	    String str1 = request.getParameter("tx");
-	    /*正式环境下
-	    String str2 = "&at=sTvmKEM1YR2EmQXW3VyBrqYWiX-8_wr0Sj5w2DQ5uqGoakHYOCKcFsaAAU4";
-	    */
-	    String str2 = "&at=VmjfBuVl1vbSC6bMV7xvROqisIsrMpKftSx_bLbAnNr-UO2JsLnAR2wfzK8";
-	    String str = "?tx=" + str1 + "&cmd=_notify-synch" + str2;
-	    /*
-	    String str = "?tx=" + str1 + "&cmd=_notify-validate" + str2;
-	    */
-	    /* 正式环境下
-	    String payPalUrl = "https://www.paypal.com/cgi-bin/webscr";
-	    */
-	    String payPalUrl = "https://www.sandbox.paypal.com/cgi-bin/webscr";
-	    payPalUrl = payPalUrl + str;
-	    URL u = new URL(payPalUrl);
-	    URLConnection uc = u.openConnection();
-	    uc.setDoOutput(true);
-	    uc.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-	    PrintWriter pw = new PrintWriter(uc.getOutputStream());
-	    pw.println(str);
-	    pw.close();
-	    //接受PayPal对IPN回发的回复信息
-	    BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
-	    String line = "";
-	    String txn_id = ""; //paypal的号码
-	    String item_name = "";//本地订单号
-	    String contact_phone = "";
-	    int i = 0;
-	    String res = "";
-	    String msg = "";
-	    while ((line = in.readLine()) != null) {
-	        i = i + 1;
-	        if (i == 1) {
-	            res = line;
-	        }
-	        if (res.equals("SUCCESS")) {
-	            if (line.indexOf("txn_id=") != -1) {
-	                txn_id = line.replace("txn_id=", "");
-	            } else if (line.indexOf("item_name=") != -1) {
-	                item_name = line.replace("item_name=", "");
-	            } else if (line.indexOf("contact_phone=") != -1) {
-	                contact_phone = line.replace("contact_phone=", "");
-	            }
-	        }
-	    }
-	    if (!txn_id.equals("") && !item_name.equals("")) {
-	       /* UserRecord userRecord=userRecordService.findById(Integer.parseInt(id[1]));
-	        userRecord.setCommitDate(date);
-	        userRecord.setHandler(id[2]);
-	        userRecord.setState(0);
-	        userRecordService.updateUserRecord(userRecord);*///修改数据库的字段信息
-	        msg = "Pay for success! Please wait for delivery!  Your Order Number: " + txn_id + " !";
-	    } else {
-	        msg = "Sorry ! Your operating error! Please contact website administrator !!";
-	    }
-	    out.print("<script>alert('" + msg + "');location.href='" + request.getContextPath() + "/goto/back'</script>");//支付完毕返回 用户信息页 !
+		final String ADD_URL = "https://www.googleapis.com/androidpublisher/v2/applications/"+"'"+packageName+"'"+"/purchases/subscriptions/"+"'"+subscriptionId+"'"+"/tokens/"+"'"+token+"'";
+		
+		/*final String ADD_URL = "https://hao.360.cn/";*/
+		
+		try {
+            //创建连接
+            URL url = new URL(ADD_URL);
+            HttpURLConnection connection = (HttpURLConnection) url
+                    .openConnection();
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestMethod("GET");
+            /*connection.setRequestProperty("Authorization", "Bearer");
+            connection.setRequestProperty("packageName", packageName);*/
+            connection.setUseCaches(false);
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestProperty("Content-Type","application/json");
+            connection.connect();
+
+            //POST请求
+            /*DataOutputStream out = new DataOutputStream(
+                    connection.getOutputStream());
+            JSONObject obj = new JSONObject();
+            obj.put("packageName", packageName);
+            obj.put("subscriptionId", subscriptionId);
+            obj.put("token", token);
+
+            out.writeBytes(obj.toString());
+            out.flush();
+            out.close();*/
+
+            //读取响应
+            BufferedReader reader = new BufferedReader(new InputStreamReader(
+                    connection.getInputStream()));
+            String lines;
+            StringBuffer sb = new StringBuffer("");
+            while ((lines = reader.readLine()) != null) {
+                lines = new String(lines.getBytes(), "utf-8");
+                sb.append(lines);
+                
+                String capture = new String(sb);
+                JSONObject paydata = JSONObject.parseObject(capture);
+                Integer paymentState = (Integer) paydata.get("paymentState");
+                if(paymentState == 0)
+                {
+                	status = "0404";
+                	message = "付款还有成功待支付状态！";
+                	map.put("status", status);
+                	map.put("message", message);
+                }
+                else if(paymentState==1)
+                {
+                	status = "0200";
+                	message = "支付成功！";
+                	map.put("status", status);
+                	map.put("message", message);
+                	map.put("paydata", paydata);
+                } 
+                else if(paymentState==2)
+                {
+                	status = "0200";
+                	message = "免费试用！";
+                	map.put("status", status);
+                	map.put("message", message);
+                	map.put("paydata", paydata);
+                }
+            }
+            reader.close();
+            // 断开连接
+            connection.disconnect();
+        } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+		
+		map.remove("packageName");
+		map.remove("subscriptionId");
+		map.remove("token");
+		
+		return map;
 	}
 	
 }

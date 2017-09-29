@@ -19,9 +19,6 @@ public class SplitString {
 			String status = "0405";
 			String message = "传入的游戏为空";
 			int userid = 0;
-			map.put("status", status);
-			map.put("message", message);
-			map.put("useid", userid);
 		}
 		else
 		{

@@ -19,6 +19,7 @@ import com.alibaba.fastjson.asm.Type;
 import com.gy.dao.UserDao;
 import com.gy.model.Account;
 import com.gy.model.Game;
+import com.gy.model.Order;
 import com.gy.model.User;
 import com.gy.services.AccountService;
 import com.gy.services.GameService;
@@ -170,6 +171,7 @@ public class UserServiceImpl implements UserService {
 		String status = null;
 		String message = null;
 		int userid = 0;
+		int gameid = 0;
 		
 		/*2.一般登录的检索用户所用的账户类型*/
 		String sql = "from User u where u.username=" +  "'" + user.getUsername() + "'"+"or u.mobile="+"'"+user.getMobile()+"'"+" or u.email="+"'"+user.getEmail()+"'"+" and u.password="+"'"+user.getPassword()+"'";
@@ -197,14 +199,12 @@ public class UserServiceImpl implements UserService {
 								games = user.getGames();
 								if(games.size()<=0)
 								{
-									System.err.println("登录时不保存游戏，游戏数据为空！");
-									status = "0405";
+									status = "0403";
 									message = "传入的游戏为空！";
-									userid = 0;
+									userid = userdata.getUserid();
 								}
 								else
 								{
-									System.err.println("登录保存游戏数据！");
 									
 									Iterator<Game> game = games.iterator();
 									
@@ -217,6 +217,12 @@ public class UserServiceImpl implements UserService {
 									gamedata.setUser(userdata);
 									
 									gameService.saveorupdate(gamedata);
+									
+									/*查询游戏*/
+									String gamesql = "from Game where gamepackage="+"'"+gamedata.getGamepackage()+"'"+"and userid="+"'"+userdata.getUserid()+"'";
+									Game gamenew = gameService.queryBysql(gamesql);
+									gameid = gamenew.getGameid();
+									map.put("gameid", gameid);
 									
 									String subject = JwtUtil.generalSubject(user, gamedata);
 									long ttlMillis = System.currentTimeMillis();
@@ -277,7 +283,9 @@ public class UserServiceImpl implements UserService {
 								games = user.getGames();
 								if(games.size()<=0)
 								{
-									System.err.println("登录时不保存游戏，游戏数据为空！");
+									status = "0403";
+									message = "传入的游戏为空！";
+									userid = userdata.getUserid();
 								}
 								else
 								{
@@ -294,6 +302,12 @@ public class UserServiceImpl implements UserService {
 									gamedata.setUser(userdata);
 									
 									gameService.saveorupdate(gamedata);
+									
+									/*查询游戏*/
+									String gamesql = "from Game where gamepackage="+"'"+gamedata.getGamepackage()+"'"+"and userid="+"'"+userdata.getUserid()+"'";
+									Game gamenew = gameService.queryBysql(gamesql);
+									gameid = gamenew.getGameid();
+									map.put("gameid", gameid);
 									
 									String subject = JwtUtil.generalSubject(user, gamedata);
 									long ttlMillis = System.currentTimeMillis();
@@ -355,11 +369,13 @@ public class UserServiceImpl implements UserService {
 								games = user.getGames();
 								if(games.size()<=0)
 								{
-									System.err.println("登录时不保存游戏，游戏数据为空！");
+									status = "0403";
+									message = "传入的游戏为空！";
+									userid = userdata.getUserid();
 								}
 								else
 								{
-									System.err.println("登录保存游戏数据！");
+									
 									
 									Iterator<Game> game = games.iterator();
 									
@@ -372,6 +388,12 @@ public class UserServiceImpl implements UserService {
 									gamedata.setUser(userdata);
 									
 									gameService.saveorupdate(gamedata);
+									
+									/*查询游戏*/
+									String gamesql = "from Game where gamepackage="+"'"+gamedata.getGamepackage()+"'"+"and userid="+"'"+userdata.getUserid()+"'";
+									Game gamenew = gameService.queryBysql(gamesql);
+									gameid = gamenew.getGameid();
+									map.put("gameid", gameid);
 									
 									String subject = JwtUtil.generalSubject(user, gamedata);
 									long ttlMillis = System.currentTimeMillis();
@@ -455,12 +477,9 @@ public class UserServiceImpl implements UserService {
 							user.setType(type);
 							this.save(user);
 							
-							
-							
 							User udata = this.querysql("from User where username="+"'"+account.getAccountname().trim()+"'"+"and type="+"'"+user.getType()+"'");
 							User usernew  = new User();
 							usernew.setUserid(udata.getUserid());
-							System.err.println("打印用户数据:"+usernew);
 							account.setUser(usernew);
 							accountService.saveorupdate(account);
 							
@@ -482,7 +501,9 @@ public class UserServiceImpl implements UserService {
 							
 							if(games.size()<=0)
 							{
-								System.err.println("登录时不保存游戏，游戏数据为空！");
+								status = "0403";
+								message = "传入的游戏为空！";
+								userid = udata.getUserid();
 							}
 							else
 							{
@@ -498,6 +519,12 @@ public class UserServiceImpl implements UserService {
 								gamedata.setUser(user);
 								
 								gameService.saveorupdate(gamedata);
+								
+								/*查询游戏*/
+								String gamesql = "from Game where gamepackage="+"'"+gamedata.getGamepackage()+"'"+"and userid="+"'"+udata.getUserid()+"'";
+								Game gamenew = gameService.queryBysql(gamesql);
+								gameid = gamenew.getGameid();
+								map.put("gameid", gameid);
 								
 								String subject = JwtUtil.generalSubject(user, gamedata);
 								long ttlMillis = System.currentTimeMillis();
@@ -524,7 +551,9 @@ public class UserServiceImpl implements UserService {
 								
 								if(games.size()<=0)
 								{
-									System.err.println("登录时不保存游戏，游戏数据为空！");
+									status = "0403";
+									message = "传入的游戏为空！";
+									userid = accountdata.getUser().getUserid();
 								}
 								else
 								{
@@ -539,6 +568,12 @@ public class UserServiceImpl implements UserService {
 									}
 									gamedata.setUser(accountdata.getUser());
 									gameService.saveorupdate(gamedata);
+									
+									/*查询游戏*/
+									String gamesql = "from Game where gamepackage="+"'"+gamedata.getGamepackage()+"'"+"and userid="+"'"+accountdata.getUser().getUserid()+"'";
+									Game gamenew = gameService.queryBysql(gamesql);
+									gameid = gamenew.getGameid();
+									map.put("gameid", gameid);
 									
 									String subject = JwtUtil.generalSubject(user, gamedata);
 									long ttlMillis = System.currentTimeMillis();
@@ -630,7 +665,9 @@ public class UserServiceImpl implements UserService {
 							
 							if(games.size()<=0)
 							{
-								System.err.println("登录时不保存游戏，游戏数据为空！");
+								status = "0403";
+								message = "传入的游戏为空！";
+								userid = accountdatanew1.getUser().getUserid();
 							}
 							else
 							{
@@ -646,6 +683,13 @@ public class UserServiceImpl implements UserService {
 								gamedata.setUser(user);
 								
 								gameService.saveorupdate(gamedata);
+								
+								/*查询游戏*/
+								String gamesql = "from Game where gamepackage="+"'"+gamedata.getGamepackage()+"'"+"and userid="+"'"+accountdatanew1.getUser().getUserid()+"'";
+								Game gamenew = gameService.queryBysql(gamesql);
+								gameid = gamenew.getGameid();
+								map.put("gameid", gameid);
+								
 								String subject = JwtUtil.generalSubject(user, gamedata);
 								long ttlMillis = System.currentTimeMillis();
 								try {
@@ -675,7 +719,6 @@ public class UserServiceImpl implements UserService {
 								}
 								else
 								{
-									System.err.println("登录时保存游戏数据！");
 									Iterator<Game> game = games.iterator();
 									
 									Game gamedata = new Game();
@@ -686,6 +729,12 @@ public class UserServiceImpl implements UserService {
 									}
 									gamedata.setUser(accountdata1.getUser());
 									gameService.saveorupdate(gamedata);
+									
+									/*查询游戏*/
+									String gamesql = "from Game where gamepackage="+"'"+gamedata.getGamepackage()+"'"+"and userid="+"'"+accountdata1.getUser().getUserid()+"'";
+									Game gamenew = gameService.queryBysql(gamesql);
+									gameid = gamenew.getGameid();
+									map.put("gameid", gameid);
 									
 									String subject = JwtUtil.generalSubject(user, gamedata);
 									long ttlMillis = System.currentTimeMillis();
@@ -755,7 +804,6 @@ public class UserServiceImpl implements UserService {
 							User udata = this.querysql("from User where username="+"'"+account2.getAccountname().trim()+"'"+"and type="+"'"+user.getType()+"'");
 							User usernew  = new User();
 							usernew.setUserid(udata.getUserid());
-							System.err.println("打印用户数据:"+usernew);
 							account2.setUser(usernew);
 							accountService.saveorupdate(account2);
 							
@@ -775,7 +823,9 @@ public class UserServiceImpl implements UserService {
 							games = user.getGames();
 							if(games.size()<=0)
 							{
-								System.err.println("登录时不保存游戏，游戏数据为空！");
+								status = "0403";
+								message = "传入的游戏为空！";
+								userid = accountdatanew2.getUser().getUserid();
 							}
 							else
 							{
@@ -792,6 +842,12 @@ public class UserServiceImpl implements UserService {
 								gamedata.setUser(user);
 								
 								gameService.saveorupdate(gamedata);
+								
+								/*查询游戏*/
+								String gamesql = "from Game where gamepackage="+"'"+gamedata.getGamepackage()+"'"+"and userid="+"'"+accountdatanew2.getUser().getUserid()+"'";
+								Game gamenew = gameService.queryBysql(gamesql);
+								gameid = gamenew.getGameid();
+								map.put("gameid", gameid);
 								
 								String subject = JwtUtil.generalSubject(user, gamedata);
 								long ttlMillis = System.currentTimeMillis();
@@ -831,6 +887,12 @@ public class UserServiceImpl implements UserService {
 									}
 									gamedata.setUser(accountdata2.getUser());
 									gameService.saveorupdate(gamedata);
+									
+									/*查询游戏*/
+									String gamesql = "from Game where gamepackage="+"'"+gamedata.getGamepackage()+"'"+"and userid="+"'"+accountdata2.getUser().getUserid()+"'";
+									Game gamenew = gameService.queryBysql(gamesql);
+									gameid = gamenew.getGameid();
+									map.put("gameid", gameid);
 									
 									String subject = JwtUtil.generalSubject(user, gamedata);
 									long ttlMillis = System.currentTimeMillis();
@@ -900,6 +962,7 @@ public class UserServiceImpl implements UserService {
 							status = "0202";
 							message = "该用户已经注册了，请重新填写！";
 							userid = userdata.getUserid();
+							map.remove("useid");
 						}
 						else
 						{
@@ -914,19 +977,34 @@ public class UserServiceImpl implements UserService {
 							user.setPassword(password);
 							
 							Game game = SplitString.getGame(map);
-							Set<Game> gameset = new HashSet<Game>();
-							gameset.add(game);
-							user.setGames(gameset);
-							if(this.save(user)){
-								status = "0200";
-								message = "用户名注册成功!";
-								User user1 = (User)this.querysql("from User where username="+"'"+user.getUsername()+"'");
-								userid = user1.getUserid();
-								/*2.生成Token给客户端*/
-								/*subject = JwtUtil.generalSubject(user1);
-								token = jwt.createJWT(Constant.JWT_ID, subject, Constant.JWT_TTL);
-								2.注册成功需要把相应的token值存储到token表中
-								map.put("token", token);*/
+							if(game==null)
+							{
+								status = "0403";
+								message = "游戏数据为空";
+								userid = 0;
+								if(this.save(user)){
+									status = "0200";
+									message = "用户名注册成功,但是没有游戏数据!";
+									User user1 = (User)this.querysql("from User where username="+"'"+user.getUsername()+"'");
+									userid = user1.getUserid();
+								}
+							}
+							else
+							{
+								Set<Game> gameset = new HashSet<Game>();
+								gameset.add(game);
+								user.setGames(gameset);
+								if(this.save(user)){
+									status = "0200";
+									message = "用户名注册成功,带有游戏数据!";
+									User user1 = (User)this.querysql("from User where username="+"'"+user.getUsername()+"'");
+									userid = user1.getUserid();
+									/*2.生成Token给客户端*/
+									/*subject = JwtUtil.generalSubject(user1);
+									token = jwt.createJWT(Constant.JWT_ID, subject, Constant.JWT_TTL);
+									2.注册成功需要把相应的token值存储到token表中
+									map.put("token", token);*/
+								}
 							}
 						}
 					}
@@ -961,14 +1039,29 @@ public class UserServiceImpl implements UserService {
 							user.setMobile("");
 							user.setPassword(password);
 							Game game = SplitString.getGame(map);
-							Set<Game> gameset = new HashSet<Game>();
-							gameset.add(game);
-							user.setGames(gameset);
-							if(this.save(user)){
-								status = "0200";
-								message = "邮箱注册成功!";
-								User user1 = (User)this.querysql("from User where username="+"'"+user.getUsername()+"'");
-								userid = user1.getUserid();
+							if(game==null)
+							{
+								status = "0403";
+								message = "游戏数据为空";
+								userid = 0;
+								if(this.save(user)){
+									status = "0200";
+									message = "邮箱注册成功,但是没有游戏数据!";
+									User user1 = (User)this.querysql("from User where username="+"'"+user.getUsername()+"'");
+									userid = user1.getUserid();
+								}
+							}
+							else
+							{
+								Set<Game> gameset = new HashSet<Game>();
+								gameset.add(game);
+								user.setGames(gameset);
+								if(this.save(user)){
+									status = "0200";
+									message = "邮箱注册成功，带有游戏数据!";
+									User user1 = (User)this.querysql("from User where username="+"'"+user.getUsername()+"'");
+									userid = user1.getUserid();
+								}
 							}
 						}
 					}
@@ -1004,15 +1097,31 @@ public class UserServiceImpl implements UserService {
 							user.setPassword(password);
 							
 							Game game = SplitString.getGame(map);
-							Set<Game> gameset = new HashSet<Game>();
-							gameset.add(game);
-							user.setGames(gameset);
 							
-							if(this.save(user)){
-								status = "0200";
-								message = "手机注册成功!";
-								User user1 = (User)this.querysql("from User where username="+"'"+user.getUsername()+"'");
-								userid = user1.getUserid();
+							if(game==null)
+							{
+								status = "0403";
+								message = "游戏数据为空";
+								userid = 0;
+								if(this.save(user)){
+									status = "0200";
+									message = "手机注册成功,但是没有游戏数据!";
+									User user1 = (User)this.querysql("from User where username="+"'"+user.getUsername()+"'");
+									userid = user1.getUserid();
+								}
+							}
+							else
+							{
+								Set<Game> gameset = new HashSet<Game>();
+								gameset.add(game);
+								user.setGames(gameset);
+								
+								if(this.save(user)){
+									status = "0200";
+									message = "手机注册成功，带有游戏数据!";
+									User user1 = (User)this.querysql("from User where username="+"'"+user.getUsername()+"'");
+									userid = user1.getUserid();
+								}
 							}
 						}
 					}
@@ -1194,4 +1303,5 @@ public class UserServiceImpl implements UserService {
 		map.put("message", message);
 		map.put("userid", userid);
 	}
+
 }

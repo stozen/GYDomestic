@@ -1,6 +1,7 @@
 package com.gy.services;
 
 import java.util.List;
+import java.util.Map;
 
 import com.gy.model.Order;
 import com.gy.model.User;
@@ -69,4 +70,43 @@ public interface OrderService {
 	 */
 	public Order queryBysql(String sql);
 	
+	/**
+	 * 创建订单功能实现
+	 * @param order
+	 * @param token
+	 * @param map
+	 */
+	public void create(Order order,String token,Map map);
+	
+	/**
+	 * 取消订单功能实现
+	 * @param order
+	 * @param token
+	 * @param map
+	 */
+	public void cancel(Order order,String token,Map map);
+	
+	/**
+	 * 修改订单功能实现
+	 * @param order
+	 * @param token
+	 * @param map
+	 */
+	public void modify(Order order,String token,Map map);
+	
+	/**
+	 * 删除订单功能实现
+	 * @param order
+	 * @param token
+	 * @param map
+	 */
+	public void delete(Order order,String token,Map map);
+	
+	/**
+	 * 查询订单功能实现
+	 * @param order
+	 * @param token
+	 * @param map
+	 */
+	public void query(String orderid,Map map);
 }
