@@ -257,6 +257,7 @@ public class OrderServiceImpl implements OrderService {
 	/**
 	 * 创建订单功能实现
 	 */
+	@SuppressWarnings({ "unused", "unchecked" })
 	@Override
 	public void create(Order order,String token,Map map) {
 		// TODO Auto-generated method stub
@@ -285,68 +286,79 @@ public class OrderServiceImpl implements OrderService {
 			/*3.再获得商品信息*/
 			Set<OrderGoods> ordergoods = order.getOrdergoods();
 			OrderGoods ordergood = new OrderGoods();
-			Iterator it = ordergoods.iterator();
-			while (it.hasNext()) {
-				ordergood = (OrderGoods) it.next();
-				/*ordergood.setOrder(order);*/
-			}
-			
-			Goods goods = new Goods();
-			goods.setGoodsname(ordergood.getTitle());
-			goods.setGoodsnumber(ordergood.getNumber());
-			goods.setGoodsprice(ordergood.getPrice());
-			goods.setGoodstotal(ordergood.getTotalprice());
-			goods.setGoodspicture(ordergood.getPicpath());
-			goods.setUser(user);
-			goodsService.save(goods);
-			
-			System.err.println("创建Ordergoodsservice服务："+orderGoodsService);
-			
-			System.err.println("订单详情："+ordergood);
-			System.err.println(goods.getGoodsname()+goods.getGoodsprice());
-			/*4.最后保存订单信息，用户信息，订单详情信息*/
-			/*order.setUser(order.getUser());*/
-			order.setClosetime(new Date());
-			order.setCreatetime(new Date());
-			order.setEndtime(new Date());
-			order.setOrdergoods(order.getOrdergoods());
-			order.setPayment(order.getPayment());
-			order.setPaytype(order.getPaytype());
-			order.setPaytime(new Date());
-			PrimaryGenerater Serialnumber = PrimaryGenerater.getInstance();
-			int randomcode = RandomCode.getRandNum();
-			String liqud = Serialnumber.generaterNextNumber(String.valueOf(randomcode));
-			order.setSerialnumber(liqud);
-			order.setPaystatus(order.getPaystatus());
-			order.setGames(game);
-			order.setUpdatetime(new Date());
-			
-			ordergood.setGoods(goods);
-			/*5.保存订单详情里面的orderid*/
-			this.create(order);
-			
-			String orderid_sql = "from Order where userid= "+"'"+user.getUserid()+"'"+" and gameid="+"'"+game.getGameid()+"'"+"and serialnumber="+"'"+liqud+"'";
-			Order orderdata = this.queryBysql(orderid_sql);
-			
-			if(orderdata == null)
+			if(ordergoods==null)
 			{
-				status = "0404";
-				message = "创建订单失败，没有创建成功！";
+				status = "0403";
+				message = "订单详情没有，没有填写购物的商品！";
 				orderid = 0;
+				map.put("status", status);
+				map.put("message", message);
+				map.put("orderid", orderid);
 			}
 			else
 			{
-				status = "0200";
-				message = "创建订单成功！";
-				orderid = orderdata.getOrderid();
+				Iterator it = ordergoods.iterator();
+				while (it.hasNext()) {
+					ordergood = (OrderGoods) it.next();
+					/*ordergood.setOrder(order);*/
+				}
 				
-				ordergood.setOrder(orderdata);
-				orderGoodsService.saveorupdate(ordergood);
+				Goods goods = new Goods();
+				goods.setGoodsname(ordergood.getTitle());
+				goods.setGoodsnumber(ordergood.getNumber());
+				goods.setGoodsprice(ordergood.getPrice());
+				goods.setGoodstotal(ordergood.getTotalprice());
+				goods.setGoodspicture(ordergood.getPicpath());
+				goods.setUser(user);
+				goodsService.save(goods);
+				
+				System.err.println("创建Ordergoodsservice服务："+orderGoodsService);
+				
+				System.err.println("订单详情："+ordergood);
+				System.err.println(goods.getGoodsname()+goods.getGoodsprice());
+				/*4.最后保存订单信息，用户信息，订单详情信息*/
+				/*order.setUser(order.getUser());*/
+				order.setClosetime(new Date());
+				order.setCreatetime(new Date());
+				order.setEndtime(new Date());
+				order.setOrdergoods(order.getOrdergoods());
+				order.setPayment(order.getPayment());
+				order.setPaytype(order.getPaytype());
+				order.setPaytime(new Date());
+				PrimaryGenerater Serialnumber = PrimaryGenerater.getInstance();
+				String liqud = Serialnumber.generaterNextNumber();
+				order.setSerialnumber(liqud);
+				order.setPaystatus(order.getPaystatus());
+				order.setGames(game);
+				order.setUpdatetime(new Date());
+				
+				ordergood.setGoods(goods);
+				/*5.保存订单详情里面的orderid*/
+				this.create(order);
+				
+				String orderid_sql = "from Order where userid= "+"'"+user.getUserid()+"'"+" and gameid="+"'"+game.getGameid()+"'"+"and serialnumber="+"'"+liqud+"'";
+				Order orderdata = this.queryBysql(orderid_sql);
+				
+				if(orderdata == null)
+				{
+					status = "0404";
+					message = "创建订单失败，没有创建成功！";
+					orderid = 0;
+				}
+				else
+				{
+					status = "0200";
+					message = "创建订单成功！";
+					orderid = orderdata.getOrderid();
+					
+					ordergood.setOrder(orderdata);
+					orderGoodsService.saveorupdate(ordergood);
+				}
+				map.put("status", status);
+				map.put("message", message);
+				map.put("orderid", orderid);
+				map.put("serialnumber",liqud);
 			}
-			map.put("status", status);
-			map.put("message", message);
-			map.put("orderid", orderid);
-			map.put("serialnumber",liqud);
 		}
 	}
 	
@@ -404,8 +416,8 @@ public class OrderServiceImpl implements OrderService {
 			order.setPaytype(order.getPaytype());
 			order.setPaytime(new Date());
 			PrimaryGenerater Serialnumber = PrimaryGenerater.getInstance();
-			int randomcode = RandomCode.getRandNum();
-			String liqud = Serialnumber.generaterNextNumber(String.valueOf(randomcode));
+			
+			String liqud = Serialnumber.generaterNextNumber();
 			order.setSerialnumber(liqud);
 			/*paytype:1代表paypal支付2代表googlepay支付 paystatus:1未付款2已付款3交易成功4取消订单*/
 			order.setPaystatus(4);
@@ -415,24 +427,34 @@ public class OrderServiceImpl implements OrderService {
 			/*5.保存订单详情里面的orderid*/
 			this.create(order);
 			
-			String orderid_sql = "from Order where userid= "+"'"+user.getUserid()+"'"+" and gameid="+"'"+game.getGameid()+"'"+"and serialnumber="+"'"+liqud+"'";
-			Order orderdata = this.queryBysql(orderid_sql);
-			
-			
-			if(orderdata == null)
+			Order orderdata = null;
+			if(game==null)
 			{
-				status = "0404";
-				message = "取消订单失败，没有取消成功！";
+				status = "0403";
+				message = "游戏资源不存在！";
 				orderid = 0;
 			}
 			else
 			{
-				status = "0200";
-				message = "取消订单成功！";
-				orderid = orderdata.getOrderid();
+				String orderid_sql = "from Order where userid= "+"'"+user.getUserid()+"'"+" and gameid="+"'"+game.getGameid()+"'"+"and serialnumber="+"'"+liqud+"'";
+				orderdata = this.queryBysql(orderid_sql);
 				
-				ordergood.setOrder(orderdata);
-				orderGoodsService.saveorupdate(ordergood);
+				if(orderdata == null)
+				{
+					status = "0404";
+					message = "取消订单失败，没有取消成功！";
+					orderid = 0;
+				}
+				else
+				{
+					status = "0200";
+					message = "取消订单成功！";
+					orderid = orderdata.getOrderid();
+					
+					ordergood.setOrder(orderdata);
+					orderGoodsService.saveorupdate(ordergood);
+				}
+				
 			}
 			
 			map.put("status", status);
@@ -495,7 +517,7 @@ public class OrderServiceImpl implements OrderService {
 			order.setPaytime(new Date());
 			PrimaryGenerater Serialnumber = PrimaryGenerater.getInstance();
 			int randomcode = RandomCode.getRandNum();
-			String liqud = Serialnumber.generaterNextNumber(String.valueOf(randomcode));
+			String liqud = Serialnumber.generaterNextNumber();
 			order.setSerialnumber(liqud);
 			order.setPaystatus(order.getPaystatus());
 			order.setUpdatetime(new Date());

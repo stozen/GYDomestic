@@ -151,7 +151,7 @@ public class Order implements Serializable {
 	 * @return
 	 */
 	@Id
-	@Column(name="orderid",length=12,nullable=false)
+	@Column(name="orderid",length=50,nullable=false)
 	@GenericGenerator(name="generator",strategy="native")
 	@GeneratedValue(generator="generator")
 	public int getOrderid() {

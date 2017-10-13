@@ -8,58 +8,19 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.gy.services.OrderService;
-import com.paypal.api.payments.CreditCard;
-import com.paypal.base.rest.APIContext;
-import com.paypal.base.rest.PayPalRESTException;
 
-/**
- * @author Administrator
- * @date 2017.9.11
- */
-@Controller
-@RequestMapping(value="/paypal")
-public class PayPal {
-
-	/**
-	 * 实现自动注入
-	 */
-	@Autowired
-	private OrderService orderService;
-	
-	/**
-	 * 生成orderService的get方法
-	 * @return
-	 */
-	public OrderService getOrderService() {
-		return orderService;
-	}
-
-	/**
-	 * 生成orderService的set方法
-	 * @param orderService
-	 */
-	public void setOrderService(OrderService orderService) {
-		this.orderService = orderService;
-	}
-	
+public class WeixinPay {
 	/**
 	 * 创建返回给客户端的状态信息
 	 */

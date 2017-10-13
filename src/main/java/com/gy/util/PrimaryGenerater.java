@@ -10,7 +10,7 @@ public class PrimaryGenerater {
 	private static PrimaryGenerater primaryGenerater = null;
 
 	public PrimaryGenerater() {
-		
+		generaterNextNumber();
 	}
 
 	/**
@@ -32,7 +32,11 @@ public class PrimaryGenerater {
 	/**
 	 * 生成下一个编号
 	 */
-	public synchronized String generaterNextNumber(String sno) {
+	public synchronized String generaterNextNumber() {
+		
+		int randomcode = RandomCode.getRandNum();
+		String sno = String.valueOf(randomcode);
+		
 		String id = null;
 		Date date = new Date();
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
@@ -48,11 +52,8 @@ public class PrimaryGenerater {
 			id = formatter.format(date)
 					+ df.format(1 + Integer.parseInt(sno.substring(0, 8)));
 		}
+		System.err.println(id);
 		return id;
 	}
-	
-	public static void main(String[] args) {
-		PrimaryGenerater generater = new PrimaryGenerater();
-		generater.generaterNextNumber("1234562455458754");
-	}
+
 }

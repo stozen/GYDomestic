@@ -199,8 +199,8 @@ public class UserServiceImpl implements UserService {
 								games = user.getGames();
 								if(games.size()<=0)
 								{
-									status = "0403";
-									message = "传入的游戏为空！";
+									status = "0200";
+									message = "普通用户名模式登录成功,但是传入的游戏为空！";
 									userid = userdata.getUserid();
 								}
 								else
@@ -283,8 +283,8 @@ public class UserServiceImpl implements UserService {
 								games = user.getGames();
 								if(games.size()<=0)
 								{
-									status = "0403";
-									message = "传入的游戏为空！";
+									status = "0200";
+									message = "普通邮箱模式登录成功,但是传入的游戏为空！";
 									userid = userdata.getUserid();
 								}
 								else
@@ -369,8 +369,8 @@ public class UserServiceImpl implements UserService {
 								games = user.getGames();
 								if(games.size()<=0)
 								{
-									status = "0403";
-									message = "传入的游戏为空！";
+									status = "0200";
+									message = "普通手机模式登录成功，但是传入的游戏为空！";
 									userid = userdata.getUserid();
 								}
 								else
@@ -501,8 +501,8 @@ public class UserServiceImpl implements UserService {
 							
 							if(games.size()<=0)
 							{
-								status = "0403";
-								message = "传入的游戏为空！";
+								status = "0200";
+								message = "登录成功,但是传入的游戏为空！";
 								userid = udata.getUserid();
 							}
 							else
@@ -551,8 +551,8 @@ public class UserServiceImpl implements UserService {
 								
 								if(games.size()<=0)
 								{
-									status = "0403";
-									message = "传入的游戏为空！";
+									status = "0200";
+									message = "登录成功,但是传入的游戏为空！";
 									userid = accountdata.getUser().getUserid();
 								}
 								else
@@ -665,8 +665,8 @@ public class UserServiceImpl implements UserService {
 							
 							if(games.size()<=0)
 							{
-								status = "0403";
-								message = "传入的游戏为空！";
+								status = "0200";
+								message = "登录成功,但是传入的游戏为空！";
 								userid = accountdatanew1.getUser().getUserid();
 							}
 							else
@@ -715,7 +715,9 @@ public class UserServiceImpl implements UserService {
 								
 								if(games.size()<=0)
 								{
-									System.err.println("登录时不保存游戏，游戏数据为空！");
+									status = "0200";
+									message = "登录成功,但是传入的游戏为空！";
+									userid = accountdata1.getUser().getUserid();
 								}
 								else
 								{
@@ -823,8 +825,8 @@ public class UserServiceImpl implements UserService {
 							games = user.getGames();
 							if(games.size()<=0)
 							{
-								status = "0403";
-								message = "传入的游戏为空！";
+								status = "0200";
+								message = "登录成功，但是传入的游戏为空！";
 								userid = accountdatanew2.getUser().getUserid();
 							}
 							else
@@ -872,7 +874,9 @@ public class UserServiceImpl implements UserService {
 								
 								if(games.size()<=0)
 								{
-									System.err.println("登录时不保存游戏，游戏数据为空！");
+									status = "0200";
+									message = "登录成功，但是传入的游戏为空！";
+									userid = accountdata2.getUser().getUserid();
 								}
 								else
 								{
@@ -926,6 +930,7 @@ public class UserServiceImpl implements UserService {
 	/**
 	 * 实现注册功能
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void register(Map map) {
 		// TODO Auto-generated method stub
@@ -1293,6 +1298,12 @@ public class UserServiceImpl implements UserService {
 						userid = userdata.getUserid();
 					}
 				}
+			}
+			else
+			{
+				status = "0404";
+				message = "不存在这个账户，请重新输入！";
+				userid = 0;
 			}
 		}
 		

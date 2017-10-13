@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -76,17 +77,17 @@ public class GooglePlay {
 	}
 
 	@RequestMapping(value="/checkorder",method=RequestMethod.POST)
-	public @ResponseBody Map<String, Object> checkOrder(@RequestBody Map map) {
+	public @ResponseBody Map<String, Object> checkOrder(@RequestBody Map map,@RequestHeader String token) {
 		// TODO Auto-generated method stub
 		String packageName = (String) map.get("packageName");
 		String subscriptionId = (String) map.get("subscriptionId");
-		String token = (String) map.get("token");
+		String accessToken = (String) map.get("accessToken");
 		
 		/*String packageName = "com.youda.android.demo";
 		String subscriptionId = "com.youda.product0001";
 		String token = "cecgnionbjnlccillajbiggo.AO-J1Ox4ADyvYEdSkcUQxhhRZjePVu1weX7CoQHGW_2f3qWaft-QQAUFPXa_iL-0VZLTMrnyaCgQMppwmrTi_n7AT-bwsIt_8kdpn-uQm_dutXr6eLr1GWVKiwO1hmhmuWN9hMK8a2jf";*/
 	
-		final String ADD_URL = "https://www.googleapis.com/androidpublisher/v2/applications/"+"'"+packageName+"'"+"/purchases/subscriptions/"+"'"+subscriptionId+"'"+"/tokens/"+"'"+token+"'";
+		final String ADD_URL = "https://www.googleapis.com/androidpublisher/v2/applications/"+packageName+"/purchases/subscriptions/"+subscriptionId+"/tokens/"+accessToken;
 		
 		/*final String ADD_URL = "https://hao.360.cn/";*/
 		
@@ -170,7 +171,7 @@ public class GooglePlay {
 		map.remove("packageName");
 		map.remove("subscriptionId");
 		map.remove("token");
-		
+		map.remove("accessToken");
 		return map;
 	}
 	

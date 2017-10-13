@@ -20,7 +20,7 @@ public class PrimaryGeneraterTest {
 	      no = generater.generaterNextNumber(no);
 	      System.out.println(no);
 	    }*/
-		System.err.println(generater.generaterNextNumber(no));
+		System.err.println(generater.generaterNextNumber());
 	}
 
 }
