@@ -49,11 +49,6 @@ public class DomesticMessage {
 	private final static String PWD = "abc85410d238d4b5bae2ea3830e3d787";
 	
 	/**
-	 * 声明合法的手机号码
-	 */
-	/*private static String phone = "15900627595";*/
-	
-	/**
 	 * 声明国家代号
 	 */
 	private final static String MID = "14341";
