@@ -943,11 +943,16 @@ public class UserServiceImpl implements UserService {
 		String password = ((String)map.get("password")).trim();
 		String type = ((String)map.get("type")).trim();
 		String valicode = ((String)map.get("valicode")).trim();
-		
 		/*//获得国内验证码
 		String valicodeServer = DomesticMessage.getVerificationCode();*/
 		//获得国际验证码
 		String valicodeServer = ForeignMessage.getVerificationCode();
+		
+		
+		/*//获得国内验证码
+		String valicodeServer = DomesticMessage.getVerificationCode();*/
+		//获得国际验证码
+		/*String valicodeServer = ForeignMessage.getVerificationCode();*/
 		
 		if(valicode.equals("") || "".equals(valicode))
 		{
@@ -1186,6 +1191,12 @@ public class UserServiceImpl implements UserService {
 		String mobile = ((String)map.get("mobile")).trim();
 		String valicode = ((String)map.get("valicode")).trim();
 		
+		/*//获得国内验证码
+		String valicodeServer = DomesticMessage.getVerificationCode();*/
+		//获得国际验证码
+		String valicodeServer = ForeignMessage.getVerificationCode();
+		
+		
 		/*1.先根据用户提供的手机号，查询数据库中是否存在这个用户如果存在则返回为真*/
 		/*1.1 先判断用户输入的内容不能为空 */
 		String sql = "from User u where u.mobile="+"'"+mobile+"'";
@@ -1198,7 +1209,7 @@ public class UserServiceImpl implements UserService {
 		}
 		else
 		{
-			if(valicode.equals("123456"))
+			if(valicode.equals(valicodeServer))
 			{
 				boolean judge = (mobile.equals("") || "".equals(mobile));
 				if(judge)
