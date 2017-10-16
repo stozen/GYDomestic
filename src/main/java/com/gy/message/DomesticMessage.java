@@ -4,10 +4,22 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /*import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.NameValuePair;
@@ -22,38 +34,62 @@ import com.alibaba.fastjson.JSONObject;
  * @introduce 这是国内短信平台
  */
 
+@Controller
+@RequestMapping(value="/getDomesticCode")
 public class DomesticMessage {
 	
 	/**
 	 * 声明用户账号UTF-8格式
 	 */
-	private final static String USER = "13402040612";
+	private static String USER = "13402040612";
 	
 	/**
 	 * 声明用户密码
 	 */
-	private static final String PWD = "yd123456";
+	private final static String PWD = "abc85410d238d4b5bae2ea3830e3d787";
 	
 	/**
 	 * 声明合法的手机号码
 	 */
-	private String phone;
+	/*private static String phone = "15900627595";*/
 	
 	/**
 	 * 声明国家代号
 	 */
-	private static final String MID = "86";
+	private final static String MID = "14341";
 	
 	/**
-	 * 声明请求的地址
+	 * 声明随机验证码
 	 */
-	private final static String SEND_URL = "http://dy.renxinl.com:8443/wtemplatesend.do";
+	static String VerificationCode = String.valueOf(MessageCode.getRandNum());
 	
-	public DomesticMessage() {
-		// TODO Auto-generated constructor stub
+	/**
+	 * 声明返回生成的验证码
+	 * @return
+	 */
+	public static String getVerificationCode() {
+		return VerificationCode;
 	}
+
+	/**
+	 * 声明生成的验证码
+	 * @param validateCode
+	 */
+	public static void setVerificationCode(String VerificationCode) {
+		DomesticMessage.VerificationCode = VerificationCode;
+	}
+
 	
-	public static void sentMessageCode() {
+	/*http://apis.renxinl.com:8080/smsgate/varsend.do?user=13402040612&pwd=abc85410d238d4b5bae2ea3830e3d787&params=15900785383,【YCGAME】1234&mid=14337*/	
+	
+	@RequestMapping(value="/send",method=RequestMethod.GET)
+	public static @ResponseBody Map<String, Object> sentMessageCode(@RequestParam String phone) {
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		/**
+		 * 声明请求的地址
+		 */
+		String SEND_URL = "http://apis.renxinl.com:8080/smsgate/varsend.do?"+"user="+USER+"&"+"pwd="+PWD+"&"+"params="+phone+","+VerificationCode+"&"+"mid="+MID;
 		// TODO Auto-generated method stub
 		try {
 	        //创建连接
@@ -93,8 +129,20 @@ public class DomesticMessage {
 	            sb.append(lines);
 	            /*map.put("data", sb);*/
 	            String capture = new String(sb);
-	            JSONObject paydata = JSONObject.parseObject(capture);
-	            String state = (String) paydata.get("state");
+	            JSONObject codeData = JSONObject.parseObject(capture);
+	            String code = (String) codeData.get("code");
+	            if(code.equals("0000"))
+	            {
+	            	map.put("status", "0200");
+	            	map.put("message", "验证码发送成功!");
+	            	map.put("detail", codeData);
+	            }
+	            else
+	            {
+	            	map.put("status", "0404");
+	            	map.put("message", "验证码发送失败!");
+	            	map.put("detail", codeData);
+	            }
 	            System.err.println(capture);
 	        }
 	        reader.close();
@@ -110,9 +158,7 @@ public class DomesticMessage {
 	        // TODO Auto-generated catch block
 	        e3.printStackTrace();
 	    }
+		return map;
 	}
 	
-	public static void main(String[] args) {
-		sentMessageCode();
-	}
 }

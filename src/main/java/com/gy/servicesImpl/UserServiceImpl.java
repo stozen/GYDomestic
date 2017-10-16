@@ -17,6 +17,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.asm.Type;
 import com.gy.dao.UserDao;
+import com.gy.message.DomesticMessage;
+import com.gy.message.ForeignMessage;
+import com.gy.message.MessageCode;
 import com.gy.model.Account;
 import com.gy.model.Game;
 import com.gy.model.Order;
@@ -941,6 +944,11 @@ public class UserServiceImpl implements UserService {
 		String type = ((String)map.get("type")).trim();
 		String valicode = ((String)map.get("valicode")).trim();
 		
+		/*//获得国内验证码
+		String valicodeServer = DomesticMessage.getVerificationCode();*/
+		//获得国际验证码
+		String valicodeServer = ForeignMessage.getVerificationCode();
+		
 		if(valicode.equals("") || "".equals(valicode))
 		{
 			status = "0403";
@@ -949,7 +957,7 @@ public class UserServiceImpl implements UserService {
 		}
 		else
 		{
-			if(valicode.equals("123456"))
+			if(valicode.equals(valicodeServer))
 			{
 				/*2.先判断数据库中是否存在这个用户*/
 				/*String sql = "from User u where u.username=" + "'" + username + "'"+"or u.mobile="+"'"+mobile+"'"+"or u.email="+"'"+email+"'";
