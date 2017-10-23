@@ -21,7 +21,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/alipay-sdk-java20170829142630.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/alipay-sdk-java20170307171631.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/commons-logging-1.1.1.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

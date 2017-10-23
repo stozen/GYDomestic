@@ -97,11 +97,10 @@ public class AliPay {
 	@RequestMapping(value="/pay",method=RequestMethod.POST)
 	public @ResponseBody Map<String, Object> checkOrder(@RequestBody Map map,@RequestHeader String token) {
 		// TODO Auto-generated method stub
+		/*商户网站唯一订单号*/
 		String out_trade_no = ((String) map.get("orderid")).trim();
-	
 		/*查询订单详情里面是否有这个订单*/
 		OrderGoods orderGoods = orderGoodsService.query(Integer.parseInt(out_trade_no));
-		
 		if(orderGoods == null)
 		{
 			map.put("status", "0404");
@@ -111,15 +110,9 @@ public class AliPay {
 		else
 		{
 			/*商品的标题/交易标题/订单标题/订单关键字等*/
-			String subject = orderGoods.getTitle();
-			/*转换商品单价小数点为两位*/
-			String price = orderGoods.getPrice().toString();
-			/*订单总金额，单位为元，精确到小数点后两位，取值范围[0.01,100000000]*/
-			String total_amount = String.valueOf(Float.parseFloat(price));
-			/*商品的标题/交易标题/订单标题/订单关键字等
 			String subject = ((String)orderGoods.getTitle()).trim();
-			订单总金额，单位为元，精确到小数点后两位，取值范围[0.01,100000000]
-			String total_amount = (orderGoods.getPrice().toString()).trim();*/
+			/*订单总金额，单位为元，精确到小数点后两位，取值范围[0.01,100000000]*/
+			String total_amount = (orderGoods.getPrice().toString()).trim();
 			/*销售产品码，商家和支付宝签约的产品码。该产品请填写固定值：QUICK_WAP_WAY*/
 			String product_code = "QUICK_WAP_WAY";
 
@@ -151,7 +144,7 @@ public class AliPay {
 			        if(response.getBody()!=null)
 			        {
 			        	status = "0200";
-			        	message = "创建支付成功！";
+			        	message = "支付成功！";
 			        	map.put("status", status);
 			        	map.put("paydata", response.getBody());
 			        	map.put("message", message);
@@ -159,7 +152,7 @@ public class AliPay {
 			        else
 			        {
 			        	status = "0404";
-			        	message = "创建支付失败！";
+			        	message = "支付失败！";
 			        	map.put("status", status);
 			        	map.put("paydata", null);
 			        	map.put("message", message);
