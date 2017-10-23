@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,6 +39,7 @@ import com.gy.util.RandomCode;
  * @date 2017.9.13
  */
 @Controller
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping(value="/order")
 public class OrderControl {
 	

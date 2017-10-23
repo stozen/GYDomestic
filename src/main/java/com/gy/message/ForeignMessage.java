@@ -53,13 +53,13 @@ public class ForeignMessage {
 	/**
 	 * 声明随机验证码
 	 */
-	private static String VerificationCode = String.valueOf(MessageCode.getRandNum());
+	private String VerificationCode = String.valueOf(MessageCode.getRandNum());
 	
 	/**
 	 * 声明返回生成的验证码
 	 * @return
 	 */
-	public static String getVerificationCode() {
+	public String getVerificationCode() {
 		return VerificationCode;
 	}
 
@@ -67,17 +67,18 @@ public class ForeignMessage {
 	 * 声明生成的验证码
 	 * @param validateCode
 	 */
-	public static void setVerificationCode(String VerificationCode) {
-		DomesticMessage.VerificationCode = VerificationCode;
+	public void setVerificationCode(String verificationCode) {
+		VerificationCode = verificationCode;
 	}
 
 	
 	/*http://apis.renxinl.com:8080/smsgate/varsend.do?user=13402040612&pwd=abc85410d238d4b5bae2ea3830e3d787&params=15900785383,【YCGAME】1234&mid=14337*/	
 	
 	@RequestMapping(value="/send",method=RequestMethod.GET)
-	public static @ResponseBody Map<String, Object> sentMessageCode(@RequestParam String countryCode,@RequestParam String phone) {
+	public @ResponseBody Map<String, Object> sentMessageCode(@RequestParam String countryCode,@RequestParam String phone) {
 		
 		Map<String, Object> map = new HashMap<String, Object>();
+		System.err.println("生成验证码:"+VerificationCode);
 		/**
 		 * 声明请求的地址
 		 */

@@ -32,7 +32,7 @@ import org.hibernate.annotations.GenericGenerator;
  *
  */
 @Entity
-@Table(name="tb_gygoods",catalog="db_gyforeign")
+@Table(name="tb_gygoods",catalog="db_gydomestic")
 public class Goods {
 
 	/**

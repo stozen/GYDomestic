@@ -26,7 +26,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name="tb_gygame",catalog="db_gyforeign")
+@Table(name="tb_gygame",catalog="db_gydomestic")
 public class Game implements Serializable {
 
 	/**
@@ -48,6 +48,11 @@ public class Game implements Serializable {
 	 * 创建游戏包名
 	 */
 	private String gamepackage;
+	
+	/**
+	 * 创建游戏渠道
+	 */
+	private String gameChannels;
 	
 	/**
 	 * 创建用户对应关系
@@ -76,7 +81,7 @@ public class Game implements Serializable {
 	 * @param order
 	 */
 	public Game(int gameid, String gamename, String remark, String gamepackage,
-			User user ,Set<Order> order) {
+			User user ,Set<Order> order,String gameChannels) {
 		super();
 		this.gameid = gameid;
 		this.gamename = gamename;
@@ -84,6 +89,7 @@ public class Game implements Serializable {
 		this.gamepackage = gamepackage;
 		this.user = user;
 		this.order = order;
+		this.gameChannels = gameChannels;
 	}
 
 	@Id
@@ -124,6 +130,15 @@ public class Game implements Serializable {
 	public void setGamepackage(String gamepackage) {
 		this.gamepackage = gamepackage;
 	}
+	
+	@Column(name="gameChannels",length=100,nullable=true)
+	public String getGameChannels() {
+		return gameChannels;
+	}
+	
+	public void setGameChannels(String gameChannels) {
+		this.gameChannels = gameChannels;
+	}
 
 	/*@ManyToOne(cascade=CascadeType.ALL,optional=false,fetch=FetchType.EAGER)
 	@JoinColumn(name="userid",referencedColumnName="userid")*/
@@ -161,6 +176,8 @@ public class Game implements Serializable {
 	public String toString() {
 		return "Game [gameid=" + gameid + ", gamename=" + gamename
 				+ ", remark=" + remark + ", gamepackage=" + gamepackage
-				+ ", user=" + user + ", order=" + order + "]";
+				+ ", gameChannels=" + gameChannels + ", user=" + user
+				+ ", order=" + order + "]";
 	}
+
 }

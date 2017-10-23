@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.lang.math.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,9 +26,11 @@ import com.gy.model.Account;
 import com.gy.model.Game;
 import com.gy.model.Order;
 import com.gy.model.User;
+import com.gy.model.VerificationCode;
 import com.gy.services.AccountService;
 import com.gy.services.GameService;
 import com.gy.services.UserService;
+import com.gy.services.VerificationCodeService;
 import com.gy.util.JwtUtil;
 import com.gy.util.RandomCode;
 import com.gy.util.SplitString;
@@ -53,6 +57,20 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private GameService gameService;
 	
+	private VerificationCode verificationCode;
+	
+	@Autowired
+	private VerificationCodeService verificationCodeService;
+	
+	public VerificationCodeService getVerificationCodeService() {
+		return verificationCodeService;
+	}
+
+	public void setVerificationCodeService(
+			VerificationCodeService verificationCodeService) {
+		this.verificationCodeService = verificationCodeService;
+	}
+
 	/**
 	 * 在自动注入的时候，需要生成set和get方法
 	 * @return
@@ -943,215 +961,247 @@ public class UserServiceImpl implements UserService {
 		String password = ((String)map.get("password")).trim();
 		String type = ((String)map.get("type")).trim();
 		String valicode = ((String)map.get("valicode")).trim();
+		String phone = ((String)map.get("mobile"));
 		
-		/*//获得国内验证码
-		String valicodeServer = DomesticMessage.getVerificationCode();*/
+		/*System.err.println("服务器获得验证码:"+valicodeServer);*/
 		//获得国际验证码
-		String valicodeServer = ForeignMessage.getVerificationCode();
+		/*String valicodeServer = ForeignMessage.getVerificationCode();*/
+		verificationCode = new VerificationCode();
+		verificationCode = verificationCodeService.querysql("from VerificationCode vc where vc.mobile ="+"'"+phone+"'"+"and vc.verificationCode="+"'"+valicode+"'");
 		
-		if(valicode.equals("") || "".equals(valicode))
+		if(verificationCode == null)
 		{
-			status = "0403";
-			message = "验证码输入为空值！";
-			userid = 0;
+			status = "0404";
+			message = "手机或者输入的验证在数据库中查找不到！";
+			map.put("status", status);
+			map.put("message", message);
+			map.put("userid", "0");
 		}
 		else
 		{
-			if(valicode.equals(valicodeServer))
+			Date endTime = new Date();
+			Date createTime = verificationCode.getCreateTime();
+			long diff = endTime.getTime()-createTime.getTime();
+			long day=diff/(24*60*60*1000);
+			long hour=(diff/(60*60*1000)-day*24);
+			long min=((diff/(60*1000))-day*24*60-hour*60);
+			System.err.println("分钟:"+min);
+			if(min>30)
 			{
-				/*2.先判断数据库中是否存在这个用户*/
-				/*String sql = "from User u where u.username=" + "'" + username + "'"+"or u.mobile="+"'"+mobile+"'"+"or u.email="+"'"+email+"'";
-				User userdata = userService.querysql(sql);*/
-				
-				switch (type) {
-				case "1":
-					String username = ((String)map.get("username")).trim();
-					if(!(username.equals("") || "".equals(username)) && !(password.equals("") || "".equals(password)))
-					{
-						String namesql = "from User u where u.username=" + "'" + username+"'"+"and u.password="+"'"+password+"'";
-						User userdata = this.querysql(namesql);
-						if(userdata!=null)
-						{
-							status = "0202";
-							message = "该用户已经注册了，请重新填写！";
-							userid = userdata.getUserid();
-							map.remove("useid");
-						}
-						else
-						{
-							/*4.如果数据库中不存在那么进行注册*/
-							User user = new User();
-							/*user.setEmail(email);*/
-							user.setRegisttime(new Date());
-							user.setType(type);
-							user.setEmail("");
-							user.setMobile("");
-							user.setUsername(username);
-							user.setPassword(password);
-							
-							Game game = SplitString.getGame(map);
-							if(game==null)
-							{
-								status = "0403";
-								message = "游戏数据为空";
-								userid = 0;
-								if(this.save(user)){
-									status = "0200";
-									message = "用户名注册成功,但是没有游戏数据!";
-									User user1 = (User)this.querysql("from User where username="+"'"+user.getUsername()+"'");
-									userid = user1.getUserid();
-								}
-							}
-							else
-							{
-								Set<Game> gameset = new HashSet<Game>();
-								gameset.add(game);
-								user.setGames(gameset);
-								if(this.save(user)){
-									status = "0200";
-									message = "用户名注册成功,带有游戏数据!";
-									User user1 = (User)this.querysql("from User where username="+"'"+user.getUsername()+"'");
-									userid = user1.getUserid();
-									/*2.生成Token给客户端*/
-									/*subject = JwtUtil.generalSubject(user1);
-									token = jwt.createJWT(Constant.JWT_ID, subject, Constant.JWT_TTL);
-									2.注册成功需要把相应的token值存储到token表中
-									map.put("token", token);*/
-								}
-							}
-						}
-					}
-					else 
-					{
-						status = "0403";
-						message = "用户输入的用户名或者密码为空！";
-						userid = 0;
-					}
-					break;
-				case "2":
-					String email = ((String)map.get("email")).trim();
-					if(!(email.equals("") || "".equals(email)) && !(password.equals("") || "".equals(password)))
-					{
-						String namesql = "from User u where u.email=" + "'" +email+"'"+"and u.password="+"'"+password+"'";
-						User userdata = this.querysql(namesql);
-						if(userdata!=null)
-						{
-							status = "0202";
-							message = "该用户已经注册了，请重新填写！";
-							userid = userdata.getUserid();
-						}
-						else
-						{
-							/*4.如果数据库中不存在那么进行注册*/
-							User user = new User();
-							/*user.setEmail(email);*/
-							user.setRegisttime(new Date());
-							user.setType(type);
-							user.setEmail(email);
-							user.setUsername("");
-							user.setMobile("");
-							user.setPassword(password);
-							Game game = SplitString.getGame(map);
-							if(game==null)
-							{
-								status = "0403";
-								message = "游戏数据为空";
-								userid = 0;
-								if(this.save(user)){
-									status = "0200";
-									message = "邮箱注册成功,但是没有游戏数据!";
-									User user1 = (User)this.querysql("from User where username="+"'"+user.getUsername()+"'");
-									userid = user1.getUserid();
-								}
-							}
-							else
-							{
-								Set<Game> gameset = new HashSet<Game>();
-								gameset.add(game);
-								user.setGames(gameset);
-								if(this.save(user)){
-									status = "0200";
-									message = "邮箱注册成功，带有游戏数据!";
-									User user1 = (User)this.querysql("from User where username="+"'"+user.getUsername()+"'");
-									userid = user1.getUserid();
-								}
-							}
-						}
-					}
-					else 
-					{
-						status = "0403";
-						message = "用户输入的邮箱或者密码为空！";
-						userid = 0;
-					}
-					break;
-				case "3":
-					String mobile = ((String)map.get("mobile")).trim();
-					if(!(mobile.equals("") || "".equals(mobile)) && !(password.equals("") || "".equals(password)))
-					{
-						String namesql = "from User u where u.mobile=" + "'"+mobile+"'"+"and u.password="+"'"+password+"'";
-						User userdata = this.querysql(namesql);
-						if(userdata!=null)
-						{
-							status = "0202";
-							message = "该用户已经注册了，请重新填写！";
-							userid = userdata.getUserid();
-						}
-						else
-						{
-							/*4.如果数据库中不存在那么进行注册*/
-							User user = new User();
-							/*user.setEmail(email);*/
-							user.setRegisttime(new Date());
-							user.setType(type);
-							user.setMobile(mobile);
-							user.setEmail("");
-							user.setUsername("");
-							user.setPassword(password);
-							
-							Game game = SplitString.getGame(map);
-							
-							if(game==null)
-							{
-								status = "0403";
-								message = "游戏数据为空";
-								userid = 0;
-								if(this.save(user)){
-									status = "0200";
-									message = "手机注册成功,但是没有游戏数据!";
-									User user1 = (User)this.querysql("from User where username="+"'"+user.getUsername()+"'");
-									userid = user1.getUserid();
-								}
-							}
-							else
-							{
-								Set<Game> gameset = new HashSet<Game>();
-								gameset.add(game);
-								user.setGames(gameset);
-								
-								if(this.save(user)){
-									status = "0200";
-									message = "手机注册成功，带有游戏数据!";
-									User user1 = (User)this.querysql("from User where username="+"'"+user.getUsername()+"'");
-									userid = user1.getUserid();
-								}
-							}
-						}
-					}
-					else 
-					{
-						status = "0403";
-						message = "用户输入的电话或者密码为空！";
-						userid = 0;
-					}
-					break;
-				}
+				status = "0403";
+				message = "输入验证码时间已经超过一分钟，请重新生成验证码！";
+				userid = 0;
+				verificationCodeService.delete(verificationCode.getVerificationCodeId());
 			}
 			else
 			{
-				status = "0402";
-				message = "验证码填写错误！";
-				userid = 0;
+				//获得国内验证码
+				String valicodeServer = verificationCode.getVerificationCode();
+				if(valicode.equals("") || "".equals(valicode))
+				{
+					status = "0403";
+					message = "验证码输入为空值！";
+					userid = 0;
+				}
+				else
+				{
+					if(valicode.equals(valicodeServer))
+					{
+						/*2.先判断数据库中是否存在这个用户*/
+						/*String sql = "from User u where u.username=" + "'" + username + "'"+"or u.mobile="+"'"+mobile+"'"+"or u.email="+"'"+email+"'";
+						User userdata = userService.querysql(sql);*/
+						
+						switch (type) {
+						case "1":
+							String username = ((String)map.get("mobile")).trim();
+							if(!(username.equals("") || "".equals(username)) && !(password.equals("") || "".equals(password)))
+							{
+								String namesql = "from User u where u.username=" + "'" + username+"'";
+								User userdata = this.querysql(namesql);
+								if(userdata!=null)
+								{
+									status = "0202";
+									message = "该用户已经注册了，请重新填写！";
+									userid = userdata.getUserid();
+									map.remove("useid");
+								}
+								else
+								{
+									/*4.如果数据库中不存在那么进行注册*/
+									User user = new User();
+									/*user.setEmail(email);*/
+									user.setRegisttime(new Date());
+									user.setType(type);
+									user.setEmail("");
+									user.setMobile("");
+									user.setUsername(username);
+									user.setPassword(password);
+									
+									Game game = SplitString.getGame(map);
+									if(game==null)
+									{
+										status = "0403";
+										message = "游戏数据为空";
+										userid = 0;
+										if(this.save(user)){
+											status = "0200";
+											message = "用户名注册成功,但是没有游戏数据!";
+											User user1 = (User)this.querysql("from User where username="+"'"+user.getUsername()+"'");
+											userid = user1.getUserid();
+										}
+									}
+									else
+									{
+										Set<Game> gameset = new HashSet<Game>();
+										gameset.add(game);
+										user.setGames(gameset);
+										if(this.save(user)){
+											status = "0200";
+											message = "用户名注册成功,带有游戏数据!";
+											User user1 = (User)this.querysql("from User where username="+"'"+user.getUsername()+"'");
+											userid = user1.getUserid();
+											/*2.生成Token给客户端*/
+											/*subject = JwtUtil.generalSubject(user1);
+											token = jwt.createJWT(Constant.JWT_ID, subject, Constant.JWT_TTL);
+											2.注册成功需要把相应的token值存储到token表中
+											map.put("token", token);*/
+										}
+									}
+								}
+							}
+							else 
+							{
+								status = "0403";
+								message = "用户输入的用户名或者密码为空！";
+								userid = 0;
+							}
+							break;
+						case "2":
+							String email = ((String)map.get("email")).trim();
+							if(!(email.equals("") || "".equals(email)) && !(password.equals("") || "".equals(password)))
+							{
+								String namesql = "from User u where u.email=" + "'" +email+"'";
+								User userdata = this.querysql(namesql);
+								if(userdata!=null)
+								{
+									status = "0202";
+									message = "该用户已经注册了，请重新填写！";
+									userid = userdata.getUserid();
+								}
+								else
+								{
+									/*4.如果数据库中不存在那么进行注册*/
+									User user = new User();
+									/*user.setEmail(email);*/
+									user.setRegisttime(new Date());
+									user.setType(type);
+									user.setEmail(email);
+									user.setUsername("");
+									user.setMobile("");
+									user.setPassword(password);
+									Game game = SplitString.getGame(map);
+									if(game==null)
+									{
+										status = "0403";
+										message = "游戏数据为空";
+										userid = 0;
+										if(this.save(user)){
+											status = "0200";
+											message = "邮箱注册成功,但是没有游戏数据!";
+											User user1 = (User)this.querysql("from User where username="+"'"+user.getUsername()+"'");
+											userid = user1.getUserid();
+										}
+									}
+									else
+									{
+										Set<Game> gameset = new HashSet<Game>();
+										gameset.add(game);
+										user.setGames(gameset);
+										if(this.save(user)){
+											status = "0200";
+											message = "邮箱注册成功，带有游戏数据!";
+											User user1 = (User)this.querysql("from User where username="+"'"+user.getUsername()+"'");
+											userid = user1.getUserid();
+										}
+									}
+								}
+							}
+							else 
+							{
+								status = "0403";
+								message = "用户输入的邮箱或者密码为空！";
+								userid = 0;
+							}
+							break;
+						case "3":
+							String mobile = ((String)map.get("mobile")).trim();
+							if(!(mobile.equals("") || "".equals(mobile)) && !(password.equals("") || "".equals(password)))
+							{
+								String namesql = "from User u where u.mobile=" + "'"+mobile+"'"+"or u.username="+"'"+mobile+"'";
+								User userdata = this.querysql(namesql);
+								if(userdata!=null)
+								{
+									status = "0202";
+									message = "该用户已经注册了，请重新填写！";
+									userid = userdata.getUserid();
+								}
+								else
+								{
+									/*4.如果数据库中不存在那么进行注册*/
+									User user = new User();
+									/*user.setEmail(email);*/
+									user.setRegisttime(new Date());
+									user.setType(type);
+									user.setMobile(mobile);
+									user.setEmail("");
+									user.setUsername("");
+									user.setPassword(password);
+									
+									Game game = SplitString.getGame(map);
+									
+									if(game==null)
+									{
+										status = "0403";
+										message = "游戏数据为空";
+										userid = 0;
+										if(this.save(user)){
+											status = "0200";
+											message = "手机注册成功,但是没有游戏数据!";
+											User user1 = (User)this.querysql("from User where username="+"'"+user.getUsername()+"'");
+											userid = user1.getUserid();
+										}
+									}
+									else
+									{
+										Set<Game> gameset = new HashSet<Game>();
+										gameset.add(game);
+										user.setGames(gameset);
+										
+										if(this.save(user)){
+											status = "0200";
+											message = "手机注册成功，带有游戏数据!";
+											User user1 = (User)this.querysql("from User where username="+"'"+user.getUsername()+"'");
+											userid = user1.getUserid();
+										}
+									}
+								}
+							}
+							else 
+							{
+								status = "0403";
+								message = "用户输入的电话或者密码为空！";
+								userid = 0;
+							}
+							break;
+						}
+					}
+					else
+					{
+						status = "0402";
+						message = "验证码填写错误！";
+						userid = 0;
+					}
+				}
 			}
 		}
 		
@@ -1186,52 +1236,88 @@ public class UserServiceImpl implements UserService {
 		String mobile = ((String)map.get("mobile")).trim();
 		String valicode = ((String)map.get("valicode")).trim();
 		
-		/*1.先根据用户提供的手机号，查询数据库中是否存在这个用户如果存在则返回为真*/
-		/*1.1 先判断用户输入的内容不能为空 */
-		String sql = "from User u where u.mobile="+"'"+mobile+"'";
-		User userdata = null;
-		if(valicode.equals("") || "".equals(valicode))
+		//获得国内验证码
+		verificationCode = new VerificationCode();
+		verificationCode = verificationCodeService.querysql("from VerificationCode vc where vc.mobile ="+"'"+mobile+"'"+"and vc.verificationCode="+"'"+valicode+"'");
+		/*System.err.println("服务器端验证码："+valicodeServer);*/
+		if(verificationCode == null)
 		{
 			status = "0404";
-			message = "用户输入的验证码有空！";
-			userid = 0;
+			message = "手机或者输入的验证在数据库中查找不到！";
+			map.put("status", status);
+			map.put("message", message);
+			map.put("userid", "0");
 		}
 		else
 		{
-			if(valicode.equals("123456"))
+			Date endTime = new Date();
+			Date createTime = verificationCode.getCreateTime();
+			long diff = endTime.getTime()-createTime.getTime();
+			long day=diff/(24*60*60*1000);
+			long hour=(diff/(60*60*1000)-day*24);
+			long min=((diff/(60*1000))-day*24*60-hour*60);
+			System.err.println("分钟:"+min);
+			if(min>30)
 			{
-				boolean judge = (mobile.equals("") || "".equals(mobile));
-				if(judge)
+				status = "0403";
+				message = "输入验证码时间已经超过一分钟，请重新生成验证码！";
+				userid = 0;
+				verificationCodeService.delete(verificationCode.getVerificationCodeId());
+			}
+			else
+			{
+				//获得国内验证码
+				String valicodeServer = verificationCode.getVerificationCode();
+				/*1.先根据用户提供的手机号，查询数据库中是否存在这个用户如果存在则返回为真*/
+				/*1.1 先判断用户输入的内容不能为空 */
+				String sql = "from User u where u.mobile="+"'"+mobile+"'"+"or u.username="+"'"+mobile+"'";
+				User userdata = null;
+				if(valicode.equals("") || "".equals(valicode))
 				{
 					status = "0404";
-					message = "用户输入的手机号为空！";
+					message = "用户输入的验证码有空！";
 					userid = 0;
 				}
 				else
 				{
-					userdata = this.querysql(sql);
-					if(userdata!=null)
+					if(valicode.equals(valicodeServer))
 					{
-						status = "0200";
-						message = "成功，进行下一步！";
-						userid = userdata.getUserid();
+						boolean judge = (mobile.equals("") || "".equals(mobile));
+						if(judge)
+						{
+							status = "0404";
+							message = "用户输入的手机号为空！";
+							userid = 0;
+						}
+						else
+						{
+							userdata = this.querysql(sql);
+							if(userdata!=null)
+							{
+								status = "0200";
+								message = "成功，进行下一步！";
+								userid = userdata.getUserid();
+							}
+							else
+							{
+								status = "0404";
+								message = "登录不成功，数据库中不存在这个账户！";
+								userid = 0;
+							}
+						}
 					}
 					else
 					{
 						status = "0404";
-						message = "登录不成功，数据库中不存在这个账户！";
+						message = "验证码不对";
 						userid = 0;
 					}
+					
 				}
 			}
-			else
-			{
-				status = "0404";
-				message = "验证码不对";
-				userid = 0;
-			}
-			
 		}
+		//获得国际验证码
+		/*String valicodeServer = ForeignMessage.getVerificationCode();*/
 		
         map.remove("mobile");
         map.remove("valicode");
@@ -1255,7 +1341,7 @@ public class UserServiceImpl implements UserService {
 		String confirmpass = ((String)map.get("confirmpass")).trim();
 		
 		/*1.先在数据库中查找这个用户*/
-		String sql = "from User u where u.mobile="+"'"+mobile.trim()+"'";
+		String sql = "from User u where u.mobile="+"'"+mobile.trim()+"'"+"or u.username="+"'"+mobile+"'";
 		User userdata = null;
 		boolean judge = (mobile.equals("") || "".equals(mobile));
 		if(judge)

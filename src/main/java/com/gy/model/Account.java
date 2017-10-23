@@ -23,7 +23,7 @@ import org.hibernate.annotations.GenericGenerator;
  *
  */
 @Entity
-@Table(name="tb_gyaccount",catalog="db_gyforeign")
+@Table(name="tb_gyaccount",catalog="db_gydomestic")
 public class Account {
 	
 	/**

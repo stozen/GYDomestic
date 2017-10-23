@@ -23,7 +23,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name="tb_gytoken",catalog="db_gyforeign")
+@Table(name="tb_gytoken",catalog="db_gydomestic")
 public class Token implements Serializable {
 	
 	/**

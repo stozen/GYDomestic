@@ -35,7 +35,7 @@ import org.hibernate.type.TrueFalseType;
  */
 @SuppressWarnings("serial")
 @Entity
-@Table(name="tb_gyorder",catalog="db_gyforeign")
+@Table(name="tb_gyorder",catalog="db_gydomestic")
 public class Order implements Serializable {
 	
 	/**

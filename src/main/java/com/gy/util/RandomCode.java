@@ -15,7 +15,7 @@ public class RandomCode {
 	//这个是获取到随机数字
 	public static int getRandNum() {
 		int min = 0;
-		int max = 999999999;
+		int max = 999999;
 	    int randNum = min + (int)(Math.random() * ((max - min) + 1));
 	    return randNum;
 	}

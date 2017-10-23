@@ -1,6 +1,7 @@
 package com.gy.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 /**
  * @author Chencongye
@@ -10,8 +11,7 @@ import org.springframework.stereotype.Controller;
  */
 
 @Controller
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class AccountControl {
 
-	
-	
 }

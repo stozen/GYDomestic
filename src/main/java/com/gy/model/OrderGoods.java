@@ -24,7 +24,7 @@ import org.hibernate.annotations.GenericGenerator;
  * @introduce 这是订单详情表实体类
  */
 @Entity
-@Table(name="tb_gyordergoods",catalog="db_gyforeign")
+@Table(name="tb_gyordergoods",catalog="db_gydomestic")
 public class OrderGoods {
 	
 	/**

@@ -30,7 +30,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name="tb_gyuser",catalog="db_gyforeign")
+@Table(name="tb_gyuser",catalog="db_gydomestic")
 public class User implements Serializable {
 	
 	/**

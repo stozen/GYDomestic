@@ -221,4 +221,19 @@
     	<property name="target" ref="orderGoodsServiceBase"></property> 
 	</bean>
 	
+	<!-- 配置VerificationCodeDaoImpl实现类 -->
+ 	<bean id="verificationCodeDao" class="com.gy.daoImpl.VerificationCodeDaoImpl">
+ 		<property name="sessionFactory" ref="sessionFactory"></property>
+ 	</bean>
+	
+	<!-- 配置VerificationCodeServiceImpl实现类 -->
+ 	<bean id="verificationCodeServiceBase" class="com.gy.servicesImpl.VerificationCodeServiceImpl">
+ 		<property name="verificationCodeDao" ref="verificationCodeDao"></property>
+ 	</bean>
+	
+	<!-- parent为transactionBese，表示支持事务 -->
+ 	<bean id="verificationCodeService" parent="transactionBese"> 
+    	<property name="target" ref="verificationCodeServiceBase"></property> 
+	</bean>
+	
  </beans>

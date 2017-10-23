@@ -25,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -57,6 +58,7 @@ import com.gy.util.ResponseUtil;
  */
 
 @SuppressWarnings("unused")
+@CrossOrigin(origins = "*", maxAge = 3600)
 @Controller
 @RequestMapping(value="/user")
 public class UserControl {
@@ -113,6 +115,7 @@ public class UserControl {
 		/*1.先判断用户以什么样的方式登录*/
 		String type = user.getType().trim();
 		
+		System.err.println("获取到的用户名:"+user.getUsername());
 		userService.login(user, map, type);
 		
 		return map;
