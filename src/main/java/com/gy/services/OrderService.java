@@ -75,8 +75,9 @@ public interface OrderService {
 	 * @param order
 	 * @param token
 	 * @param map
+	 * @throws Exception 
 	 */
-	public void create(Order order,String token,Map map);
+	public void create(Order order,String token,Map map) throws Exception;
 	
 	/**
 	 * 取消订单功能实现

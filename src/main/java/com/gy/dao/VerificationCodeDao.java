@@ -9,6 +9,7 @@ import com.gy.model.VerificationCode;
  * @date 2017-10-19
  * @introduce 
  */
+
 public interface VerificationCodeDao {
 	
 	/**
@@ -38,6 +39,7 @@ public interface VerificationCodeDao {
 	public boolean delete(int verificationCodeId);
 	
 	/**
+	 * 实现保存一个验证码
 	 * @param verificationCode
 	 * @return
 	 */

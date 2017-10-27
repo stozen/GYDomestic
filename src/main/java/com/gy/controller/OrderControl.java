@@ -26,6 +26,7 @@ import com.gy.services.GameService;
 import com.gy.services.GoodsService;
 import com.gy.services.OrderGoodsService;
 import com.gy.services.OrderService;
+import com.gy.services.TokenService;
 import com.gy.services.UserService;
 import com.gy.servicesImpl.OrderGoodsServiceImpl;
 import com.gy.util.PrimaryGenerater;
@@ -49,6 +50,28 @@ public class OrderControl {
 	@Autowired
 	private OrderService orderService;
 	
+	/**
+	 * 声明Token服务的引用
+	 */
+	@Autowired
+	private TokenService tokenService;
+	
+	/**
+	 * 声明Token服务引用的get方法
+	 * @return
+	 */
+	public TokenService getTokenService() {
+		return tokenService;
+	}
+
+	/**
+	 * 声明Token服务引用的set方法
+	 * @param tokenService
+	 */
+	public void setTokenService(TokenService tokenService) {
+		this.tokenService = tokenService;
+	}
+
 	/**
 	 * 生成订单服务的get方法
 	 * @return
@@ -130,9 +153,10 @@ public class OrderControl {
 	 * @param order
 	 * @param bindingResult
 	 * @return
+	 * @throws Exception 
 	 */
 	@RequestMapping(value="/create",method=RequestMethod.POST)
-	public @ResponseBody Map<String, Object> createOrder(@RequestBody com.gy.model.Order order,@RequestHeader String token){
+	public @ResponseBody Map<String, Object> createOrder(@RequestBody com.gy.model.Order order,@RequestHeader String token) throws Exception{
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		orderService.create(order, token, map);

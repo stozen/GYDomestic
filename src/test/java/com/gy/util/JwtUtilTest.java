@@ -32,7 +32,7 @@ public class JwtUtilTest {
 		String subject = jwtUtil.generalSubject(user, game);
 		
 		long ttlMillis = System.currentTimeMillis();
-		String token = jwtUtil.createJWT("1", subject, ttlMillis);
+		String token = jwtUtil.createJWT("1", subject, 2);
 		System.out.println(token);
 	}
 

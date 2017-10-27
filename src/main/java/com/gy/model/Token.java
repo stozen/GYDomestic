@@ -18,7 +18,7 @@ import org.hibernate.annotations.GenericGenerator;
  * @author Chencongye
  * @version 0.0.1
  * @date 2017-9-20
- * @introduce 这是用户登录token时的·
+ * @introduce 这是用户登录token时的，token的有效时长为7200秒
  */
 
 @SuppressWarnings("serial")
@@ -81,7 +81,7 @@ public class Token implements Serializable {
 	 * 创建Token生成策略
 	 * @return
 	 */
-	@Column(name="token",length=200,nullable=true,insertable=true,updatable=true)
+	@Column(name="token",length=600,nullable=true,insertable=true,updatable=true)
 	public String getToken() {
 		return token;
 	}

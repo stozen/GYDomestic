@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,6 +53,7 @@ import com.paypal.base.rest.PayPalRESTException;
  * @date 2017.9.11
  */
 @Controller
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping(value="/alipay")
 public class AliPay {
 	
@@ -109,12 +111,12 @@ public class AliPay {
 		}
 		else
 		{
-			/*商品的标题/交易标题/订单标题/订单关键字等*/
+			/*商品的标题/交易标题/订单标题/订单关键字等
 			String subject = ((String)orderGoods.getTitle()).trim();
-			/*订单总金额，单位为元，精确到小数点后两位，取值范围[0.01,100000000]*/
+			订单总金额，单位为元，精确到小数点后两位，取值范围[0.01,100000000]
 			String total_amount = (orderGoods.getPrice().toString()).trim();
-			/*销售产品码，商家和支付宝签约的产品码。该产品请填写固定值：QUICK_WAP_WAY*/
-			String product_code = "QUICK_WAP_WAY";
+			销售产品码，商家和支付宝签约的产品码。该产品请填写固定值：QUICK_WAP_WAY
+			String product_code = "QUICK_WAP_WAY";*/
 
 			/*创建支付宝支付的公共参数*/
 			final String APP_ID = "2016080301699003";
@@ -123,6 +125,15 @@ public class AliPay {
 			
 			final String ALIPAY_PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDDI6d306Q8fIfCOaTXyiUeJHkrIvYISRcc73s3vF1ZT7XN8RNPwJxo8pWaJMmvyTn9N4HQ632qJBVHf8sxHi/fEsraprwCtzvzQETrNRwVxLO5jVmRGi60j8Ue1efIlzPXV9je9mkjzOmdssymZkh2QhUrCmZYI/FCEa3/cNMW0QIDAQAB";
 			final String ALIPAY_GATEWAY = "https://openapi.alipay.com/gateway.do";
+			/*创建支付宝的扩展参数*/
+			/*商品的标题/交易标题/订单标题/订单关键字等*/
+			String subject = orderGoods.getTitle();
+			/*转换商品单价小数点为两位*/
+			String price = orderGoods.getPrice().toString();
+			/*订单总金额，单位为元，精确到小数点后两位，取值范围[0.01,100000000]*/
+			String total_amount = String.valueOf(Float.parseFloat(price));
+			/*销售产品码，商家和支付宝签约的产品码。该产品请填写固定值：QUICK_WAP_WAY*/
+			String product_code = "QUICK_WAP_WAY";
 			
 			//实例化客户端
 			AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", APP_ID, APP_PRIVATE_KEY, "json", CHARSET, ALIPAY_PUBLIC_KEY, "RSA");

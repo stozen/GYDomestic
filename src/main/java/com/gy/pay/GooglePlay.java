@@ -23,6 +23,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,6 +39,7 @@ import com.gy.services.OrderService;
  * @introduce 这是GooglePlay支付方式放回的订单处理结果
  */
 @Controller
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping(value="/googleplay")
 public class GooglePlay {
 	

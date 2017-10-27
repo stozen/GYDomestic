@@ -3,6 +3,7 @@ package com.gy.daoImpl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -61,6 +62,7 @@ public class GameDaoImpl implements GameDao {
 		Game game = null;
 		try {
 			game = (Game)session.get(Game.class, gameid);
+			Hibernate.initialize(game);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -88,6 +90,7 @@ public class GameDaoImpl implements GameDao {
 		try {
 			tx = session.beginTransaction();
 			games = session.createQuery("from Game").list();
+			Hibernate.initialize(games);
 			tx.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -120,6 +123,7 @@ public class GameDaoImpl implements GameDao {
 			tx = session.beginTransaction();
 			Query query = session.createQuery(sql);
 			List<Game> list = new ArrayList<Game>();
+			Hibernate.initialize(game);
 			list = query.list();
 			if(list!=null && list.size()>0){
 				game = (Game)list.get(0);
@@ -160,6 +164,7 @@ public class GameDaoImpl implements GameDao {
 			tx = session.beginTransaction();
 			Query query = session.createQuery(sql);
 			List<Game> list = new ArrayList<Game>();
+			Hibernate.initialize(game);
 			list = query.list();
 			if(list!=null && list.size()>0){
 				game = (Game)list.get(0);
@@ -198,6 +203,7 @@ public class GameDaoImpl implements GameDao {
 		try {
 			tx = session.beginTransaction();
 			int i = (Integer) session.save(game);
+			Hibernate.initialize(game);
 			if(i>0)
 			{
 				flag = true;
@@ -233,6 +239,7 @@ public class GameDaoImpl implements GameDao {
 		try {
 			tx = session.beginTransaction();
 			session.saveOrUpdate(game);
+			Hibernate.initialize(game);
 			flag = true;
 			tx.commit();
 		} catch (Exception e) {
@@ -257,6 +264,7 @@ public class GameDaoImpl implements GameDao {
 	public void saveAll(Game[] games) {
 		// TODO Auto-generated method stub
 		getSession().saveOrUpdate(games);
+		Hibernate.initialize(games);
 	}
 
 	/**
@@ -272,6 +280,7 @@ public class GameDaoImpl implements GameDao {
 		try {
 			tx = session.beginTransaction();
 			session.delete(game);
+			Hibernate.initialize(game);
 			flag = true;
 			tx.commit();
 		} catch (Exception e) {
@@ -300,6 +309,7 @@ public class GameDaoImpl implements GameDao {
 		boolean flag = false;
 		try {
 			getSession().delete(games);
+			Hibernate.initialize(games);
 			flag = true;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -320,6 +330,7 @@ public class GameDaoImpl implements GameDao {
 		try {
 			tx = session.beginTransaction();
 			session.update(game);
+			Hibernate.initialize(game);
 			flag = true;
 			tx.commit();
 		} catch (Exception e) {
@@ -357,7 +368,6 @@ public class GameDaoImpl implements GameDao {
 		int flag = 0;
 		try {
 			tx = session.beginTransaction();
-			
 			Query query = session.createQuery(sql);
 			flag = query.executeUpdate();
 			

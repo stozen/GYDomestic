@@ -50,7 +50,7 @@ public class PrimaryGenerater {
 			}
 			DecimalFormat df = new DecimalFormat("0000");
 			id = formatter.format(date)
-					+ df.format(1 + Integer.parseInt(sno.substring(0, 8)));
+					+ df.format(1 + Integer.parseInt(sno.substring(0, 50)));
 		}
 		System.err.println(id);
 		return id;

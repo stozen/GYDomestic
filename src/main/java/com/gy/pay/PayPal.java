@@ -17,6 +17,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +36,7 @@ import com.paypal.base.rest.PayPalRESTException;
  * @date 2017.9.11
  */
 @Controller
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping(value="/paypal")
 public class PayPal {
 

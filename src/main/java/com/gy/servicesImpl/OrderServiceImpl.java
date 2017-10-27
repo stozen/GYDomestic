@@ -1,6 +1,9 @@
 package com.gy.servicesImpl;
 
+import io.jsonwebtoken.Claims;
+
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -15,14 +18,18 @@ import com.gy.model.Game;
 import com.gy.model.Goods;
 import com.gy.model.Order;
 import com.gy.model.OrderGoods;
+import com.gy.model.Token;
 import com.gy.model.User;
 import com.gy.services.GameService;
 import com.gy.services.GoodsService;
 import com.gy.services.OrderGoodsService;
 import com.gy.services.OrderService;
+import com.gy.services.TokenService;
 import com.gy.services.UserService;
+import com.gy.util.JwtUtil;
 import com.gy.util.PrimaryGenerater;
 import com.gy.util.RandomCode;
+import com.mongodb.gridfs.CLI;
 
 /**
  * @author Chencongye
@@ -75,6 +82,12 @@ public class OrderServiceImpl implements OrderService {
 	 */
 	@Autowired
 	private OrderGoodsService orderGoodsService;
+	
+	/**
+	 * 声明Token服务类
+	 */
+	@Autowired
+	private TokenService tokenService;
 	
 	/**
 	 * 创建返回给客户端的状态信息
@@ -170,6 +183,22 @@ public class OrderServiceImpl implements OrderService {
 	public void setOrderGoodsService(OrderGoodsService orderGoodsService) {
 		this.orderGoodsService = orderGoodsService;
 	}
+	
+	/**
+	 * 声明Token服务依赖类的注入set和get方法实现
+	 * @return
+	 */
+	public TokenService getTokenService() {
+		return tokenService;
+	}
+
+	/**
+	 * 声明Token服务依赖类的注入set和get方法实现
+	 * @param tokenService
+	 */
+	public void setTokenService(TokenService tokenService) {
+		this.tokenService = tokenService;
+	}
 
 	/**
 	 * 创建查询订单根据id来查询
@@ -256,108 +285,241 @@ public class OrderServiceImpl implements OrderService {
 	
 	/**
 	 * 创建订单功能实现
+	 * @throws Exception 
+	 */
+	/* (non-Javadoc)
+	 * @see com.gy.services.OrderService#create(com.gy.model.Order, java.lang.String, java.util.Map)
 	 */
 	@SuppressWarnings({ "unused", "unchecked" })
 	@Override
-	public void create(Order order,String token,Map map) {
+	public void create(Order order,String token,Map map) throws Exception {
 		// TODO Auto-generated method stub
 		/*1.首先创建订单包含用户信息，商品信息，游戏信息，订单详情信息*/
 		/*2.先获得用户信息*/
-		User user = order.getUser();
-		Game game = order.getGames();
-		String sql = "from Game where userid="+"'"+user.getUserid()+"'"+"and gameid="+"'"+game.getGameid()+"'";
-		game = gameService.queryBysql(sql);
-		
-		user = userService.query(user.getUserid());
-		
-		/*System.out.println(game);*/
-		
-		if(user == null || game==null)
+		if(token.equals("") || "".equals(token))
 		{
 			status = "0404";
-			message = "创建订单失败，不存在该用户或者游戏！";
-			orderid = 0;
+			message = "用户输入的Token之为空！";
 			map.put("status", status);
 			map.put("message", message);
-			map.put("orderid", orderid);
+			map.put("orderid", 0);
 		}
 		else
 		{
-			/*3.再获得商品信息*/
-			Set<OrderGoods> ordergoods = order.getOrdergoods();
-			OrderGoods ordergood = new OrderGoods();
-			if(ordergoods==null)
-			{
-				status = "0403";
-				message = "订单详情没有，没有填写购物的商品！";
-				orderid = 0;
+			Token Tokendate = tokenService.querysql("from Token where token="+"'"+token+"'");
+			if (Tokendate==null) {
+				status = "0405";
+				message = "不存在这个Token或者已经过期的Token，和重新生成的Token不匹配";
 				map.put("status", status);
 				map.put("message", message);
-				map.put("orderid", orderid);
+				map.put("orderid", 0);
 			}
 			else
 			{
-				Iterator it = ordergoods.iterator();
-				while (it.hasNext()) {
-					ordergood = (OrderGoods) it.next();
-					/*ordergood.setOrder(order);*/
-				}
-				
-				Goods goods = new Goods();
-				goods.setGoodsname(ordergood.getTitle());
-				goods.setGoodsnumber(ordergood.getNumber());
-				goods.setGoodsprice(ordergood.getPrice());
-				goods.setGoodstotal(ordergood.getTotalprice());
-				goods.setGoodspicture(ordergood.getPicpath());
-				goods.setUser(user);
-				goodsService.save(goods);
-				
-				System.err.println("创建Ordergoodsservice服务："+orderGoodsService);
-				
-				System.err.println("订单详情："+ordergood);
-				System.err.println(goods.getGoodsname()+goods.getGoodsprice());
-				/*4.最后保存订单信息，用户信息，订单详情信息*/
-				/*order.setUser(order.getUser());*/
-				order.setClosetime(new Date());
-				order.setCreatetime(new Date());
-				order.setEndtime(new Date());
-				order.setOrdergoods(order.getOrdergoods());
-				order.setPayment(order.getPayment());
-				order.setPaytype(order.getPaytype());
-				order.setPaytime(new Date());
-				PrimaryGenerater Serialnumber = PrimaryGenerater.getInstance();
-				String liqud = Serialnumber.generaterNextNumber();
-				order.setSerialnumber(liqud);
-				order.setPaystatus(order.getPaystatus());
-				order.setGames(game);
-				order.setUpdatetime(new Date());
-				
-				ordergood.setGoods(goods);
-				/*5.保存订单详情里面的orderid*/
-				this.create(order);
-				
-				String orderid_sql = "from Order where userid= "+"'"+user.getUserid()+"'"+" and gameid="+"'"+game.getGameid()+"'"+"and serialnumber="+"'"+liqud+"'";
-				Order orderdata = this.queryBysql(orderid_sql);
-				
-				if(orderdata == null)
+				Date nowdate = new Date();
+				Claims claims = JwtUtil.parseJWT(token);
+				if(claims==null)
 				{
-					status = "0404";
-					message = "创建订单失败，没有创建成功！";
-					orderid = 0;
+					User user = order.getUser();
+					Game game = order.getGames();
+					String sql = "from Game where userid="+"'"+user.getUserid()+"'"+"and gameid="+"'"+game.getGameid()+"'";
+					game = gameService.queryBysql(sql);
+					user = userService.query(user.getUserid());
+
+					if(user==null || game==null)
+					{
+						status = "0403";
+						message = "数据库中不存在这个Token！";
+						map.put("status", status);
+						map.put("message", message);
+						map.put("orderid", 0);
+					}
+					else
+					{
+						int ttlMillis = 30;
+						String subject = JwtUtil.generalSubject(user, game);
+						String tokenNew = JwtUtil.createJWT(String.valueOf(RandomCode.getRandNum(1, 9999)), subject, ttlMillis);
+						Token tokendata = tokenService.querysql("from Token where userid="+"'"+user.getUserid()+"'");
+						if(tokendata==null)
+						{
+							status = "0406";
+							message = "数据库中不存在这个Token！";
+							map.put("status", status);
+							map.put("message", message);
+						}
+						else
+						{
+							tokenService.delete(tokendata.getTokenid());
+							Token token_refrash = new Token();
+							token_refrash.setToken(tokenNew);
+							token_refrash.setUser(user);
+							tokenService.save(token_refrash);
+							status = "0208";
+							message = "Token已经过期，需要重新生成Token成功，并持久化在数据库中！";
+							map.put("status", status);
+							map.put("message", message);
+							map.put("token", tokenNew);
+						}
+					}
 				}
 				else
-				{
-					status = "0200";
-					message = "创建订单成功！";
-					orderid = orderdata.getOrderid();
-					
-					ordergood.setOrder(orderdata);
-					orderGoodsService.saveorupdate(ordergood);
+				{	
+					Date expirationDate = claims.getExpiration();
+					int i = JwtUtil.compareDate(nowdate, expirationDate);
+					if(i<0)
+					{
+						/******/
+						User user = order.getUser();
+						Game game = order.getGames();
+						String sql = "from Game where userid="+"'"+user.getUserid()+"'"+"and gameid="+"'"+game.getGameid()+"'";
+						game = gameService.queryBysql(sql);
+						
+						user = userService.query(user.getUserid());
+						
+						/*System.out.println(game);*/
+						
+						if(user == null || game==null)
+						{
+							status = "0404";
+							message = "创建订单失败，不存在该用户或者游戏！";
+							orderid = 0;
+							map.put("status", status);
+							map.put("message", message);
+							map.put("orderid", orderid);
+						}
+						else
+						{
+							/*3.再获得商品信息*/
+							Set<OrderGoods> ordergoods = order.getOrdergoods();
+							OrderGoods ordergood = new OrderGoods();
+							if(ordergoods==null)
+							{
+								status = "0403";
+								message = "订单详情没有，没有填写购物的商品！";
+								orderid = 0;
+								map.put("status", status);
+								map.put("message", message);
+								map.put("orderid", orderid);
+							}
+							else
+							{
+								Iterator it = ordergoods.iterator();
+								while (it.hasNext()) {
+									ordergood = (OrderGoods) it.next();
+									/*ordergood.setOrder(order);*/
+								}
+								
+								Goods goods = new Goods();
+								goods.setGoodsname(ordergood.getTitle());
+								goods.setGoodsnumber(ordergood.getNumber());
+								goods.setGoodsprice(ordergood.getPrice());
+								goods.setGoodstotal(ordergood.getTotalprice());
+								goods.setGoodspicture(ordergood.getPicpath());
+								goods.setUser(user);
+								goodsService.save(goods);
+								
+								System.err.println("创建Ordergoodsservice服务："+orderGoodsService);
+								
+								System.err.println("订单详情："+ordergood);
+								System.err.println(goods.getGoodsname()+goods.getGoodsprice());
+								/*4.最后保存订单信息，用户信息，订单详情信息*/
+								/*order.setUser(order.getUser());*/
+								order.setClosetime(new Date());
+								order.setCreatetime(new Date());
+								order.setEndtime(new Date());
+								order.setOrdergoods(order.getOrdergoods());
+								order.setPayment(order.getPayment());
+								order.setPaytype(order.getPaytype());
+								order.setPaytime(new Date());
+								/*PrimaryGenerater Serialnumber = PrimaryGenerater.getInstance();*/
+								SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+						        Date now = new Date();
+						        String time = sdf.format(now);
+						        System.out.println("时间:"+time);
+						        int randomNum = (int)((Math.random()*9+1)*10000);
+						        String number = time+randomNum;
+								String liqud = number;
+								order.setSerialnumber(liqud);
+								order.setPaystatus(order.getPaystatus());
+								order.setGames(game);
+								order.setUpdatetime(new Date());
+								
+								ordergood.setGoods(goods);
+								/*5.保存订单详情里面的orderid*/
+								this.create(order);
+								
+								String orderid_sql = "from Order where userid= "+"'"+user.getUserid()+"'"+" and gameid="+"'"+game.getGameid()+"'"+"and serialnumber="+"'"+liqud+"'";
+								Order orderdata = this.queryBysql(orderid_sql);
+								
+								if(orderdata == null)
+								{
+									status = "0404";
+									message = "创建订单失败，没有创建成功！";
+									orderid = 0;
+								}
+								else
+								{
+									status = "0200";
+									message = "创建订单成功！";
+									orderid = orderdata.getOrderid();
+									
+									ordergood.setOrder(orderdata);
+									orderGoodsService.saveorupdate(ordergood);
+								}
+								map.put("status", status);
+								map.put("message", message);
+								map.put("orderid", orderid);
+								map.put("serialnumber",liqud);
+							}
+						}
+					}
+					else
+					{
+						status = "0403";
+						message = "token已经过期，需要重新生成Token";
+						User user = order.getUser();
+						Game game = order.getGames();
+						String sql = "from Game where userid="+"'"+user.getUserid()+"'"+"and gameid="+"'"+game.getGameid()+"'";
+						game = gameService.queryBysql(sql);
+						user = userService.query(user.getUserid());
+
+						if(user==null || game==null)
+						{
+							status = "0404";
+							message = "数据库中不存在这个Token！";
+							map.put("status", status);
+							map.put("message", message);
+							map.put("orderid", 0);
+						}
+						else
+						{
+							int ttlMillis = 2;
+							String subject = JwtUtil.generalSubject(user, game);
+							String tokenNew = JwtUtil.createJWT(String.valueOf(RandomCode.getRandNum(1, 9999)), subject, ttlMillis);
+							Token tokendata = tokenService.querysql("from Token where userid="+"'"+user.getUserid()+"'");
+							if(tokendata==null)
+							{
+								status = "0404";
+								message = "数据库中不存在这个Token！";
+								map.put("status", status);
+								map.put("message", message);
+							}
+							else
+							{
+								tokenService.delete(tokendata.getTokenid());
+								Token token_refrash = new Token();
+								token_refrash.setToken(tokenNew);
+								token_refrash.setUser(user);
+								tokenService.save(token_refrash);
+								status = "0200";
+								message = "重新生成Token成功，并持久化在数据库中！";
+								map.put("status", status);
+								map.put("message", message);
+								map.put("token", tokenNew);
+							}
+						}
+					}
 				}
-				map.put("status", status);
-				map.put("message", message);
-				map.put("orderid", orderid);
-				map.put("serialnumber",liqud);
 			}
 		}
 	}
@@ -661,3 +823,4 @@ public class OrderServiceImpl implements OrderService {
 		}
 	}
 }
+

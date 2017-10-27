@@ -3,6 +3,7 @@ package com.gy.daoImpl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -63,6 +64,7 @@ public class UserDaoImpl implements UserDao{
 		User user = null;
 		try {
 			user = (User)session.get(User.class, userid);
+			Hibernate.initialize(user);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -90,6 +92,7 @@ public class UserDaoImpl implements UserDao{
 		try {
 			tx = session.beginTransaction();
 			users = session.createQuery("from User").list();
+			Hibernate.initialize(users);
 			tx.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -121,6 +124,7 @@ public class UserDaoImpl implements UserDao{
 		try {
 			tx = session.beginTransaction();
 			int i = (Integer) session.save(user);
+			Hibernate.initialize(user);
 			if(i>0)
 			{
 				flag = true;
@@ -166,6 +170,7 @@ public class UserDaoImpl implements UserDao{
 		try {
 			tx = session.beginTransaction();
 			session.delete(user);
+			Hibernate.initialize(user);
 			flag = true;
 			tx.commit();
 		} catch (Exception e) {
@@ -194,6 +199,7 @@ public class UserDaoImpl implements UserDao{
 		boolean flag = false;
 		try {
 			getSession().delete(User);
+			Hibernate.initialize(User);
 			flag = true;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -214,6 +220,7 @@ public class UserDaoImpl implements UserDao{
 		try {
 			tx = session.beginTransaction();
 			session.update(user);
+			Hibernate.initialize(user);
 			flag = true;
 			tx.commit();
 		} catch (Exception e) {
@@ -254,6 +261,7 @@ public class UserDaoImpl implements UserDao{
 			tx = session.beginTransaction();
 			Query query = session.createQuery(sql);
 			List<User> list = new ArrayList<User>();
+			Hibernate.initialize(user);
 			list = query.list();
 			if(list!=null && list.size()>0){
 				user = (User)list.get(0);
@@ -294,6 +302,7 @@ public class UserDaoImpl implements UserDao{
 			tx = session.beginTransaction();
 			Query query = session.createQuery(sql);
 			List<User> list = new ArrayList<User>();
+			Hibernate.initialize(user);
 			list = query.list();
 			if(list!=null && list.size()>0){
 				user = (User)list.get(0);
@@ -332,6 +341,7 @@ public class UserDaoImpl implements UserDao{
 		try {
 			tx = session.beginTransaction();
 			session.saveOrUpdate(user);
+			Hibernate.initialize(user);
 			flag = true;
 			tx.commit();
 		} catch (Exception e) {

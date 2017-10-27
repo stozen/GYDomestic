@@ -27,6 +27,9 @@
 		<!-- 处理映射的验证码账户类 -->
 		<mapping class="com.gy.model.VerificationCode"/>
 		
+		<!-- 处理映射的Token类 -->
+		<mapping class="com.gy.model.Token"/>
+		
 		<!-- 处理映射其他的类，预留位置 -->
 		
 	</session-factory>

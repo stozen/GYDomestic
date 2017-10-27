@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.gy.dao.OrderGoodsDao;
 import com.gy.daoImpl.OrderGoodsDaoImpl;
@@ -19,6 +20,7 @@ import com.gy.services.OrderGoodsService;
  * @introduce 这是订单商品的服务的接口实现类
  */
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @Service
 public class OrderGoodsServiceImpl implements OrderGoodsService {
 

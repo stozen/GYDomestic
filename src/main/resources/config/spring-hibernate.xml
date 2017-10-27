@@ -236,4 +236,19 @@
     	<property name="target" ref="verificationCodeServiceBase"></property> 
 	</bean>
 	
+	<!-- 配置tokenDaoImpl实现类 -->
+ 	<bean id="tokenDao" class="com.gy.daoImpl.TokenDaoImpl">
+ 		<property name="sessionFactory" ref="sessionFactory"></property>
+ 	</bean>
+	
+	<!-- 配置tokenServiceImpl实现类 -->
+ 	<bean id="tokenServiceBase" class="com.gy.servicesImpl.TokenServiceImpl">
+ 		<property name="tokenDao" ref="tokenDao"></property>
+ 	</bean>
+	
+	<!-- parent为transactionBese，表示支持事务 -->
+ 	<bean id="tokenService" parent="transactionBese"> 
+    	<property name="target" ref="tokenServiceBase"></property> 
+	</bean>
+	
  </beans>
