@@ -16,6 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -68,6 +69,12 @@ public class AliPay {
 	private String message;
 	
 	/**
+	 * 创建订单服务
+	 */
+	@Autowired
+	private OrderService orderService;
+	
+	/**
 	 * 创建订单详情编号
 	 */
 	@Autowired
@@ -82,6 +89,24 @@ public class AliPay {
 	}
 
 	/**
+	 * 声明订单服务的get方法
+	 * @return
+	 */
+	public OrderService getOrderService() {
+		return orderService;
+	}
+
+	/**
+	 * 声明订单服务的get方法
+	 * @param orderService
+	 */
+	public void setOrderService(OrderService orderService) {
+		this.orderService = orderService;
+	}
+
+
+
+	/**
 	 * 设置订单详情服务
 	 * @param orderGoodsService
 	 */
@@ -89,6 +114,14 @@ public class AliPay {
 		this.orderGoodsService = orderGoodsService;
 	}
 
+	/*创建支付宝支付的公共参数*/
+	final String APP_ID = "2016080301699003";
+	final String APP_PRIVATE_KEY = "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJzuFpK2ikT/cLzBMQS2G0VBDJM0vjHser7pV+AG5d2kfkSSzRgDMKyTiq871M8jQmEfVlZJNtgXcKdyV5bUhoCNQL4Tq3Jp8Ndo8oAQ/3NvSux794kkq6L2UhHwckJ5yoTb4bNzQYwkGXEmAal22+bZwsc6IVwNzk2TJ0H6VdpVAgMBAAECgYAoA9G/sUoKk/PkPYLJR8ImY5LYSl+hDUKzQX7FwhyE6rfDtocTc2TK7Ig1bJU0CDKZ30q9j8erTDbOi6pn7GMrKAzpF1nSMTjJgio03Kat9784YfI7tcT0YJjaGIsjNCeUiEhy/Hd1LxpExB1Dcet9Siy3USe4qXvzY7lXlkf9AQJBANCY+cWllFUJPwxg3kx77nrqlRBCodKuizcqZBJsZc3k/IDB8LX9UU3sljeNHJM9Ee/AU/fUzDLww4E/BsP0X5UCQQDAl2Nr/RylEw9cveOJDSstYFrVmWU+lZQN0Nq3StFcg/wEtV1H/ajOEHxn4/lYvLN2RcVTgIMm8lwxm1bWu9/BAkAUCU2cjX4E+QFkV/2iTRkoF1ZAHJZcnUVkBB9eoajZsRAL8hUD9hQULxByv4wqHGiXpdqq6HbAwd2VkY89zUBNAkEAl/wgms0RuPfUrMSx9qssws+Cf4RhkMUsJMcIg5OIqzEBRpn19mUovQ3nj3kqgqvQGGsxMRd+6NJkjUVgf2+eQQJAT1uJnT3N9h1O/FAhXrcg1f0tBswtCyvtcZNh3EStARDj2NluJwJiMMbgRZe12jfvfN6lmq0sUvwOT298H8W6qQ==";
+	final String CHARSET = "utf-8";
+	
+	final String ALIPAY_PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDDI6d306Q8fIfCOaTXyiUeJHkrIvYISRcc73s3vF1ZT7XN8RNPwJxo8pWaJMmvyTn9N4HQ632qJBVHf8sxHi/fEsraprwCtzvzQETrNRwVxLO5jVmRGi60j8Ue1efIlzPXV9je9mkjzOmdssymZkh2QhUrCmZYI/FCEa3/cNMW0QIDAQAB";
+	final String ALIPAY_GATEWAY = "https://openapi.alipay.com/gateway.do";
+	
 	/**
 	 * 声明Alipay的支付接口
 	 * @param map
@@ -97,7 +130,7 @@ public class AliPay {
 	 */
 	
 	@RequestMapping(value="/pay",method=RequestMethod.POST)
-	public @ResponseBody Map<String, Object> checkOrder(@RequestBody Map map,@RequestHeader String token) {
+	public @ResponseBody Map<String, Object> checkOrder(@RequestBody Map map,@RequestHeader String token,HttpServletResponse servletRequest) {
 		// TODO Auto-generated method stub
 		/*商户网站唯一订单号*/
 		String out_trade_no = ((String) map.get("orderid")).trim();
@@ -118,13 +151,6 @@ public class AliPay {
 			销售产品码，商家和支付宝签约的产品码。该产品请填写固定值：QUICK_WAP_WAY
 			String product_code = "QUICK_WAP_WAY";*/
 
-			/*创建支付宝支付的公共参数*/
-			final String APP_ID = "2016080301699003";
-			final String APP_PRIVATE_KEY = "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJzuFpK2ikT/cLzBMQS2G0VBDJM0vjHser7pV+AG5d2kfkSSzRgDMKyTiq871M8jQmEfVlZJNtgXcKdyV5bUhoCNQL4Tq3Jp8Ndo8oAQ/3NvSux794kkq6L2UhHwckJ5yoTb4bNzQYwkGXEmAal22+bZwsc6IVwNzk2TJ0H6VdpVAgMBAAECgYAoA9G/sUoKk/PkPYLJR8ImY5LYSl+hDUKzQX7FwhyE6rfDtocTc2TK7Ig1bJU0CDKZ30q9j8erTDbOi6pn7GMrKAzpF1nSMTjJgio03Kat9784YfI7tcT0YJjaGIsjNCeUiEhy/Hd1LxpExB1Dcet9Siy3USe4qXvzY7lXlkf9AQJBANCY+cWllFUJPwxg3kx77nrqlRBCodKuizcqZBJsZc3k/IDB8LX9UU3sljeNHJM9Ee/AU/fUzDLww4E/BsP0X5UCQQDAl2Nr/RylEw9cveOJDSstYFrVmWU+lZQN0Nq3StFcg/wEtV1H/ajOEHxn4/lYvLN2RcVTgIMm8lwxm1bWu9/BAkAUCU2cjX4E+QFkV/2iTRkoF1ZAHJZcnUVkBB9eoajZsRAL8hUD9hQULxByv4wqHGiXpdqq6HbAwd2VkY89zUBNAkEAl/wgms0RuPfUrMSx9qssws+Cf4RhkMUsJMcIg5OIqzEBRpn19mUovQ3nj3kqgqvQGGsxMRd+6NJkjUVgf2+eQQJAT1uJnT3N9h1O/FAhXrcg1f0tBswtCyvtcZNh3EStARDj2NluJwJiMMbgRZe12jfvfN6lmq0sUvwOT298H8W6qQ==";
-			final String CHARSET = "utf-8";
-			
-			final String ALIPAY_PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDDI6d306Q8fIfCOaTXyiUeJHkrIvYISRcc73s3vF1ZT7XN8RNPwJxo8pWaJMmvyTn9N4HQ632qJBVHf8sxHi/fEsraprwCtzvzQETrNRwVxLO5jVmRGi60j8Ue1efIlzPXV9je9mkjzOmdssymZkh2QhUrCmZYI/FCEa3/cNMW0QIDAQAB";
-			final String ALIPAY_GATEWAY = "https://openapi.alipay.com/gateway.do";
 			/*创建支付宝的扩展参数*/
 			/*商品的标题/交易标题/订单标题/订单关键字等*/
 			String subject = orderGoods.getTitle();
@@ -156,6 +182,7 @@ public class AliPay {
 			        {
 			        	status = "0200";
 			        	message = "支付成功！";
+			        	
 			        	map.put("status", status);
 			        	map.put("paydata", response.getBody());
 			        	map.put("message", message);
@@ -184,9 +211,9 @@ public class AliPay {
 		
 		/*JAVA服务端验证异步通知信息参数示例*/
 		
-		/*//获取支付宝POST过来反馈信息
+		//获取支付宝POST过来反馈信息
 		Map<String,String> params = new HashMap<String,String>();
-		Map requestParams = request.getParameterMap();
+		Map requestParams = ((HttpServletRequest) servletRequest).getParameterMap();
 		for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext();) {
 		    String name = (String) iter.next();
 		    String[] values = (String[]) requestParams.get(name);
@@ -199,10 +226,17 @@ public class AliPay {
 			//valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
 			params.put(name, valueStr);
 		}
+		
 		//切记alipaypublickey是支付宝的公钥，请去open.alipay.com对应应用下查看。
 		//boolean AlipaySignature.rsaCheckV1(Map<String, String> params, String publicKey, String charset, String sign_type)
-		boolean flag = AlipaySignature.rsaCheckV1(params, ALIPAY_PUBLIC_KEY, CHARSET,"RSA");
-		map.put("flag", flag);*/
+		boolean flag = false;
+		try {
+			flag = AlipaySignature.rsaCheckV1(params, ALIPAY_PUBLIC_KEY, CHARSET,"RSA");
+		} catch (AlipayApiException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		map.put("flag", flag);
 		
 		map.remove("orderid");
 		map.remove("total_amount");

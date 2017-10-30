@@ -37,6 +37,9 @@
  	<!-- 配置用户验证OrderGoods类型 -->
  	<bean id="ordergoodsManager" class="com.gy.model.OrderGoods"></bean>
  	
+ 	<!-- 配置用户验证支付记录类型 -->
+ 	<bean id="payrecordManager" class="com.gy.model.PayRecord"></bean>
+ 	
  	<!-- 配置其他的实体类，预留位置 -->
  	
 </beans>

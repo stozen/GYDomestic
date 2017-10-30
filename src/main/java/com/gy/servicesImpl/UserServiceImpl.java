@@ -65,6 +65,16 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private TokenService tokenService;
 	
+	/**
+	 * 声明返回给客户端的状态码
+	 */
+	private String status;
+	
+	/**
+	 * 声明返回给客户端的信息
+	 */
+	private String message;
+	
 	public AccountService getAccountService() {
 		return accountService;
 	}
@@ -1025,7 +1035,7 @@ public class UserServiceImpl implements UserService {
 		String password = ((String)map.get("password")).trim();
 		String type = ((String)map.get("type")).trim();
 		String valicode = ((String)map.get("valicode")).trim();
-		String phone = ((String)map.get("mobile"));
+		String phone = ((String)map.get("username"));
 
 		verificationCode = new VerificationCode();
 		verificationCode = verificationCodeService.querysql("from VerificationCode vc where vc.mobile ="+"'"+phone+"'"+"and vc.verificationCode="+"'"+valicode+"'");
@@ -1089,7 +1099,7 @@ public class UserServiceImpl implements UserService {
 
 							switch (type) {
 							case "1":
-								String username = ((String)map.get("mobile")).trim();
+								String username = ((String)map.get("username")).trim();
 								if(!(username.equals("") || "".equals(username)) && !(password.equals("") || "".equals(password)))
 								{
 									String namesql = "from User u where u.username=" + "'" + username+"'"+"or mobile="+ "'" + username+"'";
@@ -1210,7 +1220,7 @@ public class UserServiceImpl implements UserService {
 								}
 								break;
 							case "3":
-								String mobile = ((String)map.get("mobile")).trim();
+								String mobile = ((String)map.get("username")).trim();
 								if(!(mobile.equals("") || "".equals(mobile)) && !(password.equals("") || "".equals(password)))
 								{
 									String namesql = "from User u where u.mobile=" + "'"+mobile+"'"+"or u.username="+"'"+mobile+"'";
@@ -1311,99 +1321,97 @@ public class UserServiceImpl implements UserService {
 		verificationCode = new VerificationCode();
 		verificationCode = verificationCodeService.querysql("from VerificationCode vc where vc.mobile ="+"'"+mobile+"'"+"and vc.verificationCode="+"'"+valicode+"'");
 		/*System.err.println("服务器端验证码："+valicodeServer);*/
-		if(verificationCode == null)
 		/*//获得国内验证码
 		String valicodeServer = DomesticMessage.getVerificationCode();*/
 			//获得国际验证码
 			/*String valicodeServer = ForeignMessage.getVerificationCode();*/
-			verificationCode = new VerificationCode();
-			verificationCode = verificationCodeService.querysql("from VerificationCode vc where vc.mobile ="+"'"+mobile+"'"+"and vc.verificationCode="+"'"+valicode+"'");
-			if(verificationCode == null)
+		verificationCode = new VerificationCode();
+		verificationCode = verificationCodeService.querysql("from VerificationCode vc where vc.mobile ="+"'"+mobile+"'"+"and vc.verificationCode="+"'"+valicode+"'");
 			/*//获得国内验证码
 			String valicodeServer = DomesticMessage.getVerificationCode();*/
 			//获得国际验证码
 			/*String valicodeServer = ForeignMessage.getVerificationCode();*/
 			
-			if(valicode.equals("") || "".equals(valicode))
+		if(valicode.equals("") || "".equals(valicode))
+		{
+			status = "0404";
+			message = "手机或者输入的验证在数据库中查找不到！";
+		}
+		else
+		{
+			Date endTime = new Date();
+			Date createTime = verificationCode.getCreateTime();
+			long diff = endTime.getTime()-createTime.getTime();
+			long day=diff/(24*60*60*1000);
+			long hour=(diff/(60*60*1000)-day*24);
+			long min=((diff/(60*1000))-day*24*60-hour*60);
+			System.err.println("分钟:"+min);
+			if(min>30)
 			{
-				status = "0404";
-				message = "手机或者输入的验证在数据库中查找不到！";
-				map.put("status", status);
-				map.put("message", message);
-				map.put("userid", "0");
+				status = "0403";
+				message = "输入验证码时间已经超过一分钟，请重新生成验证码！";
+				userid = 0;
+				verificationCodeService.delete(verificationCode.getVerificationCodeId());
 			}
 			else
 			{
-				Date endTime = new Date();
-				Date createTime = verificationCode.getCreateTime();
-				long diff = endTime.getTime()-createTime.getTime();
-				long day=diff/(24*60*60*1000);
-				long hour=(diff/(60*60*1000)-day*24);
-				long min=((diff/(60*1000))-day*24*60-hour*60);
-				System.err.println("分钟:"+min);
-				if(min>30)
+				//获得国内验证码
+				String valicodeServer = verificationCode.getVerificationCode();
+				/*1.先根据用户提供的手机号，查询数据库中是否存在这个用户如果存在则返回为真*/
+				/*1.1 先判断用户输入的内容不能为空 */
+				String sql = "from User u where u.mobile="+"'"+mobile+"'"+"or u.username="+"'"+mobile+"'";
+				User userdata = null;
+				if(valicode.equals("") || "".equals(valicode))
 				{
-					status = "0403";
-					message = "输入验证码时间已经超过一分钟，请重新生成验证码！";
+					status = "0404";
+					message = "用户输入的验证码有空！";
 					userid = 0;
-					verificationCodeService.delete(verificationCode.getVerificationCodeId());
 				}
 				else
 				{
-					//获得国内验证码
-					String valicodeServer = verificationCode.getVerificationCode();
-					/*1.先根据用户提供的手机号，查询数据库中是否存在这个用户如果存在则返回为真*/
-					/*1.1 先判断用户输入的内容不能为空 */
-					String sql = "from User u where u.mobile="+"'"+mobile+"'"+"or u.username="+"'"+mobile+"'";
-					User userdata = null;
-					if(valicode.equals("") || "".equals(valicode))
+					if(valicode.equals(valicodeServer))
 					{
-						status = "0404";
-						message = "用户输入的验证码有空！";
-						userid = 0;
-					}
-					else
-					{
-						if(valicode.equals(valicodeServer))
+						boolean judge = (mobile.equals("") || "".equals(mobile));
+						if(judge)
 						{
-							boolean judge = (mobile.equals("") || "".equals(mobile));
-							if(judge)
-							{
-								status = "0404";
-								message = "用户输入的手机号为空！";
-								userid = 0;
-							}
-							else
-							{
-								userdata = this.querysql(sql);
-								if(userdata!=null)
-								{
-									status = "0200";
-									message = "成功，进行下一步！";
-									userid = userdata.getUserid();
-								}
-								else
-								{
-									status = "0404";
-									message = "登录不成功，数据库中不存在这个账户！";
-									userid = 0;
-								}
-							}
+							status = "0404";
+							message = "用户输入的手机号为空！";
+							userid = 0;
 						}
 						else
 						{
-							status = "0404";
-							message = "验证码不对";
-							userid = 0;
+							userdata = this.querysql(sql);
+							if(userdata!=null)
+							{
+								status = "0200";
+								message = "成功，进行下一步！";
+								userid = userdata.getUserid();
+								map.put("status", status);
+								map.put("message", message);
+								map.put("userid", userid);
+							}
+							else
+							{
+								status = "0404";
+								message = "登录不成功，数据库中不存在这个账户！";
+								userid = 0;
+							}
 						}
+					}
+					else
+					{
+						status = "0404";
+						message = "验证码不对";
+						userid = 0;
 					}
 				}
 			}
-			map.remove("mobile");
-		    map.remove("valicode");
-		    map.put("status", status);
-		    map.put("message", message);
-		    map.put("userid", userid);
+		}
+		map.put("status", status);
+		map.put("message", message);
+		map.put("userid", userid);
+		map.remove("mobile");
+	    map.remove("valicode");
 }
 
 	/**
@@ -1416,7 +1424,7 @@ public class UserServiceImpl implements UserService {
 		String status = null;
 		String message = null;
 		int userid = 0;
-		String mobile = ((String)map.get("mobile")).trim();
+		String mobile = ((String)map.get("username")).trim();
 		String password = ((String)map.get("password")).trim();
 		String confirmpass = ((String)map.get("confirmpass")).trim();
 		
@@ -1429,6 +1437,7 @@ public class UserServiceImpl implements UserService {
 			status = "0404";
 			message = "手机号为空！";
 			userid = 0;
+			
 		}
 		else
 		{
@@ -1457,9 +1466,7 @@ public class UserServiceImpl implements UserService {
 						else
 						{
 							userdata.setPassword(confirmpass);
-							
 							this.update(userdata);
-							
 							status = "0200";
 							message = "更新密码成功！！！";
 							userid = userdata.getUserid();
@@ -1477,7 +1484,6 @@ public class UserServiceImpl implements UserService {
 			{
 				status = "0404";
 				message = "不存在这个账户，请重新输入！";
-				userid = 0;
 			}
 		}
 		
@@ -1488,5 +1494,5 @@ public class UserServiceImpl implements UserService {
 		map.put("message", message);
 		map.put("userid", userid);
 	}
-
+	
 }
