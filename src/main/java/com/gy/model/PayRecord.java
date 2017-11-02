@@ -1,7 +1,14 @@
 package com.gy.model;
 
+import java.util.Date;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
 
 /**
  * @author Chencongye
@@ -53,6 +60,16 @@ public class PayRecord {
 	 * 声明游戏渠道
 	 */
 	private String gameChanel;
+	
+	/**
+	 * 声明支付的电话 
+	 */
+	private String phone;
+	
+	/**
+	 * 声明支付时间
+	 */
+	private Date payTime;
 
 	/**
 	 * 声明无参构造函数s
@@ -60,36 +77,15 @@ public class PayRecord {
 	public PayRecord() {
 		// TODO Auto-generated constructor stub
 	}
-	
-	/**
-	 * 声明有参构造函数
-	 * @param payRecordId
-	 * @param payMoney
-	 * @param payStyle
-	 * @param payStatus
-	 * @param outTradeNumber
-	 * @param orderid
-	 * @param gamePackage
-	 * @param gameChanel
-	 */
-	public PayRecord(String payRecordId, String payMoney, String payStyle,
-			String payStatus, String outTradeNumber, String orderid,
-			String gamePackage, String gameChanel) {
-		super();
-		this.payRecordId = payRecordId;
-		this.payMoney = payMoney;
-		this.payStyle = payStyle;
-		this.payStatus = payStatus;
-		this.outTradeNumber = outTradeNumber;
-		this.orderid = orderid;
-		this.gamePackage = gamePackage;
-		this.gameChanel = gameChanel;
-	}
 
 	/**
 	 * 声明支付记录的id的get方法
 	 * @return
 	 */
+	@Id
+	@GenericGenerator(name="generator",strategy="uuid")
+	@GeneratedValue(generator="generator")
+	@Column(name="payRecordId",length=120,nullable=false,unique=true)
 	public String getPayRecordId() {
 		return payRecordId;
 	}
@@ -106,6 +102,7 @@ public class PayRecord {
 	 * 声明支付记录的金额的get方法
 	 * @return
 	 */
+	@Column(name="payMoney",length=30,nullable=false,insertable=true,updatable=true)
 	public String getPayMoney() {
 		return payMoney;
 	}
@@ -122,6 +119,7 @@ public class PayRecord {
 	 * 声明支付记录的类型的get方法
 	 * @return
 	 */
+	@Column(name="payStyle",length=8,nullable=false,insertable=true,updatable=true)
 	public String getPayStyle() {
 		return payStyle;
 	}
@@ -138,6 +136,7 @@ public class PayRecord {
 	 * 声明支付记录状态的get方法
 	 * @return
 	 */
+	@Column(name="payStatus",length=8,nullable=false,insertable=true,updatable=true)
 	public String getPayStatus() {
 		return payStatus;
 	}
@@ -151,9 +150,27 @@ public class PayRecord {
 	}
 
 	/**
+	 * 声明支付记录状态的get方法
+	 * @return
+	 */
+	@Column(name="payTime",length=6,nullable=false,insertable=true,updatable=true)
+	public Date getPayTime() {
+		return payTime;
+	}
+
+	/**
+	 * 声明支付记录的set方法
+	 * @param payTime
+	 */
+	public void setPayTime(Date payTime) {
+		this.payTime = payTime;
+	}
+
+	/**
 	 * 声明交易订单号的get方法
 	 * @return
 	 */
+	@Column(name="outTradeNumber",length=30,nullable=false,insertable=true,updatable=true)
 	public String getOutTradeNumber() {
 		return outTradeNumber;
 	}
@@ -170,6 +187,7 @@ public class PayRecord {
 	 * 声明交易记录订单的id
 	 * @return
 	 */
+	@Column(name="orderid",length=30,nullable=false,insertable=true,updatable=true)
 	public String getOrderid() {
 		return orderid;
 	}
@@ -186,6 +204,7 @@ public class PayRecord {
 	 * 声明交易记录订单的游戏名的get方法
 	 * @return
 	 */
+	@Column(name="gamePackage",length=50,nullable=false,insertable=true,updatable=true)
 	public String getGamePackage() {
 		return gamePackage;
 	}
@@ -202,6 +221,7 @@ public class PayRecord {
 	 * 声明交易记录的游戏渠道的get方法
 	 * @return
 	 */
+	@Column(name="gameChanel",length=30,nullable=false,insertable=true,updatable=true)
 	public String getGameChanel() {
 		return gameChanel;
 	}
@@ -214,18 +234,20 @@ public class PayRecord {
 		this.gameChanel = gameChanel;
 	}
 
-	/* 
-	 * 声明交易记录的toString方法
-	 * (non-Javadoc)
-	 * @see java.lang.Object#toString()
+	/**
+	 * 声明支付的手机号码
+	 * @return
 	 */
-	@Override
-	public String toString() {
-		return "PayRecord [payRecordId=" + payRecordId + ", payMoney="
-				+ payMoney + ", payStyle=" + payStyle + ", payStatus="
-				+ payStatus + ", outTradeNumber=" + outTradeNumber
-				+ ", orderid=" + orderid + ", gamePackage=" + gamePackage
-				+ ", gameChanel=" + gameChanel + "]";
+	@Column(name="phone",length=30,nullable=false,insertable=true,updatable=true)
+	public String getPhone() {
+		return phone;
 	}
-	
+
+	/**
+	 * 声明支付的手机号码
+	 * @param phone
+	 */
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
 }

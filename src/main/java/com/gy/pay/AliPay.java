@@ -9,7 +9,9 @@ import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -42,9 +44,14 @@ import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.request.AlipayTradeWapPayRequest;
 import com.alipay.api.response.AlipayOpenPublicTemplateMessageIndustryModifyResponse;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
+import com.gy.model.Game;
+import com.gy.model.Order;
 import com.gy.model.OrderGoods;
+import com.gy.model.PayRecord;
+import com.gy.model.User;
 import com.gy.services.OrderGoodsService;
 import com.gy.services.OrderService;
+import com.gy.services.PayRecordService;
 import com.paypal.api.payments.CreditCard;
 import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
@@ -68,6 +75,28 @@ public class AliPay {
 	 */
 	private String message;
 	
+	/**
+	 * 声明支付记录服务，实现自动依赖注入
+	 */
+	@Autowired
+	private PayRecordService payRecordService;
+	
+	/**
+	 * 声明支付记录的get方法
+	 * @return
+	 */
+	public PayRecordService getPayRecordService() {
+		return payRecordService;
+	}
+
+	/**
+	 * 声明支付记录的set方法
+	 * @param payRecordService
+	 */
+	public void setPayRecordService(PayRecordService payRecordService) {
+		this.payRecordService = payRecordService;
+	}
+
 	/**
 	 * 创建订单服务
 	 */
@@ -104,8 +133,6 @@ public class AliPay {
 		this.orderService = orderService;
 	}
 
-
-
 	/**
 	 * 设置订单详情服务
 	 * @param orderGoodsService
@@ -130,7 +157,7 @@ public class AliPay {
 	 */
 	
 	@RequestMapping(value="/pay",method=RequestMethod.POST)
-	public @ResponseBody Map<String, Object> checkOrder(@RequestBody Map map,@RequestHeader String token,HttpServletResponse servletRequest) {
+	public @ResponseBody Map<String, Object> checkOrder(@RequestBody Map map,@RequestHeader String token,HttpServletRequest servletRequest) {
 		// TODO Auto-generated method stub
 		/*商户网站唯一订单号*/
 		String out_trade_no = ((String) map.get("orderid")).trim();
@@ -183,6 +210,36 @@ public class AliPay {
 			        	status = "0200";
 			        	message = "支付成功！";
 			        	
+			        	Order order = orderGoods.getOrder();
+			            Game game = order.getGames();
+			            String gamePackage = game.getGamepackage();
+			            /*String gameChannels = game.getGameChannels();*/
+			            String goodname = orderGoods.getTitle();
+			            orderGoods.getTotalprice();
+			            PayRecord payRecord = new PayRecord();
+			            /*if(gameChannels.equals(""))
+			            {
+			            	payRecord.setGameChanel("");
+			            }
+			            else
+			            {
+			            	payRecord.setGameChanel(gameChannels);
+			            }*/
+			            /*payRecord.setGameChanel(gameChannels);*/
+			            payRecord.setGameChanel("网易之家");
+			            payRecord.setGamePackage(gamePackage);
+			            payRecord.setOutTradeNumber(out_trade_no);
+			            payRecord.setOrderid(out_trade_no);
+			            payRecord.setPayMoney(total_amount);
+			            payRecord.setPayStyle("支付宝");
+			            payRecord.setPayStatus("0");
+			            /*SimpleDateFormat sdfdate = new SimpleDateFormat("yyyyMMddHHmmss");
+			            System.err.println("时间日期:"+timestamp);*/
+			            payRecord.setPayTime(new Date());
+			            User user = order.getUser();
+			            payRecord.setPhone(user.getUsername());
+			            payRecordService.add(payRecord);
+			        	
 			        	map.put("status", status);
 			        	map.put("paydata", response.getBody());
 			        	map.put("message", message);
@@ -208,12 +265,23 @@ public class AliPay {
 		订单总金额，单位为元，精确到小数点后两位，取值范围[0.01,100000000]
 		String total_amount = ((String) map.get("total_amount")).trim();*/
 		
+		map.remove("orderid");
+		map.remove("total_amount");
+		map.remove("subject");
 		
-		/*JAVA服务端验证异步通知信息参数示例*/
+		return map;
+	}
+	
+	/*JAVA服务端验证异步通知信息参数示例*/
+	@RequestMapping(value="/notify",method=RequestMethod.POST)
+	public @ResponseBody Map<String, Object> notifyOrder(@RequestBody Map map,HttpServletRequest request) {
 		
+		/*//声明返回的信息
+		Map<String, Object> map = new HashMap<String,Object>();*/
+		String out_trade_no = (String) map.get("out_trade_no");
 		//获取支付宝POST过来反馈信息
 		Map<String,String> params = new HashMap<String,String>();
-		Map requestParams = ((HttpServletRequest) servletRequest).getParameterMap();
+		Map requestParams = request.getParameterMap();
 		for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext();) {
 		    String name = (String) iter.next();
 		    String[] values = (String[]) requestParams.get(name);
@@ -232,16 +300,28 @@ public class AliPay {
 		boolean flag = false;
 		try {
 			flag = AlipaySignature.rsaCheckV1(params, ALIPAY_PUBLIC_KEY, CHARSET,"RSA");
+			PayRecord payRecord = payRecordService.get(out_trade_no);
+			if(payRecord.getPayTime()!=null){
+                System.out.println("通知微信后台");
+                payRecord.setPayTime(new Date());
+                String phone=payRecord.getPhone();
+                payRecord.setPayStatus("1");
+                /*AppCustomer appCustomer=appCustomerService.getByPhone(phone);
+                float balance=appCustomer.getBalance();
+                balance+=Float.valueOf(map.get("total_fee"))/100;
+                appCustomer.setBalance(balance);
+                appCustomerService.update(appCustomer);*/
+                payRecordService.update(payRecord);
+                status = "0200";
+                message = "支付成功";
+            }
 		} catch (AlipayApiException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		map.put("flag", flag);
-		
-		map.remove("orderid");
-		map.remove("total_amount");
-		map.remove("subject");
-		
+		map.put("status", status);
+		map.put("message", message);
 		return map;
 	}
 	

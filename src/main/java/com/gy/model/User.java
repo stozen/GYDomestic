@@ -80,6 +80,11 @@ public class User implements Serializable {
 	private String type;
 	
 	/**
+	 * 创建用户登录状态
+	 */
+	private String loginStatus;
+	
+	/**
 	 * 创建引用游戏
 	 */
 	private Set<Game> games = new HashSet<Game>();
@@ -209,6 +214,23 @@ public class User implements Serializable {
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
 	}
+	
+	/**
+	 * 声明用户登录状态get方法
+	 * @return
+	 */
+	@Column(name="loginStatus",length=8,nullable=true)
+	public String getLoginStatus() {
+		return loginStatus;
+	}
+
+	/**
+	 * 声明用户登录状态的set方法
+	 * @param loginStatus
+	 */
+	public void setLoginStatus(String loginStatus) {
+		this.loginStatus = loginStatus;
+	}
 
 	/**
 	 * 创建用户的邮箱账号set和get方法
@@ -292,17 +314,5 @@ public class User implements Serializable {
 	public void setToken(Token token) {
 		this.token = token;
 	}
-	
-	/**
-	 * 创建toString方法
-	 */
-	@Override
-	public String toString() {
-		return "User [userid=" + userid + ", username=" + username
-				+ ", password=" + password + ", logintime=" + logintime
-				+ ", registtime=" + registtime + ", modifytime=" + modifytime
-				+ ", mobile=" + mobile + ", games=" + games + ", orders="
-				+ orders + "]";
-	}
-	
+		
 }

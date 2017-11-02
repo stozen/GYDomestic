@@ -88,7 +88,7 @@
 			<value>${c3p0.numHelperThreads}</value>
 		</property>                                                 
 	</bean>
-
+	
 	<!-- 配置Hibernate SessionFactry -->
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
 		<property name="dataSource" ref="dataSource"></property>
@@ -249,6 +249,21 @@
 	<!-- parent为transactionBese，表示支持事务 -->
  	<bean id="tokenService" parent="transactionBese"> 
     	<property name="target" ref="tokenServiceBase"></property> 
+	</bean>
+	
+	<!-- 配置payRecordDaoImpl实现类 -->
+ 	<bean id="payRecordDao" class="com.gy.daoImpl.PayRecordDaoImpl">
+ 		<property name="sessionFactory" ref="sessionFactory"></property>
+ 	</bean>
+	
+	<!-- 配置payRecordServiceImpl实现类 -->
+ 	<bean id="payRecordServiceBase" class="com.gy.servicesImpl.PayRecordServiceImpl">
+ 		<property name="payRecordDao" ref="payRecordDao"></property>
+ 	</bean>
+	
+	<!-- parent为transactionBese，表示支持事务 -->
+ 	<bean id="payRecordService" parent="transactionBese"> 
+    	<property name="target" ref="payRecordServiceBase"></property> 
 	</bean>
 	
  </beans>

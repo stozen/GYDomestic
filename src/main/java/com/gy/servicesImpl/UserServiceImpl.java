@@ -1,5 +1,8 @@
 package com.gy.servicesImpl;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -1132,7 +1135,7 @@ public class UserServiceImpl implements UserService {
 											if(this.save(user)){
 												status = "0200";
 												message = "用户名注册成功,但是没有游戏数据!";
-												User user1 = (User)this.querysql("from User where username="+"'"+user.getUsername()+"'");
+												User user1 = (User)this.querysql("from User where username="+"'"+username+"'");
 												userid = user1.getUserid();
 											}
 										}
@@ -1144,7 +1147,8 @@ public class UserServiceImpl implements UserService {
 											if(this.save(user)){
 												status = "0200";
 												message = "用户名注册成功,带有游戏数据!";
-												User user1 = (User)this.querysql("from User where username="+"'"+user.getUsername()+"'");
+												User user1 = (User)this.querysql("from User where username="+"'"+username+"'");
+												System.err.println("得到的用户"+user1);
 												userid = user1.getUserid();
 												/*2.生成Token给客户端*/
 												/*subject = JwtUtil.generalSubject(user1);
@@ -1331,78 +1335,87 @@ public class UserServiceImpl implements UserService {
 			String valicodeServer = DomesticMessage.getVerificationCode();*/
 			//获得国际验证码
 			/*String valicodeServer = ForeignMessage.getVerificationCode();*/
+		
 			
 		if(valicode.equals("") || "".equals(valicode))
 		{
 			status = "0404";
-			message = "手机或者输入的验证在数据库中查找不到！";
+			message = "用户输入的验证码为空！";
 		}
 		else
 		{
-			Date endTime = new Date();
-			Date createTime = verificationCode.getCreateTime();
-			long diff = endTime.getTime()-createTime.getTime();
-			long day=diff/(24*60*60*1000);
-			long hour=(diff/(60*60*1000)-day*24);
-			long min=((diff/(60*1000))-day*24*60-hour*60);
-			System.err.println("分钟:"+min);
-			if(min>30)
+			if(verificationCode==null)
 			{
-				status = "0403";
-				message = "输入验证码时间已经超过一分钟，请重新生成验证码！";
-				userid = 0;
-				verificationCodeService.delete(verificationCode.getVerificationCodeId());
+				status = "0404";
+				message = "数据库中不存在这个验证码!";
 			}
 			else
 			{
-				//获得国内验证码
-				String valicodeServer = verificationCode.getVerificationCode();
-				/*1.先根据用户提供的手机号，查询数据库中是否存在这个用户如果存在则返回为真*/
-				/*1.1 先判断用户输入的内容不能为空 */
-				String sql = "from User u where u.mobile="+"'"+mobile+"'"+"or u.username="+"'"+mobile+"'";
-				User userdata = null;
-				if(valicode.equals("") || "".equals(valicode))
+				Date endTime = new Date();
+				Date createTime = verificationCode.getCreateTime();
+				long diff = endTime.getTime()-createTime.getTime();
+				long day=diff/(24*60*60*1000);
+				long hour=(diff/(60*60*1000)-day*24);
+				long min=((diff/(60*1000))-day*24*60-hour*60);
+				System.err.println("分钟:"+min);
+				if(min>30)
 				{
-					status = "0404";
-					message = "用户输入的验证码有空！";
+					status = "0403";
+					message = "输入验证码时间已经超过一分钟，请重新生成验证码！";
 					userid = 0;
+					verificationCodeService.delete(verificationCode.getVerificationCodeId());
 				}
 				else
 				{
-					if(valicode.equals(valicodeServer))
+					//获得国内验证码
+					String valicodeServer = verificationCode.getVerificationCode();
+					/*1.先根据用户提供的手机号，查询数据库中是否存在这个用户如果存在则返回为真*/
+					/*1.1 先判断用户输入的内容不能为空 */
+					String sql = "from User u where u.mobile="+"'"+mobile+"'"+"or u.username="+"'"+mobile+"'";
+					User userdata = null;
+					if(valicode.equals("") || "".equals(valicode))
 					{
-						boolean judge = (mobile.equals("") || "".equals(mobile));
-						if(judge)
-						{
-							status = "0404";
-							message = "用户输入的手机号为空！";
-							userid = 0;
-						}
-						else
-						{
-							userdata = this.querysql(sql);
-							if(userdata!=null)
-							{
-								status = "0200";
-								message = "成功，进行下一步！";
-								userid = userdata.getUserid();
-								map.put("status", status);
-								map.put("message", message);
-								map.put("userid", userid);
-							}
-							else
-							{
-								status = "0404";
-								message = "登录不成功，数据库中不存在这个账户！";
-								userid = 0;
-							}
-						}
+						status = "0404";
+						message = "用户输入的验证码有空！";
+						userid = 0;
 					}
 					else
 					{
-						status = "0404";
-						message = "验证码不对";
-						userid = 0;
+						if(valicode.equals(valicodeServer))
+						{
+							boolean judge = (mobile.equals("") || "".equals(mobile));
+							if(judge)
+							{
+								status = "0404";
+								message = "用户输入的手机号为空！";
+								userid = 0;
+							}
+							else
+							{
+								userdata = this.querysql(sql);
+								if(userdata!=null)
+								{
+									status = "0200";
+									message = "成功，进行下一步！";
+									userid = userdata.getUserid();
+									map.put("status", status);
+									map.put("message", message);
+									map.put("userid", userid);
+								}
+								else
+								{
+									status = "0404";
+									message = "登录不成功，数据库中不存在这个账户！";
+									userid = 0;
+								}
+							}
+						}
+						else
+						{
+							status = "0404";
+							message = "验证码不对";
+							userid = 0;
+						}
 					}
 				}
 			}
@@ -1495,4 +1508,121 @@ public class UserServiceImpl implements UserService {
 		map.put("userid", userid);
 	}
 	
+	/* 
+	 * 提供给CP服务器登录验证
+	 * (non-Javadoc)
+	 * @see com.gy.services.UserService#checkUser(java.util.Map)
+	 */
+	@Override
+	public void checkUser(Map map) {
+		// TODO Auto-generated method stub
+		String token = (String) map.get("token");
+		String user_id = (String) map.get("userid");
+		/*Claims claim;
+		try {
+			claim = JwtUtil.parseJWT(token);
+		    String subject = claim.getSubject();
+		    System.err.println(subject);
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
+		
+		
+		int userid = Integer.parseInt(user_id);
+		if(user_id.equals("") || "".equals(user_id))
+		{
+			status = "0402";
+			message = "用户id为空";
+			user_id = "0"; 
+		}
+		else if(token.equals("") || "".equals(token))
+		{
+			status = "0403";
+			message = "输入的Token值为空!";
+		}
+		else
+		{
+			String query_sql = "from Token where userid="+"'"+user_id+"'"+"and token="+"'"+token+"'";
+			Token tokendata = tokenService.querysql(query_sql);
+			if(tokendata==null)
+			{
+				status = "0404";
+				message = "数据库中不存在!";
+				user_id = "0";
+			}
+			else
+			{
+				/*//验证Token是否过期
+				Claims claim;
+				try {
+					claim = JwtUtil.parseJWT(token);
+					String subject = claim.getSubject();
+					status = "0200";
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}*/
+			    status = "0200";
+			    message = "验证登录成功!";
+			}
+		}
+		
+		map.put("status", status);
+		map.put("message", message);
+		/*map.put("userid", user_id);*/
+	}
+	
+	/* 
+	 * 实现用户注销操作
+	 * (non-Javadoc)
+	 * @see com.gy.services.UserService#logout(java.util.Map)
+	 */
+	@Override
+	public void logout(Map map) {
+		// TODO Auto-generated method stub
+		String user_id = (String) map.get("userid");
+		if(user_id.equals("") || "".equals(user_id))
+		{
+			status = "0403";
+			message = "输入的用户id为空!";
+			map.put("userid", "0");
+		}
+		else
+		{
+			int userid = Integer.parseInt(user_id);
+			User userdata =  this.query(userid);
+			if(userdata==null)
+			{
+				status = "0404";
+				message = "数据库中不存在这个账户";
+				user_id = "0";
+			}
+			else
+			{
+				/*获得用户登录的状态*/
+				String login_status = userdata.getLoginStatus();
+				if(login_status.equals("0"))
+				{
+					status = "0604";
+					message = "用户未登录状态!";
+					user_id = user_id;
+				}
+				else if(login_status.equals("1"))
+				{
+					String logout_status = "0";
+					userdata.setLoginStatus(logout_status);
+					status = "0200";
+					message = "注销成功!";
+					user_id = user_id;
+					this.update(userdata);
+				}
+			}
+		}
+		map.remove("userid");
+		map.put("status", status);
+		map.put("message", message);
+		map.put("userid", user_id);
+	}
 }

@@ -108,4 +108,13 @@ public interface UserService {
 	 */
 	public void forgetpasstwo(Map map);
 	
+	/**
+	 * 实现CP服务器验证用户登录情况
+	 */
+	public void checkUser(Map map);
+	
+	/**
+	 * 实现用户注销事件
+	 */
+	public void logout(Map map);
 }

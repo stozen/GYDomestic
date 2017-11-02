@@ -173,7 +173,7 @@ public class JwtUtil {
 		long ttlMillis = date.getTime();
 		long mills = 2*60*60*1000;
 		ttlMillis+=mills;
-		String token = jwtUtil.createJWT(String.valueOf(RandomCode.getRandNum(1, 9999)), subject, 2);
+		String token = jwtUtil.createJWT(String.valueOf(RandomCode.getRandNum(1, 9999)), subject, 60);
 		System.err.println("生成的Token为："+token);
 		
 		Claims claims = jwtUtil.parseJWT(token);

@@ -164,4 +164,21 @@ public class UserControl {
 		userService.forgetpasstwo(map);
         return map;
 	}
+	
+	/**
+	 * 验证易捷服务器的Token
+	 */
+	@RequestMapping(value="checkLogin",method = RequestMethod.POST)
+	public @ResponseBody Map<String, Object> checkUser(@RequestBody Map map) {
+		// TODO Auto-generated method stub
+		userService.checkUser(map);
+		return map;
+	}
+	
+	@RequestMapping(value="logout",method = RequestMethod.PUT)
+	public @ResponseBody Map<String, Object> logout(@RequestBody Map map) {
+		// TODO Auto-generated method stub
+		userService.logout(map);
+		return map;
+	}
 }

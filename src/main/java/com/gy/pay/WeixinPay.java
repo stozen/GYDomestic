@@ -26,12 +26,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 
+import com.gy.model.Game;
+import com.gy.model.Goods;
+import com.gy.model.Order;
 import com.gy.model.OrderGoods;
+import com.gy.model.PayRecord;
+import com.gy.model.User;
 import com.gy.pay.PrepayIdRequestHandler;
 import com.gy.pay.ConstantUtil;
 import com.gy.pay.MD5Util;
 import com.gy.pay.WXUtil;
 import com.gy.services.OrderGoodsService;
+import com.gy.services.PayRecordService;
 
 
 @Controller
@@ -56,6 +62,12 @@ public class WeiXinPay {
 	private OrderGoodsService orderGoodsService;
 	
 	/**
+	 * 声明支付记录服务，实现自动依赖注入
+	 */
+	@Autowired
+	private PayRecordService payRecordService;
+	
+	/**
 	 * 获取订单详情服务
 	 * @return
 	 */
@@ -71,6 +83,22 @@ public class WeiXinPay {
 		this.orderGoodsService = orderGoodsService;
 	}
     
+	/**
+	 * 实现支付记录的get方法
+	 * @return
+	 */
+	public PayRecordService getPayRecordService() {
+		return payRecordService;
+	}
+
+	/**
+	 * 实现支付记录的set方法
+	 * @param payRecordService
+	 */
+	public void setPayRecordService(PayRecordService payRecordService) {
+		this.payRecordService = payRecordService;
+	}
+
 	@ResponseBody 
     @RequestMapping("/pay")
     public Map<String, Object> getOrder(@RequestBody Map map,@RequestHeader String token,HttpServletRequest request, HttpServletResponse response)
@@ -118,7 +146,7 @@ public class WeiXinPay {
 	        System.out.println("时间:"+time);
 	        int randomNum = (int)((Math.random()*9+1)*1000);
 	        /*String number = time+randomNum+out_trade_no;*/
-	        String number = time;
+	        String number = time+out_trade_no;
 	        System.err.println("订单号:"+number);
 	        prepayReqHandler.setParameter("out_trade_no", number);
 	        /*prepayReqHandler.setParameter("sign_type","MD5");*/
@@ -141,22 +169,47 @@ public class WeiXinPay {
 	        prepayReqHandler.setGateUrl(ConstantUtil.GATEURL);
 	        String prepayid = prepayReqHandler.sendPrepay();
 	        
-	        /*String signni = "appid=" + ConstantUtil.APP_ID + "&noncestr=" + nonce_str + "&package=Sign=WXPay&partnerid="
-                    + ConstantUtil.MCH_ID  + "&prepayid=" + prepayid + "&timestamp=" + timestamp + "&key="
-                    + ConstantUtil.APP_KEY;
-            System.out.println("签名之前字符串:"+signni);*/
 	        System.err.println("之前生成的签名:"+sign);
 	        // 若获取prepayid成功，将相关信息返回客户端
 	        if (prepayid != null && !prepayid.equals("")) {
 	        	
 	        	System.err.println("签名之后的时间："+timestamp);
-	            /*String signs = "appid=" + ConstantUtil.APP_ID +"&body="+body+"&mch_id="+ConstantUtil.MCH_ID +"&nonce_str=" + nonce_str +"&notify_url="+ConstantUtil.NOTIFY_URL+"&out_trade_no="+number+"&sign_type="+"MD5"+"&spbill_create_ip="+spbill_create_ip+ "&time_start=" + timestamp +"&total_fee="+String.valueOf(total_fee)+"&trade_type="+"APP"+ "&key="
-	                    + ConstantUtil.PARTNER_KEY;*/
 	            
 	            String signs = "appid=" + ConstantUtil.APP_ID + "&noncestr=" + nonce_str + "&package=Sign=WXPay&partnerid="
 	                    + ConstantUtil.PARTNER_ID + "&prepayid=" + prepayid + "&timestamp=" + timestamp + "&key="
 	                    + ConstantUtil.APP_KEY;
 	            /*System.out.println("签名之前字符串:"+signs);*/
+	            
+	            
+	            Order order = orderGoods.getOrder();
+	            Game game = order.getGames();
+	            String gamePackage = game.getGamepackage();
+	            /*String gameChannels = game.getGameChannels();*/
+	            String goodname = orderGoods.getTitle();
+	            orderGoods.getTotalprice();
+	            PayRecord payRecord = new PayRecord();
+	            /*if(gameChannels.equals(""))
+	            {
+	            	payRecord.setGameChanel("");
+	            }
+	            else
+	            {
+	            	payRecord.setGameChanel(gameChannels);
+	            }*/
+	            /*payRecord.setGameChanel(gameChannels);*/
+	            payRecord.setGameChanel("网易之家");
+	            payRecord.setGamePackage(gamePackage);
+	            payRecord.setOutTradeNumber(number);
+	            payRecord.setOrderid(out_trade_no);
+	            payRecord.setPayMoney(total.toString());
+	            payRecord.setPayStyle("微信");
+	            payRecord.setPayStatus("0");
+	            SimpleDateFormat sdfdate = new SimpleDateFormat("yyyyMMddHHmmss");
+	            System.err.println("时间日期:"+timestamp);
+	            payRecord.setPayTime(new Date());
+	            User user = order.getUser();
+	            payRecord.setPhone(user.getUsername());
+	            payRecordService.add(payRecord);
 	            map.put("code", 0);
 	            map.put("info", "success");
 	            map.put("prepayid", prepayid);
@@ -167,7 +220,6 @@ public class WeiXinPay {
 	             */
 	            /*map.put("sign", MD5Util.MD5Encode(signs, "utf8").toUpperCase());*/
 	            map.put("sign",MD5Util.MD5Encode(signs, "utf8").toUpperCase());
-	            /*System.err.println("之后生成的签名:"+MD5Util.MD5Encode(signs, "utf8").toUpperCase());*/
 	            System.err.println("之后生成的签名:"+MD5Util.MD5Encode(signs, "utf8").toUpperCase());
 	            map.put("appid", ConstantUtil.APP_ID);
 	            map.put("timestamp", timestamp);  //等于请求prepayId时的time_start
@@ -190,13 +242,15 @@ public class WeiXinPay {
      * @param response
      * @throws IOException
      */
-    /*@RequestMapping(value = "/notify")
+    @RequestMapping(value = "/notify")
     public void getnotify(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         System.out.println("微信支付回调");
         PrintWriter writer = response.getWriter();
         InputStream inStream = request.getInputStream();
         ByteArrayOutputStream outSteam = new ByteArrayOutputStream();
+        String out_trade_no = request.getParameter("out_trade_no");
+        System.err.println("订单编号:"+out_trade_no);
         byte[] buffer = new byte[1024];
         int len = 0;
         while ((len = inStream.read(buffer)) != -1) {
@@ -208,9 +262,9 @@ public class WeiXinPay {
         System.out.println("微信支付通知结果：" + result);
         Map<String, String> map = null;
         try {
-            *//**
+            /**
              * 解析微信通知返回的信息
-             *//*
+             */
             map = XMLUtil.doXMLParse(result);
         } catch (JDOMException e) {
             // TODO Auto-generated catch block
@@ -221,26 +275,27 @@ public class WeiXinPay {
         if (map.get("return_code").equals("SUCCESS")) {
             if (map.get("result_code").equals("SUCCESS")) {
                 System.out.println("充值成功！");
-                PayRecord payRecord=payRecordService.get(Long.valueOf(map.get("out_trade_no")));
-                System.out.println("订单号："+Long.valueOf(map.get("out_trade_no")));
-                System.out.println("payRecord.getPayTime():"+payRecord.getPayTime()==null+","+payRecord.getPayTime());
+                PayRecord payRecord = payRecordService.get(out_trade_no);
+                System.err.println("支付情况:"+payRecord);
+                /*System.out.println("订单号："+Long.valueOf(map.get("out_trade_no")));*/
+                /*System.out.println("payRecord.getPayTime():"+payRecord.getPayTime()==null+","+payRecord.getPayTime());*/
                 //判断通知是否已处理，若已处理，则不予处理
-                if(payRecord.getPayTime()==null){
+                if(payRecord.getPayTime()!=null){
                     System.out.println("通知微信后台");
                     payRecord.setPayTime(new Date());
                     String phone=payRecord.getPhone();
-                    AppCustomer appCustomer=appCustomerService.getByPhone(phone);
+                    payRecord.setPayStatus("1");
+                    /*AppCustomer appCustomer=appCustomerService.getByPhone(phone);
                     float balance=appCustomer.getBalance();
                     balance+=Float.valueOf(map.get("total_fee"))/100;
                     appCustomer.setBalance(balance);
-                    appCustomerService.update(appCustomer);
+                    appCustomerService.update(appCustomer);*/
                     payRecordService.update(payRecord);
-                    String notifyStr = XMLUtil.setXML("SUCCESS", "");
+                    String notifyStr = XMLUtil.setXML("SUCCESS", "支付成功!");
                     writer.write(notifyStr);
                     writer.flush();
                 }
             }
         }
-    }*/
-
+    }
 }
