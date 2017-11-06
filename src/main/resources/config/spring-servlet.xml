@@ -65,7 +65,12 @@
 	                    	<value>application/json;charset=UTF-8</value> 
 	                        <value>text/html;charset=UTF-8</value> 
 	                    </list> 
-	                </property> 
+	                </property>
+	                <!-- <property name="objectMapper">  
+	                    <bean class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">  
+	                       <property name="modulesToInstall" value="com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module"/>  
+	                    </bean>
+                	</property>  -->
 	            </bean> 
 	        </list> 
 	    </property> 

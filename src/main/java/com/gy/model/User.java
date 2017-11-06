@@ -21,6 +21,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * @author Chencongye
  * @version 0.0.1
@@ -31,7 +33,7 @@ import org.hibernate.annotations.GenericGenerator;
 @SuppressWarnings("serial")
 @Entity
 @Table(name="tb_gyuser",catalog="db_gydomestic")
-public class User implements Serializable {
+public class User{
 	
 	/**
 	 * 创建ID字段
@@ -252,8 +254,8 @@ public class User implements Serializable {
 	/*@Column(name="game",length=20,nullable=true)
 	@OneToMany(mappedBy="user",cascade=CascadeType.ALL,fetch=FetchType.EAGER)
 	@JoinColumn(name="userid")*/
-	@OneToMany
-	@Cascade(value={CascadeType.ALL})
+	@OneToMany(fetch=FetchType.LAZY)
+	@Cascade(value={CascadeType.SAVE_UPDATE,  CascadeType.DELETE_ORPHAN,CascadeType.ALL})
 	@JoinColumn(name="userid")
 	public Set<Game> getGames() {
 		return games;
@@ -270,7 +272,7 @@ public class User implements Serializable {
 	/*@Column(name="order",length=30,nullable=false)
 	@OneToMany(mappedBy="user",cascade=javax.persistence.CascadeType.ALL)*/
 	@OneToMany
-	@Cascade(value={CascadeType.ALL})
+	@Cascade(value={CascadeType.SAVE_UPDATE,  CascadeType.DELETE_ORPHAN,CascadeType.ALL})
 	@JoinColumn(name="userid")
 	public Set<Order> getOrders() {
 		return orders;
@@ -305,7 +307,7 @@ public class User implements Serializable {
 	 * @return
 	 */
 	@OneToOne
-	@Cascade(value={CascadeType.ALL})
+	@Cascade(value={CascadeType.SAVE_UPDATE,  CascadeType.DELETE_ORPHAN,CascadeType.ALL})
 	@JoinColumn(name="userid")
 	public Token getToken() {
 		return token;

@@ -40,6 +40,12 @@
  	<!-- 配置用户验证支付记录类型 -->
  	<bean id="payrecordManager" class="com.gy.model.PayRecord"></bean>
  	
+ 	<!-- 配置阿里支付配置类型 -->
+ 	<bean id="aliPayConfigManager" class="com.gy.model.AliPayConfig"></bean>
+ 	
+ 	<!-- 配置微信阿里支付配置类型 -->
+ 	<bean id="weixinPayConfigManager" class="com.gy.model.WeixinPayConfig"></bean>
+ 	
  	<!-- 配置其他的实体类，预留位置 -->
  	
 </beans>

@@ -41,6 +41,22 @@ public class PrepayIdRequestHandler extends RequestHandler {
         String sign = MD5Util.MD5Encode(params, "utf8");
         return sign.toUpperCase();
     }
+    
+    public String createMD5Sign(String APP_KEY) {
+        StringBuffer sb = new StringBuffer();
+        Set es = super.getAllParameters().entrySet();
+        Iterator it = es.iterator();
+        while (it.hasNext()) {
+            Map.Entry entry = (Map.Entry) it.next();
+            String k = (String) entry.getKey();
+            String v = (String) entry.getValue();
+            sb.append(k + "=" + v + "&");
+        }
+        System.err.println("输入的参数:"+sb);
+        String params=sb.append("key="+APP_KEY).substring(0);
+        String sign = MD5Util.MD5Encode(params, "utf8");
+        return sign.toUpperCase();
+    }
 
     // 提交预支付
     public String sendPrepay() throws Exception {

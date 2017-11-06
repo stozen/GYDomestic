@@ -266,4 +266,33 @@
     	<property name="target" ref="payRecordServiceBase"></property> 
 	</bean>
 	
+	<!-- 配置AliPayConfigDaoImpl实现类 -->
+ 	<bean id="aliPayConfigDao" class="com.gy.daoImpl.AliPayConfigDaoImpl">
+ 		<property name="sessionFactory" ref="sessionFactory"></property>
+ 	</bean>
+	
+	<!-- 配置AliPayConfigServiceImpl实现类 -->
+ 	<bean id="aliPayConfigServiceBase" class="com.gy.servicesImpl.AliPayConfigServiceImpl">
+ 		<property name="aliPayConfigDao" ref="aliPayConfigDao"></property>
+ 	</bean>
+	
+	<!-- parent为transactionBese，表示支持事务 -->
+ 	<bean id="aliPayConfigService" parent="transactionBese"> 
+    	<property name="target" ref="aliPayConfigServiceBase"></property> 
+	</bean>
+	
+	<!-- 配置WeixinAliPayConfigDaoImpl实现类 -->
+ 	<bean id="weixinPayConfigDao" class="com.gy.daoImpl.WeixinPayConfigDaoImpl">
+ 		<property name="sessionFactory" ref="sessionFactory"></property>
+ 	</bean>
+	
+	<!-- 配置WeixinConfigServiceImpl实现类 -->
+ 	<bean id="weixinPayConfigServiceBase" class="com.gy.servicesImpl.WeixinPayConfigServiceImpl">
+ 		<property name="weixinPayConfigDao" ref="weixinPayConfigDao"></property>
+ 	</bean>
+	
+	<!-- parent为transactionBese，表示支持事务 -->
+ 	<bean id="weixinPayConfigService" parent="transactionBese"> 
+    	<property name="target" ref="weixinPayConfigServiceBase"></property> 
+	</bean>
  </beans>

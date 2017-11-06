@@ -17,6 +17,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * @author Chencongye
  * @version 0.0.1
@@ -62,6 +64,7 @@ public class Game implements Serializable {
 	/**
 	 * 创建游戏和订单之间的一对多关系
 	 */
+	@JsonIgnoreProperties(value={"transportOrders"}) 
 	private Set<Order> order;
 	
 	/**
@@ -146,7 +149,7 @@ public class Game implements Serializable {
 	 * 创建用户和游戏之间的关联关系
 	 * @return
 	 */
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.EAGER)
 	@Cascade(value={CascadeType.ALL})
 	@JoinColumn(name="userid")
 	public User getUser() {
@@ -162,7 +165,7 @@ public class Game implements Serializable {
 	 * @return
 	 */
 	@OneToMany
-	@Cascade(value={CascadeType.ALL})
+	@Cascade(value={CascadeType.SAVE_UPDATE,  CascadeType.DELETE_ORPHAN,CascadeType.ALL})
 	@JoinColumn(name="gameid")
 	public Set<Order> getOrder() {
 		return order;

@@ -11,18 +11,19 @@ import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.gy.dao.GameDao;
-import com.gy.model.Game;
+import com.gy.dao.AliPayConfigDao;
+import com.gy.model.AliPayConfig;
+import com.gy.model.WeixinPayConfig;
 
 /**
  * @author Chencongye
  * @version 0.0.1
- * @introduce 这是游戏数据库操作实现层
- * @date 2017.9.12
+ * @date 2017-10-25
+ * @introduce 这是阿里支付的配置dao层接口的实现层
  */
 
 @Repository
-public class GameDaoImpl implements GameDao {
+public class AliPayConfigDaoImpl implements AliPayConfigDao {
 
 	/**
 	 * 创建Hibernate的会话工厂类
@@ -31,18 +32,31 @@ public class GameDaoImpl implements GameDao {
 	private SessionFactory sessionFactory;
 	
 	/**
-	 * 创建事务
+	 * 创建事务管理
 	 */
 	private Transaction tx;
 	
+	/**
+	 * 声明查询语句
+	 */
+	private Query query;
+	
+	/**
+	 * 声明Hibernate的会话工厂引用的get方法
+	 * @return
+	 */
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}
 
+	/**
+	 * 声明Hibernate的会话工厂引用的set方法
+	 * @param sessionFactory
+	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
 	/**
 	 * 创建获得Session对象
 	 * @return
@@ -51,172 +65,23 @@ public class GameDaoImpl implements GameDao {
 		return this.getSessionFactory().openSession();
 	}
 	
-	/**
-	 * 创建获得查询游戏功能
-	 * @return Game
+	/* 
+	 * 实现通过id来查询阿里支付的配置信息
+	 * (non-Javadoc)
+	 * @see com.gy.dao.AliPayConfigDao#queryAliPayConfigId(java.lang.String)
 	 */
 	@Override
-	public Game query(int gameid) {
+	public AliPayConfig queryAliPayConfigId(String aliPayConfigId) {
 		// TODO Auto-generated method stub
 		Session session = getSession();
-		Game game = null;
-		try {
-			game = (Game)session.get(Game.class, gameid);
-			Hibernate.initialize(game);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			if(session!=null){
-				session.close();
-			}
-			/*if(sessionFactory!=null){
-				sessionFactory.close();
-			}*/
-		}
-		return game;
-	}
-
-	/**
-	 * 创建获得查询所有游戏功能
-	 * @return Game
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<Game> queryAll() {
-		// TODO Auto-generated method stub
-		List<Game> games = new ArrayList<Game>();
-		Session session = getSession();
+		AliPayConfig aliPayConfig = null;
 		try {
 			tx = session.beginTransaction();
-			games = (List<Game>) session.createSQLQuery("select gameid,gameChannels,gamename,gamepackage,remark,userid from tb_gygame group by gamepackage having(count(gamepackage)>1)").addEntity(Game.class).list();
-			Hibernate.initialize(games);
+			session.get(AliPayConfig.class, aliPayConfigId);
 			tx.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			if(tx!=null)
-			{
-				tx.rollback();
-			}
-			e.printStackTrace();
-		} /*finally {
-			if(session!=null)
-			{
-				session.close();
-			}
-		}*/
-		
-		return games;
-	}
-
-	/**
-	 * 根据条件来查询游戏
-	 * @return Game
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public Game querysql(String sql) {
-		// TODO Auto-generated method stub
-		Session session = getSession();
-		Game game = null;
-		try {
-			tx = session.beginTransaction();
-			Query query = session.createQuery(sql);
-			List<Game> list = new ArrayList<Game>();
-			Hibernate.initialize(game);
-			list = query.list();
-			if(list!=null && list.size()>0){
-				game = (Game)list.get(0);
-			}
-			else
-			{
-				System.err.println("数组越界,用户输入的内容有空值！！！");
-			}
-			tx.commit();
-			return game;
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			if(tx!=null)
-			{
-				tx.rollback();
-			}
-			e.printStackTrace();
-		} finally {
-			/*if(session!=null)
-			{
-				session.close();
-			}*/
-		}
-		return game;
-	}
-
-	/**
-	 * 根据条件来查询游戏
-	 * @return Game
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public Game queryBysql(String sql) {
-		// TODO Auto-generated method stub
-		Session session = getSession();
-		Game game = null;
-		try {
-			tx = session.beginTransaction();
-			Query query = session.createQuery(sql);
-			List<Game> list = new ArrayList<Game>();
-			Hibernate.initialize(game);
-			list = query.list();
-			if(list!=null && list.size()>0){
-				game = (Game)list.get(0);
-			}
-			else
-			{
-				System.err.println("数组越界,用户输入的内容有空值！！！");
-			}
-			tx.commit();
-			return game;
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			if(tx!=null)
-			{
-				tx.rollback();
-			}
-			e.printStackTrace();
-		} finally {
-			if(session!=null)
-			{
-				session.close();
-			}
-		}
-		return game;
-	}
-
-	/**
-	 * 创建添加游戏功能
-	 * @return Game
-	 */
-	@Override
-	public boolean save(Game game) {
-		// TODO Auto-generated method stub
-		Session session = getSession();
-		boolean flag = false;
-		try {
-			tx = session.beginTransaction();
-			int i = (Integer) session.save(game);
-			Hibernate.initialize(game);
-			if(i>0)
-			{
-				flag = true;
-			}
-			else{
-				flag = false;
-			}
-			session.refresh(game);
-			tx.commit();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			if(tx!=null)
-			{
+			if (tx!=null) {
 				tx.rollback();
 			}
 			e.printStackTrace();
@@ -225,23 +90,134 @@ public class GameDaoImpl implements GameDao {
 				session.close();
 			}
 		}
-		return flag;
+		return aliPayConfig;
 	}
 
-	/**
-	 * 实现更新或者添加游戏
-	 * @return Game
+	/* 
+	 * 实现查询所有的阿里支付的配置信息
+	 * (non-Javadoc)
+	 * @see com.gy.dao.AliPayConfigDao#queryAllAliPayConfig()
 	 */
 	@Override
-	public boolean saveorupdate(Game game) {
+	public List<AliPayConfig> queryAllAliPayConfig() {
+		// TODO Auto-generated method stub
+		List<AliPayConfig> aliPayConfig = new ArrayList<AliPayConfig>();
+		Session session = getSession();
+		try {
+			tx = session.beginTransaction();
+			aliPayConfig = session.createQuery("from AliPayConfig").list();
+			Hibernate.initialize(aliPayConfig);
+			tx.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			if(tx!=null)
+			{
+				tx.rollback();
+			}
+			e.printStackTrace();
+		} finally {
+			if(session!=null)
+			{
+				session.close();
+			}
+		}
+		return aliPayConfig;
+	}
+
+	/* 
+	 * 实现通过包名来查询阿里支付的配置信息
+	 * (non-Javadoc)
+	 * @see com.gy.dao.AliPayConfigDao#queryGamepackage(java.lang.String)
+	 */
+	@Override
+	public AliPayConfig queryGamepackage(String gamePacakge) {
+		// TODO Auto-generated method stub
+		AliPayConfig aliPayConfig = null;
+		Session session = getSession();
+		try {
+			tx = session.beginTransaction();
+			List<AliPayConfig> list = new ArrayList<AliPayConfig>();
+			Query query =  session.createQuery("from AliPayConfig where GAME_PACKAGE="+"'"+gamePacakge+"'");
+			list = query.list();
+			if(list!=null && list.size()>0){
+				aliPayConfig = (AliPayConfig)list.get(0);
+			}
+			else
+			{
+				System.err.println("数组越界,用户输入的内容有空值！！！");
+			}
+			Hibernate.initialize(aliPayConfig);
+			tx.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			if(tx!=null)
+			{
+				tx.rollback();
+			}
+			e.printStackTrace();
+		} finally {
+			if(session!=null)
+			{
+				session.close();
+			}
+		}
+		return aliPayConfig;
+	}
+
+	/* 
+	 * 实现通过sql语句来查询阿里支付的配置信息
+	 * (non-Javadoc)
+	 * @see com.gy.dao.AliPayConfigDao#queryBysql(java.lang.String)
+	 */
+	@Override
+	public AliPayConfig queryBysql(String sql) {
+		// TODO Auto-generated method stub
+		Session session = getSession();
+		AliPayConfig aliPayConfig = null;
+		try {
+			tx = session.beginTransaction();
+			Query query = session.createQuery(sql);
+			List<AliPayConfig> list = new ArrayList<AliPayConfig>();
+			Hibernate.initialize(aliPayConfig);
+			list = query.list();
+			if(list!=null && list.size()>0){
+				aliPayConfig = (AliPayConfig)list.get(0);
+			}
+			else
+			{
+				System.err.println("数组越界,用户输入的内容有空值！！！");
+			}
+			tx.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			if(tx!=null)
+			{
+				tx.rollback();
+			}
+			e.printStackTrace();
+		} finally {
+			if(session!=null)
+			{
+				session.close();
+			}
+		}
+		return aliPayConfig;
+	}
+
+	/* 
+	 * 实现添加阿里支付的配置信息
+	 * (non-Javadoc)
+	 * @see com.gy.dao.AliPayConfigDao#addAliPayConfig(com.gy.model.AliPayConfig)
+	 */
+	@Override
+	public boolean addAliPayConfig(AliPayConfig aliPayConfig) {
 		// TODO Auto-generated method stub
 		Session session = getSession();
 		boolean flag = false;
 		try {
 			tx = session.beginTransaction();
-			session.saveOrUpdate(game);
-			Hibernate.initialize(game);
-			session.refresh(game);
+			session.save(aliPayConfig);
+			Hibernate.initialize(aliPayConfig);
 			flag = true;
 			tx.commit();
 		} catch (Exception e) {
@@ -259,31 +235,52 @@ public class GameDaoImpl implements GameDao {
 		return flag;
 	}
 
-	/**
-	 * 创建批量添加游戏功能
+	/* 
+	 * 实现更新或者保存阿里支付的配置信息
+	 * (non-Javadoc)
+	 * @see com.gy.dao.AliPayConfigDao#saveOrUpdateAliPayConfig(com.gy.model.AliPayConfig)
 	 */
 	@Override
-	public void saveAll(Game[] games) {
+	public boolean saveOrUpdateAliPayConfig(AliPayConfig aliPayConfig) {
 		// TODO Auto-generated method stub
-		getSession().saveOrUpdate(games);
-		Hibernate.initialize(games);
-	}
-
-	/**
-	 * 创建删除游戏功能
-	 * @return Game
-	 */
-	@Override
-	public boolean delete(int gameid) {
-		// TODO Auto-generated method stub
-		Game game = query(gameid);
 		Session session = getSession();
 		boolean flag = false;
 		try {
 			tx = session.beginTransaction();
-			session.refresh(game);
-			session.delete(game);
-			Hibernate.initialize(game);
+			session.saveOrUpdate(aliPayConfig);
+			Hibernate.initialize(aliPayConfig);
+			flag = true;
+			tx.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			if(tx!=null)
+			{
+				tx.rollback();
+			}
+			e.printStackTrace();
+		} finally {
+			if(session!=null) {
+				session.close();
+			}
+		}
+		return flag;
+	}
+
+	/* 
+	 * 实现通过id来删除阿里支付的配置信息
+	 * (non-Javadoc)
+	 * @see com.gy.dao.AliPayConfigDao#deleteAliPayConfigId(int)
+	 */
+	@Override
+	public boolean deleteAliPayConfigId(String aliPayConfigId) {
+		// TODO Auto-generated method stub
+		AliPayConfig aliPayConfig = queryAliPayConfigId(aliPayConfigId);
+		Session session = getSession();
+		boolean flag = false;
+		try {
+			tx = session.beginTransaction();
+			session.delete(aliPayConfig);
+			Hibernate.initialize(aliPayConfig);
 			flag = true;
 			tx.commit();
 		} catch (Exception e) {
@@ -301,80 +298,21 @@ public class GameDaoImpl implements GameDao {
 		return flag;
 	}
 
-	/**
-	 * 创建删除所有游戏功能
-	 * @return Game
-	 */
-	@SuppressWarnings("unused")
-	@Override
-	public boolean deleteAll(Game[] games) {
-		// TODO Auto-generated method stub
-		boolean flag = false;
-		try {
-			getSession().delete(games);
-			Hibernate.initialize(games);
-			flag = true;
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return false;
-	}
-
-	/**
-	 * 创建更新游戏功能
-	 * @return Game
+	/* 
+	 * 实现更新阿里支付的配置信息
+	 * (non-Javadoc)
+	 * @see com.gy.dao.AliPayConfigDao#updateAliPayConfig(com.gy.model.AliPayConfig)
 	 */
 	@Override
-	public boolean update(Game game) {
+	public boolean updateAliPayConfig(AliPayConfig aliPayConfig) {
 		// TODO Auto-generated method stub
 		Session session = getSession();
 		boolean flag = false;
 		try {
 			tx = session.beginTransaction();
-			session.refresh(game);
-			session.update(game);
-			Hibernate.initialize(game);
+			session.update(aliPayConfig);
+			Hibernate.initialize(aliPayConfig);
 			flag = true;
-			tx.commit();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			if (tx!=null) {
-				tx.rollback();
-			}
-			e.printStackTrace();
-		} finally {
-			if(session!=null) {
-				session.close();
-			}
-		}
-		return flag;
-	}
-
-	/**
-	 * 创建批量更新游戏功能
-	 * @return Game
-	 */
-	@Override
-	public boolean updateAll(Game[] games) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	/**
-	 * 创建批量插入游戏功能
-	 * @return Game
-	 */
-	@Override
-	public int insert(String sql) {
-		// TODO Auto-generated method stub
-		Session session = getSession();
-		int flag = 0;
-		try {
-			tx = session.beginTransaction();
-			Query query = session.createQuery(sql);
-			flag = query.executeUpdate();
-			
 			tx.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

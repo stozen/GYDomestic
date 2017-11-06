@@ -85,7 +85,7 @@ public class PayRecord {
 	@Id
 	@GenericGenerator(name="generator",strategy="uuid")
 	@GeneratedValue(generator="generator")
-	@Column(name="payRecordId",length=120,nullable=false,unique=true)
+	@Column(name="payRecordId",length=300,nullable=false,unique=true)
 	public String getPayRecordId() {
 		return payRecordId;
 	}
@@ -102,7 +102,7 @@ public class PayRecord {
 	 * 声明支付记录的金额的get方法
 	 * @return
 	 */
-	@Column(name="payMoney",length=30,nullable=false,insertable=true,updatable=true)
+	@Column(name="payMoney",length=100,nullable=false,insertable=true,updatable=true)
 	public String getPayMoney() {
 		return payMoney;
 	}
@@ -119,7 +119,7 @@ public class PayRecord {
 	 * 声明支付记录的类型的get方法
 	 * @return
 	 */
-	@Column(name="payStyle",length=8,nullable=false,insertable=true,updatable=true)
+	@Column(name="payStyle",length=500,nullable=false,insertable=true,updatable=true)
 	public String getPayStyle() {
 		return payStyle;
 	}
@@ -136,7 +136,7 @@ public class PayRecord {
 	 * 声明支付记录状态的get方法
 	 * @return
 	 */
-	@Column(name="payStatus",length=8,nullable=false,insertable=true,updatable=true)
+	@Column(name="payStatus",length=100,nullable=false,insertable=true,updatable=true)
 	public String getPayStatus() {
 		return payStatus;
 	}
@@ -170,7 +170,7 @@ public class PayRecord {
 	 * 声明交易订单号的get方法
 	 * @return
 	 */
-	@Column(name="outTradeNumber",length=30,nullable=false,insertable=true,updatable=true)
+	@Column(name="outTradeNumber",length=500,nullable=false,insertable=true,updatable=true)
 	public String getOutTradeNumber() {
 		return outTradeNumber;
 	}
@@ -187,7 +187,7 @@ public class PayRecord {
 	 * 声明交易记录订单的id
 	 * @return
 	 */
-	@Column(name="orderid",length=30,nullable=false,insertable=true,updatable=true)
+	@Column(name="orderid",length=500,nullable=false,insertable=true,updatable=true)
 	public String getOrderid() {
 		return orderid;
 	}
@@ -204,7 +204,7 @@ public class PayRecord {
 	 * 声明交易记录订单的游戏名的get方法
 	 * @return
 	 */
-	@Column(name="gamePackage",length=50,nullable=false,insertable=true,updatable=true)
+	@Column(name="gamePackage",length=500,nullable=false,insertable=true,updatable=true)
 	public String getGamePackage() {
 		return gamePackage;
 	}
@@ -221,7 +221,7 @@ public class PayRecord {
 	 * 声明交易记录的游戏渠道的get方法
 	 * @return
 	 */
-	@Column(name="gameChanel",length=30,nullable=false,insertable=true,updatable=true)
+	@Column(name="gameChanel",length=500,nullable=false,insertable=true,updatable=true)
 	public String getGameChanel() {
 		return gameChanel;
 	}
@@ -238,7 +238,7 @@ public class PayRecord {
 	 * 声明支付的手机号码
 	 * @return
 	 */
-	@Column(name="phone",length=30,nullable=false,insertable=true,updatable=true)
+	@Column(name="phone",length=80,nullable=false,insertable=true,updatable=true)
 	public String getPhone() {
 		return phone;
 	}

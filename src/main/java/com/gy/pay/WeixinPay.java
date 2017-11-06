@@ -32,12 +32,14 @@ import com.gy.model.Order;
 import com.gy.model.OrderGoods;
 import com.gy.model.PayRecord;
 import com.gy.model.User;
+import com.gy.model.WeixinPayConfig;
 import com.gy.pay.PrepayIdRequestHandler;
 import com.gy.pay.ConstantUtil;
 import com.gy.pay.MD5Util;
 import com.gy.pay.WXUtil;
 import com.gy.services.OrderGoodsService;
 import com.gy.services.PayRecordService;
+import com.gy.services.WeixinPayConfigService;
 
 
 @Controller
@@ -67,6 +69,29 @@ public class WeiXinPay {
 	@Autowired
 	private PayRecordService payRecordService;
 	
+	/**
+	 * 声明微信支付配置服务的依赖注入
+	 */
+	@Autowired
+	private WeixinPayConfigService weixinPayConfigService;
+	
+	/**
+	 * 实现微信支付的配置服务的依赖注入的get方法
+	 * @return
+	 */
+	public WeixinPayConfigService getWeixinPayConfigService() {
+		return weixinPayConfigService;
+	}
+
+	/**
+	 * 实现微信支付的配置服务的依赖注入的set方法
+	 * @param weixinPayConfigService
+	 */
+	public void setWeixinPayConfigService(
+			WeixinPayConfigService weixinPayConfigService) {
+		this.weixinPayConfigService = weixinPayConfigService;
+	}
+
 	/**
 	 * 获取订单详情服务
 	 * @return
@@ -120,117 +145,253 @@ public class WeiXinPay {
 	        PrepayIdRequestHandler prepayReqHandler = new PrepayIdRequestHandler(request, response);
 	        //String totalFee = request.getParameter("total_fee");
 	       // int total_fee=(int) (Float.valueOf(totalFee)*100);
+	        Order order = orderGoods.getOrder();
+            Game game = order.getGames();
+            String gamePackage = game.getGamepackage(); 
 	        
-	        /*商品的标题/交易标题/订单标题/订单关键字等*/
-			String body = orderGoods.getTitle();
-			/*转换商品单价小数点为两位*/
-			String price = orderGoods.getPrice().toString();
-			BigDecimal total = orderGoods.getPrice();
-			System.err.println("大数据:"+total.multiply(new BigDecimal(100)));
-			/*订单总金额，单位为元，精确到小数点后两位，取值范围[0.01,100000000]*/
-			int total_fee = (int)Float.parseFloat(total.multiply(new BigDecimal(100)).toString());
-			System.out.println("body"+(int)Float.parseFloat(total.multiply(new BigDecimal(100)).toString()));
-	        /*int total_fee=1;*/
-	        /*System.out.println("total:"+total_fee);
-	        System.out.println("total_fee:" + total_fee);*/
-	        prepayReqHandler.setParameter("appid", ConstantUtil.APP_ID);
-	        prepayReqHandler.setParameter("body", body);
-	        prepayReqHandler.setParameter("mch_id", ConstantUtil.MCH_ID);
-	        String nonce_str = WXUtil.getNonceStr();
-	        prepayReqHandler.setParameter("nonce_str", nonce_str);
-	        prepayReqHandler.setParameter("notify_url", ConstantUtil.NOTIFY_URL);
-	        /*String out_trade_no = "2017101217182852172";*/
-	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-	        Date now = new Date();
-	        String time = sdf.format(now);
-	        System.out.println("时间:"+time);
-	        int randomNum = (int)((Math.random()*9+1)*1000);
-	        /*String number = time+randomNum+out_trade_no;*/
-	        String number = time+out_trade_no;
-	        System.err.println("订单号:"+number);
-	        prepayReqHandler.setParameter("out_trade_no", number);
-	        /*prepayReqHandler.setParameter("sign_type","MD5");*/
-	        String spbill_create_ip=request.getRemoteAddr();
-	        prepayReqHandler.setParameter("spbill_create_ip", spbill_create_ip);
-	        String timestamp = WXUtil.getTimeStamp();
-	        prepayReqHandler.setParameter("time_start", timestamp);
-	        System.err.println("签名之前的时间:"+timestamp);
-	        System.out.println(String.valueOf(total_fee));
-	        prepayReqHandler.setParameter("total_fee", String.valueOf(total_fee));
-	        prepayReqHandler.setParameter("trade_type", "APP");
-	        
-	        /**
-	         * 注意签名（sign）的生成方式，具体见官方文档（传参都要参与生成签名，且参数名按照字典序排序，最后接上APP_KEY,转化成大写）
-	         */
-	        String sign = prepayReqHandler.createMD5Sign();
-	        prepayReqHandler.setParameter("sign", sign);
-	        
-	        
-	        prepayReqHandler.setGateUrl(ConstantUtil.GATEURL);
-	        String prepayid = prepayReqHandler.sendPrepay();
-	        
-	        System.err.println("之前生成的签名:"+sign);
-	        // 若获取prepayid成功，将相关信息返回客户端
-	        if (prepayid != null && !prepayid.equals("")) {
-	        	
-	        	System.err.println("签名之后的时间："+timestamp);
-	            
-	            String signs = "appid=" + ConstantUtil.APP_ID + "&noncestr=" + nonce_str + "&package=Sign=WXPay&partnerid="
-	                    + ConstantUtil.PARTNER_ID + "&prepayid=" + prepayid + "&timestamp=" + timestamp + "&key="
-	                    + ConstantUtil.APP_KEY;
-	            /*System.out.println("签名之前字符串:"+signs);*/
-	            
-	            
-	            Order order = orderGoods.getOrder();
-	            Game game = order.getGames();
-	            String gamePackage = game.getGamepackage();
-	            /*String gameChannels = game.getGameChannels();*/
-	            String goodname = orderGoods.getTitle();
-	            orderGoods.getTotalprice();
-	            PayRecord payRecord = new PayRecord();
-	            /*if(gameChannels.equals(""))
-	            {
-	            	payRecord.setGameChanel("");
-	            }
-	            else
-	            {
-	            	payRecord.setGameChanel(gameChannels);
-	            }*/
-	            /*payRecord.setGameChanel(gameChannels);*/
-	            payRecord.setGameChanel("网易之家");
-	            payRecord.setGamePackage(gamePackage);
-	            payRecord.setOutTradeNumber(number);
-	            payRecord.setOrderid(out_trade_no);
-	            payRecord.setPayMoney(total.toString());
-	            payRecord.setPayStyle("微信");
-	            payRecord.setPayStatus("0");
-	            SimpleDateFormat sdfdate = new SimpleDateFormat("yyyyMMddHHmmss");
-	            System.err.println("时间日期:"+timestamp);
-	            payRecord.setPayTime(new Date());
-	            User user = order.getUser();
-	            payRecord.setPhone(user.getUsername());
-	            payRecordService.add(payRecord);
-	            map.put("code", 0);
-	            map.put("info", "success");
-	            map.put("prepayid", prepayid);
-	            /*map.put("mergeSigns",signs);*/
-	            
-	            /**
-	             * 签名方式与上面类似
-	             */
-	            /*map.put("sign", MD5Util.MD5Encode(signs, "utf8").toUpperCase());*/
-	            map.put("sign",MD5Util.MD5Encode(signs, "utf8").toUpperCase());
-	            System.err.println("之后生成的签名:"+MD5Util.MD5Encode(signs, "utf8").toUpperCase());
-	            map.put("appid", ConstantUtil.APP_ID);
-	            map.put("timestamp", timestamp);  //等于请求prepayId时的time_start
-	            map.put("noncestr", nonce_str);   //与请求prepayId时值一致
-	            map.put("package", "Sign=WXPay");  //固定常量
-	            map.put("partnerid", ConstantUtil.PARTNER_ID);
-	            map.put("key", ConstantUtil.APP_KEY);
-	        } else {
-	            map.put("code", 1);
-	            map.put("info", "获取prepayid失败");
-	        }
+            WeixinPayConfig weixinPayConfig = weixinPayConfigService.queryGamepackage(gamePackage);
+            if(weixinPayConfig==null)
+            {
+            	status = "0403";
+				message = "数据库中没有添加微信支付的配置信息!";
+				/*final String APP_ID = weixinPayConfig.getAPP_ID();
+    	        final String MCH_ID = weixinPayConfig.getMCH_ID();
+    	        final String NOTIFY_URL = weixinPayConfig.getNOTIFY_URL();*/
+    	        /*final String GATEURL = "https://api.mch.weixin.qq.com/pay/unifiedorder";*/
+    	        /*final String PARTNER_ID = weixinPayConfig.getPARTNER_ID();
+    	        final String APP_KEY = weixinPayConfig.getAPP_KEY();*/
+    	        
+    	        /*商品的标题/交易标题/订单标题/订单关键字等*/
+    			String body = orderGoods.getTitle();
+    			/*转换商品单价小数点为两位*/
+    			String price = orderGoods.getPrice().toString();
+    			BigDecimal total = orderGoods.getPrice();
+    			System.err.println("大数据:"+total.multiply(new BigDecimal(100)));
+    			/*订单总金额，单位为元，精确到小数点后两位，取值范围[0.01,100000000]*/
+    			int total_fee = (int)Float.parseFloat(total.multiply(new BigDecimal(100)).toString());
+    			System.out.println("body"+(int)Float.parseFloat(total.multiply(new BigDecimal(100)).toString()));
+    	        /*int total_fee=1;*/
+    	        /*System.out.println("total:"+total_fee);
+    	        System.out.println("total_fee:" + total_fee);*/
+    	        prepayReqHandler.setParameter("appid", ConstantUtil.APP_ID);
+    	        prepayReqHandler.setParameter("body", body);
+    	        prepayReqHandler.setParameter("mch_id", ConstantUtil.MCH_ID);
+    	        String nonce_str = WXUtil.getNonceStr();
+    	        prepayReqHandler.setParameter("nonce_str", nonce_str);
+    	        prepayReqHandler.setParameter("notify_url", ConstantUtil.NOTIFY_URL);
+    	        /*String out_trade_no = "2017101217182852172";*/
+    	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+    	        Date now = new Date();
+    	        String time = sdf.format(now);
+    	        System.out.println("时间:"+time);
+    	        int randomNum = (int)((Math.random()*9+1)*1000);
+    	        /*String number = time+randomNum+out_trade_no;*/
+    	        String number = time+out_trade_no;
+    	        System.err.println("订单号:"+number);
+    	        prepayReqHandler.setParameter("out_trade_no", number);
+    	        /*prepayReqHandler.setParameter("sign_type","MD5");*/
+    	        String spbill_create_ip=request.getRemoteAddr();
+    	        prepayReqHandler.setParameter("spbill_create_ip", spbill_create_ip);
+    	        String timestamp = WXUtil.getTimeStamp();
+    	        prepayReqHandler.setParameter("time_start", timestamp);
+    	        System.err.println("签名之前的时间:"+timestamp);
+    	        System.out.println(String.valueOf(total_fee));
+    	        prepayReqHandler.setParameter("total_fee", String.valueOf(total_fee));
+    	        prepayReqHandler.setParameter("trade_type", "APP");
+    	        
+    	        /**
+    	         * 注意签名（sign）的生成方式，具体见官方文档（传参都要参与生成签名，且参数名按照字典序排序，最后接上APP_KEY,转化成大写）
+    	         */
+    	        String sign = prepayReqHandler.createMD5Sign();
+    	        prepayReqHandler.setParameter("sign", sign);
+    	        
+    	        
+    	        prepayReqHandler.setGateUrl(ConstantUtil.GATEURL);
+    	        String prepayid = prepayReqHandler.sendPrepay();
+    	        
+    	        System.err.println("之前生成的签名:"+sign);
+    	        // 若获取prepayid成功，将相关信息返回客户端
+    	        if (prepayid != null && !prepayid.equals("")) {
+    	        	
+    	        	System.err.println("签名之后的时间："+timestamp);
+    	            
+    	            String signs = "appid=" + ConstantUtil.APP_ID + "&noncestr=" + nonce_str + "&package=Sign=WXPay&partnerid="
+    	                    + ConstantUtil.PARTNER_ID + "&prepayid=" + prepayid + "&timestamp=" + timestamp + "&key="
+    	                    + ConstantUtil.APP_KEY;
+    	            /*System.out.println("签名之前字符串:"+signs);*/
+    	            
+    	            
+    	            /*Order order = orderGoods.getOrder();
+    	            Game game = order.getGames();
+    	            String gamePackage = game.getGamepackage();*/
+    	            /*String gameChannels = game.getGameChannels();*/
+    	            String goodname = orderGoods.getTitle();
+    	            orderGoods.getTotalprice();
+    	            PayRecord payRecord = new PayRecord();
+    	            /*if(gameChannels.equals(""))
+    	            {
+    	            	payRecord.setGameChanel("");
+    	            }
+    	            else
+    	            {
+    	            	payRecord.setGameChanel(gameChannels);
+    	            }*/
+    	            /*payRecord.setGameChanel(gameChannels);*/
+    	            payRecord.setGameChanel("网易之家");
+    	            payRecord.setGamePackage(gamePackage);
+    	            payRecord.setOutTradeNumber(number);
+    	            payRecord.setOrderid(out_trade_no);
+    	            payRecord.setPayMoney(total.toString());
+    	            payRecord.setPayStyle("微信");
+    	            payRecord.setPayStatus("1");
+    	            SimpleDateFormat sdfdate = new SimpleDateFormat("yyyyMMddHHmmss");
+    	            System.err.println("时间日期:"+timestamp);
+    	            payRecord.setPayTime(new Date());
+    	            User user = order.getUser();
+    	            payRecord.setPhone(user.getUsername());
+    	            payRecordService.add(payRecord);
+    	            map.put("code", 0);
+    	            map.put("info", "success");
+    	            map.put("prepayid", prepayid);
+    	            /*map.put("mergeSigns",signs);*/
+    	            
+    	            /**
+    	             * 签名方式与上面类似
+    	             */
+    	            /*map.put("sign", MD5Util.MD5Encode(signs, "utf8").toUpperCase());*/
+    	            map.put("sign",MD5Util.MD5Encode(signs, "utf8").toUpperCase());
+    	            System.err.println("之后生成的签名:"+MD5Util.MD5Encode(signs, "utf8").toUpperCase());
+    	            map.put("appid", ConstantUtil.APP_ID);
+    	            map.put("timestamp", timestamp);  //等于请求prepayId时的time_start
+    	            map.put("noncestr", nonce_str);   //与请求prepayId时值一致
+    	            map.put("package", "Sign=WXPay");  //固定常量
+    	            map.put("partnerid", ConstantUtil.PARTNER_ID);
+    	            map.put("key", ConstantUtil.APP_KEY);
+    	        } else {
+    	            map.put("code", 1);
+    	            map.put("info", "获取prepayid失败");
+    	        }
+            }
+            else
+            {
+            	final String APP_ID = weixinPayConfig.getAPP_ID();
+    	        final String MCH_ID = weixinPayConfig.getMCH_ID();
+    	        final String NOTIFY_URL = weixinPayConfig.getNOTIFY_URL();
+    	        final String GATEURL = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+    	        final String PARTNER_ID = weixinPayConfig.getPARTNER_ID();
+    	        final String APP_KEY = weixinPayConfig.getAPP_KEY();
+    	        
+    	        /*商品的标题/交易标题/订单标题/订单关键字等*/
+    			String body = orderGoods.getTitle();
+    			/*转换商品单价小数点为两位*/
+    			String price = orderGoods.getPrice().toString();
+    			BigDecimal total = orderGoods.getPrice();
+    			System.err.println("大数据:"+total.multiply(new BigDecimal(100)));
+    			/*订单总金额，单位为元，精确到小数点后两位，取值范围[0.01,100000000]*/
+    			int total_fee = (int)Float.parseFloat(total.multiply(new BigDecimal(100)).toString());
+    			System.out.println("body"+(int)Float.parseFloat(total.multiply(new BigDecimal(100)).toString()));
+    	        /*int total_fee=1;*/
+    	        /*System.out.println("total:"+total_fee);
+    	        System.out.println("total_fee:" + total_fee);*/
+    	        prepayReqHandler.setParameter("appid", APP_ID);
+    	        prepayReqHandler.setParameter("body", body);
+    	        prepayReqHandler.setParameter("mch_id", MCH_ID);
+    	        String nonce_str = WXUtil.getNonceStr();
+    	        prepayReqHandler.setParameter("nonce_str", nonce_str);
+    	        prepayReqHandler.setParameter("notify_url", NOTIFY_URL);
+    	        /*String out_trade_no = "2017101217182852172";*/
+    	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+    	        Date now = new Date();
+    	        String time = sdf.format(now);
+    	        System.out.println("时间:"+time);
+    	        int randomNum = (int)((Math.random()*9+1)*1000);
+    	        /*String number = time+randomNum+out_trade_no;*/
+    	        String number = time+out_trade_no;
+    	        System.err.println("订单号:"+number);
+    	        prepayReqHandler.setParameter("out_trade_no", number);
+    	        /*prepayReqHandler.setParameter("sign_type","MD5");*/
+    	        String spbill_create_ip=request.getRemoteAddr();
+    	        prepayReqHandler.setParameter("spbill_create_ip", spbill_create_ip);
+    	        String timestamp = WXUtil.getTimeStamp();
+    	        prepayReqHandler.setParameter("time_start", timestamp);
+    	        System.err.println("签名之前的时间:"+timestamp);
+    	        System.out.println(String.valueOf(total_fee));
+    	        prepayReqHandler.setParameter("total_fee", String.valueOf(total_fee));
+    	        prepayReqHandler.setParameter("trade_type", "APP");
+    	        
+    	        /**
+    	         * 注意签名（sign）的生成方式，具体见官方文档（传参都要参与生成签名，且参数名按照字典序排序，最后接上APP_KEY,转化成大写）
+    	         */
+    	        String sign = prepayReqHandler.createMD5Sign(APP_KEY);
+    	        prepayReqHandler.setParameter("sign", sign);
+    	        
+    	        
+    	        prepayReqHandler.setGateUrl(GATEURL);
+    	        String prepayid = prepayReqHandler.sendPrepay();
+    	        
+    	        System.err.println("之前生成的签名:"+sign);
+    	        // 若获取prepayid成功，将相关信息返回客户端
+    	        if (prepayid != null && !prepayid.equals("")) {
+    	        	
+    	        	System.err.println("签名之后的时间："+timestamp);
+    	            
+    	            String signs = "appid=" + ConstantUtil.APP_ID + "&noncestr=" + nonce_str + "&package=Sign=WXPay&partnerid="
+    	                    + PARTNER_ID + "&prepayid=" + prepayid + "&timestamp=" + timestamp + "&key="
+    	                    + APP_KEY;
+    	            /*System.out.println("签名之前字符串:"+signs);*/
+    	            
+    	            
+    	            /*Order order = orderGoods.getOrder();
+    	            Game game = order.getGames();
+    	            String gamePackage = game.getGamepackage();*/
+    	            /*String gameChannels = game.getGameChannels();*/
+    	            String goodname = orderGoods.getTitle();
+    	            orderGoods.getTotalprice();
+    	            PayRecord payRecord = new PayRecord();
+    	            /*if(gameChannels.equals(""))
+    	            {
+    	            	payRecord.setGameChanel("");
+    	            }
+    	            else
+    	            {
+    	            	payRecord.setGameChanel(gameChannels);
+    	            }*/
+    	            /*payRecord.setGameChanel(gameChannels);*/
+    	            payRecord.setGameChanel("网易之家");
+    	            payRecord.setGamePackage(gamePackage);
+    	            payRecord.setOutTradeNumber(number);
+    	            payRecord.setOrderid(out_trade_no);
+    	            payRecord.setPayMoney(total.toString());
+    	            payRecord.setPayStyle("微信");
+    	            payRecord.setPayStatus("1");
+    	            SimpleDateFormat sdfdate = new SimpleDateFormat("yyyyMMddHHmmss");
+    	            System.err.println("时间日期:"+timestamp);
+    	            payRecord.setPayTime(new Date());
+    	            User user = order.getUser();
+    	            payRecord.setPhone(user.getUsername());
+    	            payRecordService.add(payRecord);
+    	            map.put("code", 0);
+    	            map.put("info", "success");
+    	            map.put("prepayid", prepayid);
+    	            /*map.put("mergeSigns",signs);*/
+    	            
+    	            /**
+    	             * 签名方式与上面类似
+    	             */
+    	            /*map.put("sign", MD5Util.MD5Encode(signs, "utf8").toUpperCase());*/
+    	            map.put("sign",MD5Util.MD5Encode(signs, "utf8").toUpperCase());
+    	            System.err.println("之后生成的签名:"+MD5Util.MD5Encode(signs, "utf8").toUpperCase());
+    	            map.put("appid", APP_ID);
+    	            map.put("timestamp", timestamp);  //等于请求prepayId时的time_start
+    	            map.put("noncestr", nonce_str);   //与请求prepayId时值一致
+    	            map.put("package", "Sign=WXPay");  //固定常量
+    	            map.put("partnerid", PARTNER_ID);
+    	            map.put("key", APP_KEY);
+    	        } else {
+    	            map.put("code", 1);
+    	            map.put("info", "获取prepayid失败");
+    	        }
+            }
 		}
         
         return map;

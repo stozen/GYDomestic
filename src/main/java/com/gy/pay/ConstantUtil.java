@@ -33,7 +33,7 @@ public class ConstantUtil {
     public static final String PARTNER_KEY="343b1c4a3ea721b2d640fc8700db0f36";
     
     /**
-     * 商户id,没用到
+     * 商户id，也就是商务登录微信公众平台的账号
      */
     public static final String PARTNER_ID="1491013092@1491013092";
     

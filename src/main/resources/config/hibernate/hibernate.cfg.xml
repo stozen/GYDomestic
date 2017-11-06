@@ -30,8 +30,14 @@
 		<!-- 处理映射的Token类 -->
 		<mapping class="com.gy.model.Token"/>
 		
-		<!-- 处理映射的Token类 -->
+		<!-- 处理映射的支付记录类 -->
 		<mapping class="com.gy.model.PayRecord"/>
+		
+		<!-- 处理映射的阿里支付的类 -->
+		<mapping class="com.gy.model.AliPayConfig"/>
+		
+		<!-- 处理映射的微信支付的类 -->
+		<mapping class="com.gy.model.WeixinPayConfig"/>
 		
 		<!-- 处理映射其他的类，预留位置 -->
 		

@@ -73,6 +73,7 @@ public class ForeignMessage {
 		this.verificationCodeService = verificationCodeService;
 	}
 
+
 	private VerificationCode verificationCode;
 	
 	/*http://apis.renxinl.com:8080/smsgate/varsend.do?user=13402040612&pwd=abc85410d238d4b5bae2ea3830e3d787&params=15900785383,【YCGAME】1234&mid=14337*/	
