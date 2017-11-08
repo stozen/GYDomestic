@@ -159,5 +159,16 @@ public class GameServiceImpl implements GameService {
 		// TODO Auto-generated method stub
 		return gameDao.insert(sql);
 	}
+	
+	/* 
+	 * 实现游戏渠道的分析功能
+	 * (non-Javadoc)
+	 * @see com.gy.services.GameService#queryChanel(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public List<Game> queryChanel(String beginTime, String endTime) {
+		// TODO Auto-generated method stub
+		return gameDao.queryChanel(beginTime, endTime);
+	}
 
 }

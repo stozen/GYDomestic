@@ -31,6 +31,16 @@ public class GameDaoImpl implements GameDao {
 	private SessionFactory sessionFactory;
 	
 	/**
+	 * 声明Hibernate会话工厂
+	 */
+	private Session session;
+	
+	/**
+	 * 声明Hibernate的Query对象的引用
+	 */
+	private Query query;
+	
+	/**
 	 * 创建事务
 	 */
 	private Transaction tx;
@@ -388,6 +398,34 @@ public class GameDaoImpl implements GameDao {
 			}
 		}
 		return flag;
+	}
+	
+	/* 
+	 * 实现游戏渠道分析功能
+	 * (non-Javadoc)
+	 * @see com.gy.dao.GameDao#queryChanel(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public List<Game> queryChanel(String beginTime, String endTime) {
+		// TODO Auto-generated method stub
+		
+		List<Game> games = new ArrayList<Game>();
+		
+		try {
+			session = getSession();
+			tx = session.beginTransaction();
+			query = session.createSQLQuery("select * from tb_gygame where createTime between "+"'"+beginTime+"'"+" and "+"'"+endTime+"'"+" group by createTime,gameChannels");
+			games = (List<Game>)query.list();
+			tx.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			if(tx!=null)
+			{
+				tx.rollback();
+			}
+		}
+		return games;
 	}
 
 }

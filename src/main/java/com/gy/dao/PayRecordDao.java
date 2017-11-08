@@ -1,5 +1,9 @@
 package com.gy.dao;
 
+
+import java.util.List;
+
+import com.gy.model.DataCount;
 import com.gy.model.PayRecord;
 
 /**
@@ -36,4 +40,15 @@ public interface PayRecordDao {
 	 */
 	public void delete(String out_trade_no);
 	
+	/**
+	 * 查询所有支付记录
+	 * @return
+	 */
+	public List<DataCount> queryAllPay(String beginTime,String endTime);
+	
+    /**
+     * 声明支付记录总数
+     * @return
+     */
+    public int getAllRowCount();
 }

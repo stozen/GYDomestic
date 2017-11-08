@@ -88,4 +88,12 @@ public interface GameService {
 	 * @return
 	 */
 	public int insert(String sql);
+	
+	/**
+	 * 实现游戏渠道的
+	 * @param beginTime
+	 * @param endTime
+	 * @return
+	 */
+	public List<Game> queryChanel(String beginTime,String endTime);
 }

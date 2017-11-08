@@ -88,4 +88,12 @@ public interface GameDao {
 	 * @return
 	 */
 	public int insert(String sql);
+	
+	/**
+	 * 实现游戏渠道分析功能
+	 * @param beginTime
+	 * @param endTime
+	 * @return
+	 */
+	public List<Game> queryChanel(String beginTime,String endTime);
 }

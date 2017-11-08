@@ -46,6 +46,9 @@
  	<!-- 配置微信阿里支付配置类型 -->
  	<bean id="weixinPayConfigManager" class="com.gy.model.WeixinPayConfig"></bean>
  	
+ 	<!-- 配置用户统计配置类型 -->
+ 	<bean id="dataCountConfigManager" class="com.gy.model.DataCount"></bean>
+ 	
  	<!-- 配置其他的实体类，预留位置 -->
  	
 </beans>

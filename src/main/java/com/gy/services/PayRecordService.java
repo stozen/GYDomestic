@@ -1,6 +1,10 @@
 package com.gy.services;
 
+import java.util.List;
+
+import com.gy.model.DataCount;
 import com.gy.model.PayRecord;
+import com.gy.util.Page;
 
 /**
  * @author Chencongye
@@ -36,4 +40,15 @@ public interface PayRecordService {
 	 */
 	public void delete(String out_trade_no);
 	
+	/**
+	 * 实现支付记录查询
+	 * @return
+	 */
+	public List<DataCount> queryAllPay(String beginTime,String endTime);
+	
+	/**
+     * 声明支付记录总数
+     * @return
+     */
+    public int getAllRowCount();
 }

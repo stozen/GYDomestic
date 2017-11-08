@@ -3,6 +3,7 @@ package com.gy.daoImpl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.tools.ant.types.resources.selectors.Date;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -12,6 +13,7 @@ import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import com.gy.dao.UserDao;
+import com.gy.model.DataCount;
 import com.gy.model.User;
 
 /**
@@ -34,10 +36,23 @@ public class UserDaoImpl implements UserDao{
 	 */
 	private Transaction tx;
 	
+	/**
+	 * 
+	 */
+	private Query query;
+	
+	/**
+	 * 声明Hibernate会话工厂的引用的get方法
+	 * @return
+	 */
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}
 
+	/**
+	 * 声明Hibernate的会话工厂的引用的set方法
+	 * @param sessionFactory
+	 */
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
@@ -50,7 +65,6 @@ public class UserDaoImpl implements UserDao{
 		return this.getSessionFactory().openSession();
 	}
 
-	
 	/*private HibernateTemplate hibernateTemplate;*/
 	
 	/**
@@ -91,7 +105,7 @@ public class UserDaoImpl implements UserDao{
 		Session session = getSession();
 		try {
 			tx = session.beginTransaction();
-			users = session.createQuery("from User").list();
+			users = session.createSQLQuery("select * from tb_gyuser").addEntity(User.class).list();
 			Hibernate.initialize(users);
 			tx.commit();
 		} catch (Exception e) {
@@ -110,6 +124,30 @@ public class UserDaoImpl implements UserDao{
 		
 		return users;
 	}
+	
+	
+	//查询记录总数
+    public int getAllRowCount(){
+    	Session session = getSession();
+    	int count = 0;
+		try {
+			tx = session.beginTransaction();
+			query = session.createSQLQuery("select * from tb_gyuser");
+			count = query.list().size();
+			tx.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			if(tx!=null) {
+				tx.rollback();
+			}
+		} finally {
+			if(session!=null) {
+				session.close();
+			}
+		}
+        return count;  
+    }
 
 	/**
 	 * 创建添加用户功能
@@ -358,4 +396,62 @@ public class UserDaoImpl implements UserDao{
 		}
 		return flag;
 	}
+	
+	/* 
+	 * 实现查询用户分页功能
+	 * (non-Javadoc)
+	 * @see com.gy.dao.UserDao#findByPage(int, int)
+	 */
+	@Override
+	public List<User> findByPage(int offset, int length) {
+		// TODO Auto-generated method stub
+		List<User> users = new ArrayList<User>();
+		Session session = getSession();
+		try {
+			tx = session.beginTransaction();
+			query = session.createSQLQuery("SELECT userid,email,loginStatus,logintime,mobile,modifytime,passwd,registtime,type,username FROM tb_gyuser").addEntity(User.class);
+			query.setFirstResult(offset);
+			query.setMaxResults(length);
+			users = (List<User>)query.list();
+			query.list();
+			tx.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			if(tx!=null)
+			{
+				tx.rollback();
+			}
+		} /*finally {
+			if(session!=null)
+			{
+				session.close();
+			}
+		}*/
+		return users;
+	}
+
+	public List<DataCount> queryTime(String beginTime,String endTime,int offset,int length) {
+		// TODO Auto-generated method stub
+		Session session = getSession();
+		List<DataCount> dataCounts = new ArrayList<DataCount>();
+		try {
+			tx = session.beginTransaction();
+			query = session.createSQLQuery("SELECT userid, DATE_FORMAT(registtime,'%Y-%m-%d') AS TIME , COUNT(*) AS COUNT, username as userCount,passwd as payMoney FROM tb_gyuser WHERE registtime BETWEEN"+"'"+beginTime+"'"+ " AND "+"'"+endTime+"'"+" GROUP BY TIME").addEntity(DataCount.class);
+			query.setFirstResult(offset);
+			query.setMaxResults(length);
+			dataCounts = (List<DataCount>)query.list();
+			tx.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			if(tx!=null)
+			{
+				tx.rollback();
+			}
+		}
+		
+		return dataCounts;
+	}
+
 }

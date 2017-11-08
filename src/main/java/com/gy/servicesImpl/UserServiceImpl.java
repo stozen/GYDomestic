@@ -24,6 +24,7 @@ import com.gy.message.DomesticMessage;
 import com.gy.message.ForeignMessage;
 import com.gy.message.MessageCode;
 import com.gy.model.Account;
+import com.gy.model.DataCount;
 import com.gy.model.Game;
 import com.gy.model.Order;
 import com.gy.model.Token;
@@ -35,6 +36,7 @@ import com.gy.services.TokenService;
 import com.gy.services.UserService;
 import com.gy.services.VerificationCodeService;
 import com.gy.util.JwtUtil;
+import com.gy.util.Page;
 import com.gy.util.RandomCode;
 import com.gy.util.SplitString;
 
@@ -138,9 +140,58 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<User> queryAll() {
 		// TODO Auto-generated method stub
-		return null;
+		return userDao.queryAll();
 	}
 
+	/**
+	 * 实现分页查询用户
+	 */
+	@Override
+	public Page findByPage(int currentPage, int pageSize) {
+		// TODO Auto-generated method stub
+		Page page = new Page();       
+        //总记录数
+        int allRow = userDao.getAllRowCount();
+        //当前页开始记录
+        int offset = page.countOffset(currentPage,pageSize);  
+        //分页查询结果集
+        List<User> list = userDao.findByPage(offset, pageSize); 
+        page.setPageNo(currentPage);
+        page.setPageSize(pageSize);
+        page.setTotalRecords(allRow);
+        page.setList(list);    
+        return page;
+	}
+	
+	/**
+	 * 实现统计用户增长数
+	 */
+	@Override
+	public Page queryTime(String beginTime, String endTime, int currentPage, int pageSize) {
+		// TODO Auto-generated method stub
+		Page page = new Page();       
+        //总记录数
+        int allRow = userDao.getAllRowCount();
+        //当前页开始记录
+        int offset = page.countOffset(currentPage,pageSize);  
+        //分页查询结果集
+        List<DataCount> list = userDao.queryTime(beginTime, endTime, offset, pageSize); 
+        page.setPageNo(currentPage);
+        page.setPageSize(pageSize);
+        page.setTotalRecords(allRow);
+        page.setList(list);    
+        return page;
+	}
+	
+	/**
+	 * 查询所有用户个数
+	 */
+	@Override
+	public int getAllRowCount() {
+		// TODO Auto-generated method stub
+		return userDao.getAllRowCount();
+	}
+	
 	/**
 	 * 保存用户
 	 */
@@ -261,6 +312,10 @@ public class UserServiceImpl implements UserService {
 								if(games.size()<=0)
 								{
 									status = "0200";
+									userdata.setLogintime(new Date());
+									userdata.setLoginStatus("1");
+									userdata.setMobile(userdata.getUsername());
+									userDao.update(userdata);
 									message = "普通用户名模式登录成功,但是传入的游戏为空！";
 									userid = userdata.getUserid();
 								}
@@ -278,6 +333,11 @@ public class UserServiceImpl implements UserService {
 									gamedata.setUser(userdata);
 									
 									gameService.saveorupdate(gamedata);
+									
+									userdata.setLogintime(new Date());
+									userdata.setLoginStatus("1");
+									userdata.setMobile(userdata.getUsername());
+									userDao.update(userdata);
 									
 									/*查询游戏*/
 									String gamesql = "from Game where gamepackage="+"'"+gamedata.getGamepackage()+"'"+"and userid="+"'"+userdata.getUserid()+"'";
@@ -1479,6 +1539,7 @@ public class UserServiceImpl implements UserService {
 						else
 						{
 							userdata.setPassword(confirmpass);
+							userdata.setModifytime(new Date());
 							this.update(userdata);
 							status = "0200";
 							message = "更新密码成功！！！";

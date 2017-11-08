@@ -21,6 +21,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
@@ -33,7 +34,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @SuppressWarnings("serial")
 @Entity
 @Table(name="tb_gyuser",catalog="db_gydomestic")
-public class User{
+public class User implements Serializable{
 	
 	/**
 	 * 创建ID字段
@@ -254,6 +255,7 @@ public class User{
 	/*@Column(name="game",length=20,nullable=true)
 	@OneToMany(mappedBy="user",cascade=CascadeType.ALL,fetch=FetchType.EAGER)
 	@JoinColumn(name="userid")*/
+	@JsonIgnore
 	@OneToMany(fetch=FetchType.LAZY)
 	@Cascade(value={CascadeType.SAVE_UPDATE,  CascadeType.DELETE_ORPHAN,CascadeType.ALL})
 	@JoinColumn(name="userid")
@@ -271,6 +273,7 @@ public class User{
 	 */
 	/*@Column(name="order",length=30,nullable=false)
 	@OneToMany(mappedBy="user",cascade=javax.persistence.CascadeType.ALL)*/
+	@JsonIgnore
 	@OneToMany
 	@Cascade(value={CascadeType.SAVE_UPDATE,  CascadeType.DELETE_ORPHAN,CascadeType.ALL})
 	@JoinColumn(name="userid")
@@ -290,7 +293,8 @@ public class User{
 	public void setType(String type) {
 		this.type = type;
 	}
-
+	
+	@JsonIgnore
 	@OneToMany
 	@Cascade(value={CascadeType.ALL})
 	@JoinColumn(name="userid")
@@ -306,6 +310,7 @@ public class User{
 	 * 生成用户Token对象
 	 * @return
 	 */
+	@JsonIgnore
 	@OneToOne
 	@Cascade(value={CascadeType.SAVE_UPDATE,  CascadeType.DELETE_ORPHAN,CascadeType.ALL})
 	@JoinColumn(name="userid")

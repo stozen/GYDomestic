@@ -39,6 +39,9 @@
 		<!-- 处理映射的微信支付的类 -->
 		<mapping class="com.gy.model.WeixinPayConfig"/>
 		
+		<!-- 处理映射的微信支付的类 -->
+		<mapping class="com.gy.model.DataCount"/>
+		
 		<!-- 处理映射其他的类，预留位置 -->
 		
 	</session-factory>

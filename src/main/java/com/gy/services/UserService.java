@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.gy.model.Order;
 import com.gy.model.User;
+import com.gy.util.Page;
 
 /**
  * @author Chencongye
@@ -117,4 +118,28 @@ public interface UserService {
 	 * 实现用户注销事件
 	 */
 	public void logout(Map map);
+	
+	/**
+	 * 实现查询所有用户
+	 * @return
+	 */
+	public int getAllRowCount();
+	
+	/**
+	 * 实现分页查询功能
+	 * @param offset
+	 * @param length
+	 * @return
+	 */
+	public Page findByPage(int currentPage, int pageSize);
+	
+	/**
+	 * 声明时间查询结果方法
+	 * @param beginTime
+	 * @param endTime
+	 * @param offset
+	 * @param length
+	 * @return
+	 */
+	public Page queryTime(String beginTime,String endTime,int currentPage, int pageSize);
 }

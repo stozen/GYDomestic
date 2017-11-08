@@ -2,6 +2,7 @@ package com.gy.dao;
 
 import java.util.List;
 
+import com.gy.model.DataCount;
 import com.gy.model.User;
 
 /**
@@ -81,4 +82,26 @@ public interface UserDao {
 	 */
 	public boolean updateAll(User[] users);
 
+	/**
+	 * 查询所有记录
+	 * @return
+	 */
+	public int getAllRowCount();
+	
+	/**
+	 * 实现分页查询功能
+	 * @param offset
+	 * @param length
+	 * @return
+	 */
+	public List<User> findByPage(int offset,int length);
+	
+	/**
+	 * 实现查询周的新增用户
+	 * @param time
+	 * @param offset
+	 * @param length
+	 * @return
+	 */
+	public List<DataCount> queryTime(String beginTime,String endTime,int offset,int length);
 }

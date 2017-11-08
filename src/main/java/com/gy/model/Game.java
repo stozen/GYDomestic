@@ -1,6 +1,7 @@
 package com.gy.model;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -55,6 +56,11 @@ public class Game implements Serializable {
 	 * 创建游戏渠道
 	 */
 	private String gameChannels;
+	
+	/**
+	 * 声明游戏创建时间
+	 */
+	private Date createTime;
 	
 	/**
 	 * 创建用户对应关系
@@ -165,7 +171,7 @@ public class Game implements Serializable {
 	 * @return
 	 */
 	@OneToMany
-	@Cascade(value={CascadeType.SAVE_UPDATE,  CascadeType.DELETE_ORPHAN,CascadeType.ALL})
+	@Cascade(value={CascadeType.SAVE_UPDATE, CascadeType.DELETE_ORPHAN,CascadeType.ALL})
 	@JoinColumn(name="gameid")
 	public Set<Order> getOrder() {
 		return order;
@@ -181,6 +187,23 @@ public class Game implements Serializable {
 				+ ", remark=" + remark + ", gamepackage=" + gamepackage
 				+ ", gameChannels=" + gameChannels + ", user=" + user
 				+ ", order=" + order + "]";
+	}
+
+	/**
+	 * 实现游戏创建的时间的get方法
+	 * @return
+	 */
+	@Column(name="createTime",length=6,nullable=true,insertable=true,updatable=true)
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	/**
+	 * 实现游戏创建时间的set方法
+	 * @param createTime
+	 */
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
 	}
 
 }

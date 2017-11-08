@@ -237,7 +237,7 @@ public class WeiXinPay {
     	            	payRecord.setGameChanel(gameChannels);
     	            }*/
     	            /*payRecord.setGameChanel(gameChannels);*/
-    	            payRecord.setGameChanel("网易之家");
+    	            payRecord.setGameChanel("微信支付");
     	            payRecord.setGamePackage(gamePackage);
     	            payRecord.setOutTradeNumber(number);
     	            payRecord.setOrderid(out_trade_no);
@@ -357,7 +357,7 @@ public class WeiXinPay {
     	            	payRecord.setGameChanel(gameChannels);
     	            }*/
     	            /*payRecord.setGameChanel(gameChannels);*/
-    	            payRecord.setGameChanel("网易之家");
+    	            payRecord.setGameChanel("微信支付");
     	            payRecord.setGamePackage(gamePackage);
     	            payRecord.setOutTradeNumber(number);
     	            payRecord.setOrderid(out_trade_no);

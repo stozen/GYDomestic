@@ -1,10 +1,14 @@
 package com.gy.servicesImpl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.gy.dao.PayRecordDao;
+import com.gy.model.DataCount;
 import com.gy.model.PayRecord;
 import com.gy.services.PayRecordService;
+import com.gy.util.Page;
 
 public class PayRecordServiceImpl implements PayRecordService {
 	
@@ -74,4 +78,25 @@ public class PayRecordServiceImpl implements PayRecordService {
 		payRecordDao.delete(out_trade_no);
 	}
 
+	/* 
+	 * 实现查询所有支付记录
+	 * (non-Javadoc)
+	 * @see com.gy.services.PayRecordService#queryAllPay()
+	 */
+	@Override
+	public List<DataCount> queryAllPay(String beginTime,String endTime) {
+		// TODO Auto-generated method stub
+        return payRecordDao.queryAllPay(beginTime, endTime);
+	}
+	
+	/* 
+	 * 实现查询支付记录的所有记录数
+	 * (non-Javadoc)
+	 * @see com.gy.services.PayRecordService#getAllRowCount()
+	 */
+	@Override
+	public int getAllRowCount() {
+		// TODO Auto-generated method stub
+		return payRecordDao.getAllRowCount();
+	}
 }

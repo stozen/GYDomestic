@@ -83,6 +83,12 @@ public class UserDaoImplTest {
 		/*还没有实现*/
 		
 	}
+	
+	public void testGetAllRowCount(){
+		ApplicationContext context= new ClassPathXmlApplicationContext("classpath:/config/spring-hibernate.xml");
+		UserDaoImpl userdao = (UserDaoImpl) context.getBean("userDao");
+		int i = userdao.getAllRowCount();
+	}
 
 	@SuppressWarnings("resource")
 	@Test

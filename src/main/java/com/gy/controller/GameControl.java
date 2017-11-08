@@ -251,9 +251,32 @@ public class GameControl {
 			     json.add(jo);
 			 }
 			 map.put("game", json);
-					 
 		 }
 		
+		map.put("status", status);
+		map.put("message", message);
+		return map;
+	}
+	
+	/*1.实现渠道分析功能*/
+	@RequestMapping(value="querychanel",method=RequestMethod.GET)
+	public @ResponseBody Map<String, Object> queryChanel(String beginTime, String endTime) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		if(beginTime.equals("") || "".equals(beginTime)) {
+			status = "0602";
+			message = "输入的起始时间为空!";
+		}
+		else if(endTime.equals("") || "".equals(endTime)) {
+			status = "0603";
+			message = "输入的截止时间为空!";
+		} 
+		else {
+			List<Game> gamedata = gameService.queryChanel(beginTime, endTime);
+			status = "0200";
+			message = "查询成功!";
+			map.put("gameChanel", gamedata);
+		}
 		map.put("status", status);
 		map.put("message", message);
 		return map;
