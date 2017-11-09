@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.gy.dao.GameDao;
+import com.gy.model.DataCount;
 import com.gy.model.Game;
 
 /**
@@ -406,16 +407,16 @@ public class GameDaoImpl implements GameDao {
 	 * @see com.gy.dao.GameDao#queryChanel(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public List<Game> queryChanel(String beginTime, String endTime) {
+	public List<DataCount> queryChanel(String beginTime, String endTime) {
 		// TODO Auto-generated method stub
 		
-		List<Game> games = new ArrayList<Game>();
+		List<DataCount> dataCounts = new ArrayList<DataCount>();
 		
 		try {
 			session = getSession();
 			tx = session.beginTransaction();
-			query = session.createSQLQuery("select * from tb_gygame where createTime between "+"'"+beginTime+"'"+" and "+"'"+endTime+"'"+" group by createTime,gameChannels");
-			games = (List<Game>)query.list();
+			query = session.createSQLQuery("SELECT channel.gameid as userid, channel.userCount,channel.gameChannels as payMoney,TIME,gameCount as count FROM (SELECT COUNT(gameChannels) AS gameCount,gameid,COUNT(userid) AS userCount,gameChannels,DATE_FORMAT(createTime,'%Y-%m-%d') AS TIME  FROM tb_gygame WHERE createTime BETWEEN "+"'"+beginTime+"'"+" AND "+"'"+endTime+"'"+" GROUP BY TIME,gameChannels) AS channel GROUP BY TIME").addEntity(DataCount.class);
+			dataCounts = (List<DataCount>)query.list();
 			tx.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -425,7 +426,7 @@ public class GameDaoImpl implements GameDao {
 				tx.rollback();
 			}
 		}
-		return games;
+		return dataCounts;
 	}
 
 }

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.google.gson.JsonArray;
+import com.gy.model.DataCount;
 import com.gy.model.Game;
 import com.gy.services.GameService;
 import com.gy.util.JSONTool;
@@ -263,20 +264,32 @@ public class GameControl {
 	public @ResponseBody Map<String, Object> queryChanel(String beginTime, String endTime) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		
-		if(beginTime.equals("") || "".equals(beginTime)) {
+		if((beginTime.equals("") || "".equals(beginTime)) || (endTime.equals("") || "".equals(endTime)))
+		{
 			status = "0602";
-			message = "输入的起始时间为空!";
+			message = "输入的日期数据为空！";
 		}
-		else if(endTime.equals("") || "".equals(endTime)) {
-			status = "0603";
-			message = "输入的截止时间为空!";
-		} 
-		else {
-			List<Game> gamedata = gameService.queryChanel(beginTime, endTime);
+		else
+		{
+			//查询所有用户个数
+			List<DataCount> userdata = gameService.queryChanel(beginTime, endTime);
+			
+			net.sf.json.JSONArray json = new net.sf.json.JSONArray();
+			for (DataCount datacount : userdata) {
+				JSONObject jo = new JSONObject();
+				jo.put("channelId", datacount.getDataCountId());
+				jo.put("channelTime", datacount.getTime());
+				jo.put("channelCount", datacount.getCount());
+				jo.put("channelName", datacount.getPayMoney());
+				jo.put("userCount", datacount.getUserCount());
+				json.add(jo);
+			}
+			
+			map.put("data", json);
 			status = "0200";
 			message = "查询成功!";
-			map.put("gameChanel", gamedata);
 		}
+		
 		map.put("status", status);
 		map.put("message", message);
 		return map;

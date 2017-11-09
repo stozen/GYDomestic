@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.gy.dao.GameDao;
+import com.gy.model.DataCount;
 import com.gy.model.Game;
 import com.gy.services.GameService;
 
@@ -166,7 +167,7 @@ public class GameServiceImpl implements GameService {
 	 * @see com.gy.services.GameService#queryChanel(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public List<Game> queryChanel(String beginTime, String endTime) {
+	public List<DataCount> queryChanel(String beginTime, String endTime) {
 		// TODO Auto-generated method stub
 		return gameDao.queryChanel(beginTime, endTime);
 	}

@@ -2,6 +2,7 @@ package com.gy.dao;
 
 import java.util.List;
 
+import com.gy.model.DataCount;
 import com.gy.model.Game;
 
 /**
@@ -95,5 +96,5 @@ public interface GameDao {
 	 * @param endTime
 	 * @return
 	 */
-	public List<Game> queryChanel(String beginTime,String endTime);
+	public List<DataCount> queryChanel(String beginTime,String endTime);
 }
