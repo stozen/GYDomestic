@@ -3,6 +3,7 @@ package com.gy.services;
 import java.util.List;
 import java.util.Map;
 
+import com.gy.model.DataCount;
 import com.gy.model.Order;
 import com.gy.model.User;
 import com.gy.util.Page;
@@ -142,4 +143,12 @@ public interface UserService {
 	 * @return
 	 */
 	public Page queryTime(String beginTime,String endTime,int currentPage, int pageSize);
+	
+	/**
+	 * 实现用户活跃度统计的功能
+	 * @param beginTime
+	 * @param endTime
+	 * @return
+	 */
+	public List<DataCount> queryActive(String beginTime,String endTime);
 }

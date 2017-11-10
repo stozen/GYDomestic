@@ -309,6 +309,7 @@ public class UserServiceImpl implements UserService {
 								
 								Set<Game> games = new HashSet<Game>();
 								games = user.getGames();
+								System.err.println("传入获得的游戏:"+games);
 								if(games.size()<=0)
 								{
 									status = "0200";
@@ -1685,5 +1686,16 @@ public class UserServiceImpl implements UserService {
 		map.put("status", status);
 		map.put("message", message);
 		map.put("userid", user_id);
+	}
+	
+	/* 
+	 * 实现用户活跃度的统计
+	 * (non-Javadoc)
+	 * @see com.gy.services.UserService#queryActive(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public List<DataCount> queryActive(String beginTime, String endTime) {
+		// TODO Auto-generated method stub
+		return userDao.queryActive(beginTime, endTime);
 	}
 }

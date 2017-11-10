@@ -422,4 +422,40 @@ public class UserControl {
 		
 		return map;
 	}
+
+	/**
+	 * 查询用户活跃度
+	 */
+	@RequestMapping(value="queryactive",method=RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> queryActive(@RequestParam String beginTime,String endTime) {
+		// TODO Auto-generated method stub
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		if((beginTime.equals("") || "".equals(beginTime)) && (endTime.equals("") || "".equals(endTime)))
+		{
+			status = "0603";
+			message = "输入的起始时间和截止时间为空";
+		}
+		else
+		{
+			//查询所有用户个数
+			List<DataCount> userdata = userService.queryActive(beginTime, endTime);
+			
+			JSONArray json = new JSONArray();
+			for (DataCount datacount : userdata) {
+				JSONObject jo = new JSONObject();
+				jo.put("userId", datacount.getDataCountId());
+				jo.put("userTime", datacount.getTime());
+				jo.put("userCount", datacount.getCount());
+				json.add(jo);
+			}
+			
+			map.put("userActive", json);
+			status = "0200";
+			message = "查询成功!";
+		}
+		
+		return map;
+	}
 }

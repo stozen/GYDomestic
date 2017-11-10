@@ -255,7 +255,6 @@ public class User implements Serializable{
 	/*@Column(name="game",length=20,nullable=true)
 	@OneToMany(mappedBy="user",cascade=CascadeType.ALL,fetch=FetchType.EAGER)
 	@JoinColumn(name="userid")*/
-	@JsonIgnore
 	@OneToMany(fetch=FetchType.LAZY)
 	@Cascade(value={CascadeType.SAVE_UPDATE,  CascadeType.DELETE_ORPHAN,CascadeType.ALL})
 	@JoinColumn(name="userid")

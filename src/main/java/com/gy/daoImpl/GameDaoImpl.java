@@ -100,7 +100,7 @@ public class GameDaoImpl implements GameDao {
 		Session session = getSession();
 		try {
 			tx = session.beginTransaction();
-			games = (List<Game>) session.createSQLQuery("select gameid,gameChannels,gamename,gamepackage,remark,userid from tb_gygame group by gamepackage having(count(gamepackage)>1)").addEntity(Game.class).list();
+			games = (List<Game>) session.createSQLQuery("select gameid,gameChannels,gamename,gamepackage,remark,userid,createTime from tb_gygame group by gamepackage having(count(gamepackage)>1)").addEntity(Game.class).list();
 			Hibernate.initialize(games);
 			tx.commit();
 		} catch (Exception e) {

@@ -104,4 +104,12 @@ public interface UserDao {
 	 * @return
 	 */
 	public List<DataCount> queryTime(String beginTime,String endTime,int offset,int length);
+	
+	/**
+	 * 实现统计用户活跃度的功能
+	 * @param beginTime
+	 * @param endTime
+	 * @return
+	 */
+	public List<DataCount> queryActive(String beginTime,String endTime);
 }

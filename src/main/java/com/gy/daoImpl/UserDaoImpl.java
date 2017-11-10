@@ -431,6 +431,11 @@ public class UserDaoImpl implements UserDao{
 		return users;
 	}
 
+	/* 
+	 * 实现用户数据统计的功能
+	 * (non-Javadoc)
+	 * @see com.gy.dao.UserDao#queryTime(java.lang.String, java.lang.String, int, int)
+	 */
 	public List<DataCount> queryTime(String beginTime,String endTime,int offset,int length) {
 		// TODO Auto-generated method stub
 		Session session = getSession();
@@ -454,4 +459,29 @@ public class UserDaoImpl implements UserDao{
 		return dataCounts;
 	}
 
+	
+	/* 
+	 * 实现用户活跃度的功能
+	 * (non-Javadoc)
+	 * @see com.gy.dao.UserDao#queryActive(java.lang.String, java.lang.String)
+	 */
+	public List<DataCount> queryActive(String beginTime,String endTime) {
+		
+		Session session = getSession();
+		List<DataCount> dataCounts = new ArrayList<DataCount>();
+		try {
+			tx = session.beginTransaction();
+			query = session.createSQLQuery("SELECT userid,COUNT(*) AS COUNT,COUNT(userid) AS userCount,COUNT(*) AS payMoney,DATE_FORMAT(logintime,'%Y-%m-%d') AS TIME FROM tb_gyuser WHERE logintime BETWEEN "+"'"+beginTime+"'"+" AND "+"'"+endTime+"'"+" GROUP BY TIME").addEntity(DataCount.class);
+			dataCounts = (List<DataCount>)query.list();
+			tx.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			if(tx!=null)
+			{
+				tx.rollback();
+			}
+		}
+		return dataCounts;
+	}
 }

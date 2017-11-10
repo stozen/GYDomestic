@@ -260,8 +260,8 @@ public class GameControl {
 	}
 	
 	/*1.实现渠道分析功能*/
-	@RequestMapping(value="querychanel",method=RequestMethod.GET)
-	public @ResponseBody Map<String, Object> queryChanel(String beginTime, String endTime) {
+	@RequestMapping(value="querychannel",method=RequestMethod.GET)
+	public @ResponseBody Map<String, Object> queryChannel(String beginTime, String endTime) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		
 		if((beginTime.equals("") || "".equals(beginTime)) || (endTime.equals("") || "".equals(endTime)))
