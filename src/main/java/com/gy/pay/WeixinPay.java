@@ -148,7 +148,7 @@ public class WeiXinPay {
 	        Order order = orderGoods.getOrder();
             Game game = order.getGames();
             String gamePackage = game.getGamepackage(); 
-	        
+            String otherOrderID = order.getOtherOrderID();
             WeixinPayConfig weixinPayConfig = weixinPayConfigService.queryGamepackage(gamePackage);
             if(weixinPayConfig==null)
             {
@@ -186,7 +186,7 @@ public class WeiXinPay {
     	        System.out.println("时间:"+time);
     	        int randomNum = (int)((Math.random()*9+1)*1000);
     	        /*String number = time+randomNum+out_trade_no;*/
-    	        String number = time+out_trade_no;
+    	        String number = otherOrderID;
     	        System.err.println("订单号:"+number);
     	        prepayReqHandler.setParameter("out_trade_no", number);
     	        /*prepayReqHandler.setParameter("sign_type","MD5");*/
@@ -253,6 +253,10 @@ public class WeiXinPay {
     	            map.put("code", 0);
     	            map.put("info", "success");
     	            map.put("prepayid", prepayid);
+		        	map.put("otherOrderID", otherOrderID);
+		        	map.put("goodName", goodname);
+		        	map.put("goodPrice", total.toString());
+		        	map.put("ourOrderID", out_trade_no);
     	            /*map.put("mergeSigns",signs);*/
     	            
     	            /**
@@ -306,7 +310,7 @@ public class WeiXinPay {
     	        System.out.println("时间:"+time);
     	        int randomNum = (int)((Math.random()*9+1)*1000);
     	        /*String number = time+randomNum+out_trade_no;*/
-    	        String number = time+out_trade_no;
+    	        String number = otherOrderID;
     	        System.err.println("订单号:"+number);
     	        prepayReqHandler.setParameter("out_trade_no", number);
     	        /*prepayReqHandler.setParameter("sign_type","MD5");*/
@@ -373,6 +377,10 @@ public class WeiXinPay {
     	            map.put("code", 0);
     	            map.put("info", "success");
     	            map.put("prepayid", prepayid);
+		        	map.put("otherOrderID", otherOrderID);
+		        	map.put("goodName", goodname);
+		        	map.put("goodPrice", total.toString());
+		        	map.put("ourOrderID", out_trade_no);
     	            /*map.put("mergeSigns",signs);*/
     	            
     	            /**
@@ -403,7 +411,7 @@ public class WeiXinPay {
      * @param response
      * @throws IOException
      */
-    @RequestMapping(value = "/notify")
+	 @RequestMapping(value = "/signdata")
     public void getnotify(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         System.out.println("微信支付回调");

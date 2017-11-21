@@ -431,6 +431,7 @@ public class OrderServiceImpl implements OrderService {
 								order.setPayment(order.getPayment());
 								order.setPaytype(order.getPaytype());
 								order.setPaytime(new Date());
+								order.setOtherOrderID(order.getOtherOrderID());
 								/*PrimaryGenerater Serialnumber = PrimaryGenerater.getInstance();*/
 								SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 						        Date now = new Date();

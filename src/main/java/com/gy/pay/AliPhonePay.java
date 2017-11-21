@@ -137,6 +137,7 @@ public class AliPhonePay {
             String goodname = orderGoods.getTitle();
             orderGoods.getTotalprice();
             AliPayConfig aliPayConfig = aliPayConfigService.queryGamepackage(gamePackage);
+	        String otherOrderID = order.getOtherOrderID();
 			if(aliPayConfig==null)
 			{
 				status = "0403";
@@ -168,7 +169,7 @@ public class AliPhonePay {
 		        String time = sdf.format(now);
 		        System.out.println("时间:"+time);
 		        int randomNum = (int)((Math.random()*9+1)*100);
-		        String out_trade_no = time+number;
+		        String out_trade_no = otherOrderID;
 				
 				//实例化客户端
 				AlipayClient alipayClient = new DefaultAlipayClient(ALIPAY_GATEWAY, APP_ID, APP_PRIVATE_KEY, "json", CHARSET, ALIPAY_PUBLIC_KEY, "RSA");
@@ -178,6 +179,7 @@ public class AliPhonePay {
 				alipayRequest.setBizContent("{" +
 						"    \"out_trade_no\":\""+out_trade_no+"\"," +
 				        "    \"product_code\":\""+product_code+"\"," +
+				        "    \"body\":\""+subject+otherOrderID+"\"," +
 				        "    \"total_amount\":\""+total_amount+"\"," +
 				        "    \"subject\":\""+subject+"\"" +
 				        "  }");//填充业务参数
@@ -198,7 +200,7 @@ public class AliPhonePay {
 	            payRecord.setGameChanel("支付宝手机APP网站支付");
 	            payRecord.setGamePackage(gamePackage);
 	            payRecord.setOutTradeNumber(out_trade_no);
-	            payRecord.setOrderid(out_trade_no);
+	            payRecord.setOrderid(number);
 	            payRecord.setPayMoney(total_amount);
 	            payRecord.setPayStyle("支付宝手机APP网站支付");
 	            payRecord.setPayStatus("1");
@@ -245,7 +247,7 @@ public class AliPhonePay {
 		        String time = sdf.format(now);
 		        System.out.println("时间:"+time);
 		        int randomNum = (int)((Math.random()*9+1)*100);
-		        String out_trade_no = time+number;
+		        String out_trade_no = otherOrderID;
 				
 				//实例化客户端
 				AlipayClient alipayClient = new DefaultAlipayClient(ALIPAY_GATEWAY, APP_ID, APP_PRIVATE_KEY, "json", CHARSET, ALIPAY_PUBLIC_KEY, "RSA");
@@ -255,6 +257,7 @@ public class AliPhonePay {
 				alipayRequest.setBizContent("{" +
 						"    \"out_trade_no\":\""+out_trade_no+"\"," +
 				        "    \"product_code\":\""+product_code+"\"," +
+				        "    \"body\":\""+subject+otherOrderID+"\"," +
 				        "    \"total_amount\":\""+total_amount+"\"," +
 				        "    \"subject\":\""+subject+"\"" +
 				        "  }");//填充业务参数
@@ -275,7 +278,7 @@ public class AliPhonePay {
 	            payRecord.setGameChanel("支付宝手机APP网站支付");
 	            payRecord.setGamePackage(gamePackage);
 	            payRecord.setOutTradeNumber(out_trade_no);
-	            payRecord.setOrderid(out_trade_no);
+	            payRecord.setOrderid(number);
 	            payRecord.setPayMoney(total_amount);
 	            payRecord.setPayStyle("支付宝手机APP网站支付");
 	            payRecord.setPayStatus("1");

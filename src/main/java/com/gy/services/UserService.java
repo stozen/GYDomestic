@@ -151,4 +151,12 @@ public interface UserService {
 	 * @return
 	 */
 	public List<DataCount> queryActive(String beginTime,String endTime);
+	
+	/**
+	 * 实现用户留存的显示功能
+	 * @param beginTime
+	 * @param endTime
+	 * @return
+	 */
+	public List<DataCount> queryRetained(String beginTime,String endTime);
 }

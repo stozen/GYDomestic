@@ -1698,4 +1698,15 @@ public class UserServiceImpl implements UserService {
 		// TODO Auto-generated method stub
 		return userDao.queryActive(beginTime, endTime);
 	}
+	
+	/* 
+	 * 实现用户留存的功能
+	 * (non-Javadoc)
+	 * @see com.gy.services.UserService#queryRetained(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public List<DataCount> queryRetained(String beginTime, String endTime) {
+		// TODO Auto-generated method stub
+		return userDao.queryRetained(beginTime, endTime);
+	}
 }

@@ -484,4 +484,32 @@ public class UserDaoImpl implements UserDao{
 		}
 		return dataCounts;
 	}
+	
+	/* 
+	 * 实现用户留存问题
+	 * (non-Javadoc)
+	 * @see com.gy.dao.UserDao#queryRetained(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public List<DataCount> queryRetained(String beginTime, String endTime) {
+		// TODO Auto-generated method stub
+		Session session = getSession();
+		List<DataCount> dataCounts = new ArrayList<DataCount>();
+		
+		try {
+			tx = session.beginTransaction();
+			/*query = session.createSQLQuery("select sum(u.COUNT)/u1.nowUser as payMoney,u.count as COUNT,u.userid,COUNT(u.userid) as userCount,DATE_FORMAT(u.logintime,'%Y-%m-%d') AS TIME from (select COUNT(*)as COUNT,userid,username,logintime,DATE_FORMAT(logintime,'%Y-%m-%d') AS TIME from tb_gyuser WHERE logintime BETWEEN "+"'"+beginTime+"'"+" and "+"'"+endTime+"'"+" GROUP BY TIME ) as u,(select COUNT(*) as nowUser from tb_gyuser where logintime BETWEEN "+"'"+beginTime+"'"+" and "+"'"+endTime+"'"+") as u1 where u.logintime BETWEEN "+"'"+beginTime+"'"+" and "+"'"+endTime+"'"+" GROUP BY TIME").addEntity(DataCount.class);*/
+			query = session.createSQLQuery("select sum(u.COUNT)/u1.nowUser as payMoney,u1.nowUser as nowUser,u.count as COUNT,u.userid,COUNT(u.userid) as userCount,u.username,DATE_FORMAT(u.logintime,'%Y-%m-%d') AS TIME from (select COUNT(*) as COUNT,userid,username,logintime,DATE_FORMAT(logintime,'%Y-%m-%d') AS TIME from tb_gyuser WHERE logintime BETWEEN "+"'"+beginTime+"'"+" and "+"'"+endTime+"'"+" GROUP BY TIME ) as u,(select COUNT(*) as nowUser from tb_gyuser) as u1 where u.logintime BETWEEN "+"'"+beginTime+"'"+" and "+"'"+endTime+"'"+" GROUP BY TIME;").addEntity(DataCount.class);
+			dataCounts = (List<DataCount>)query.list();
+			tx.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			if(tx!=null) 
+			{
+				tx.rollback();
+			}
+		}
+		return dataCounts;
+	}
 }

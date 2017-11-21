@@ -112,4 +112,12 @@ public interface UserDao {
 	 * @return
 	 */
 	public List<DataCount> queryActive(String beginTime,String endTime);
+	
+	/**
+	 * 实现统计用户留存问题
+	 * @param beginTime
+	 * @param endTime
+	 * @return
+	 */
+	public List<DataCount> queryRetained(String beginTime,String endTime);
 }

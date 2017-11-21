@@ -218,8 +218,9 @@ public class AliPay {
 		        String time = sdf.format(now);
 		        System.out.println("时间:"+time);
 		        int randomNum = (int)((Math.random()*9+1)*100);
+		        String otherOrderID = order.getOtherOrderID();
 		        /*String number = time+randomNum+out_trade_no;*/
-		        String out_trade_no = time+number;
+		        String out_trade_no = otherOrderID;
 		        
 				//实例化客户端
 				AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", APP_ID, APP_PRIVATE_KEY, "json", CHARSET, ALIPAY_PUBLIC_KEY, "RSA");
@@ -227,8 +228,8 @@ public class AliPay {
 				AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
 				//SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
 				AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
-				model.setBody("我是测试数据");
-				model.setSubject("App支付测试Java");
+				model.setBody(otherOrderID);
+				model.setSubject(goodname);
 				model.setOutTradeNo(out_trade_no);
 				model.setTimeoutExpress("30m");
 				model.setTotalAmount(total_amount);
@@ -257,7 +258,7 @@ public class AliPay {
 				            payRecord.setGameChanel("支付宝APP支付");
 				            payRecord.setGamePackage(gamePackage);
 				            payRecord.setOutTradeNumber(out_trade_no);
-				            payRecord.setOrderid(out_trade_no);
+				            payRecord.setOrderid(number);
 				            payRecord.setPayMoney(total_amount);
 				            payRecord.setPayStyle("支付宝APP支付");
 				            payRecord.setPayStatus("1");
@@ -271,6 +272,11 @@ public class AliPay {
 				        	map.put("status", status);
 				        	map.put("paydata", response.getBody());
 				        	map.put("message", message);
+				        	
+				        	map.put("otherOrderID", otherOrderID);
+				        	map.put("goodName", goodname);
+				        	map.put("goodPrice", total_amount);
+				        	map.put("ourOrderID", out_trade_no);
 				        }
 				        else
 				        {
@@ -308,7 +314,8 @@ public class AliPay {
 		        System.out.println("时间:"+time);
 		        int randomNum = (int)((Math.random()*9+1)*100);
 		        /*String number = time+randomNum+out_trade_no;*/
-		        String out_trade_no = time+number;
+		        String otherOrderID = order.getOtherOrderID();
+		        String out_trade_no = otherOrderID;
 		        
 				//实例化客户端
 				AlipayClient alipayClient = new DefaultAlipayClient("https://openapi.alipay.com/gateway.do", APP_ID, APP_PRIVATE_KEY, "json", CHARSET, ALIPAY_PUBLIC_KEY, "RSA");
@@ -316,8 +323,8 @@ public class AliPay {
 				AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
 				//SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
 				AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
-				model.setBody("我是测试数据");
-				model.setSubject("App支付测试Java");
+				model.setBody(otherOrderID);
+				model.setSubject(goodname);
 				model.setOutTradeNo(out_trade_no);
 				model.setTimeoutExpress("30m");
 				model.setTotalAmount(total_amount);
@@ -346,7 +353,7 @@ public class AliPay {
 				            payRecord.setGameChanel("支付宝APP支付");
 				            payRecord.setGamePackage(gamePackage);
 				            payRecord.setOutTradeNumber(out_trade_no);
-				            payRecord.setOrderid(out_trade_no);
+				            payRecord.setOrderid(number);
 				            payRecord.setPayMoney(total_amount);
 				            payRecord.setPayStyle("支付宝APP支付");
 				            payRecord.setPayStatus("1");
@@ -360,6 +367,10 @@ public class AliPay {
 				        	map.put("status", status);
 				        	map.put("paydata", response.getBody());
 				        	map.put("message", message);
+				        	map.put("otherOrderID", otherOrderID);
+				        	map.put("goodName", goodname);
+				        	map.put("goodPrice", total_amount);
+				        	map.put("ourOrderID", out_trade_no);
 				        }
 				        else
 				        {
@@ -384,8 +395,8 @@ public class AliPay {
 	}
 	
 	/*JAVA服务端验证异步通知信息参数示例*/
-	@RequestMapping(value="/notify",method=RequestMethod.POST)
-	public @ResponseBody Map<String, Object> notifyOrder(@RequestBody Map map,HttpServletRequest request) {
+	@RequestMapping(value="/signdata",method=RequestMethod.POST)
+	public @ResponseBody Map<String, Object> notifyOrder(HttpServletRequest request,HttpServletResponse response) {
 		/*创建支付宝支付的公共参数*/
 		final String APP_ID = "2016080301699003";
 		final String APP_PRIVATE_KEY = "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJzuFpK2ikT/cLzBMQS2G0VBDJM0vjHser7pV+AG5d2kfkSSzRgDMKyTiq871M8jQmEfVlZJNtgXcKdyV5bUhoCNQL4Tq3Jp8Ndo8oAQ/3NvSux794kkq6L2UhHwckJ5yoTb4bNzQYwkGXEmAal22+bZwsc6IVwNzk2TJ0H6VdpVAgMBAAECgYAoA9G/sUoKk/PkPYLJR8ImY5LYSl+hDUKzQX7FwhyE6rfDtocTc2TK7Ig1bJU0CDKZ30q9j8erTDbOi6pn7GMrKAzpF1nSMTjJgio03Kat9784YfI7tcT0YJjaGIsjNCeUiEhy/Hd1LxpExB1Dcet9Siy3USe4qXvzY7lXlkf9AQJBANCY+cWllFUJPwxg3kx77nrqlRBCodKuizcqZBJsZc3k/IDB8LX9UU3sljeNHJM9Ee/AU/fUzDLww4E/BsP0X5UCQQDAl2Nr/RylEw9cveOJDSstYFrVmWU+lZQN0Nq3StFcg/wEtV1H/ajOEHxn4/lYvLN2RcVTgIMm8lwxm1bWu9/BAkAUCU2cjX4E+QFkV/2iTRkoF1ZAHJZcnUVkBB9eoajZsRAL8hUD9hQULxByv4wqHGiXpdqq6HbAwd2VkY89zUBNAkEAl/wgms0RuPfUrMSx9qssws+Cf4RhkMUsJMcIg5OIqzEBRpn19mUovQ3nj3kqgqvQGGsxMRd+6NJkjUVgf2+eQQJAT1uJnT3N9h1O/FAhXrcg1f0tBswtCyvtcZNh3EStARDj2NluJwJiMMbgRZe12jfvfN6lmq0sUvwOT298H8W6qQ==";
@@ -393,9 +404,7 @@ public class AliPay {
 		
 		final String ALIPAY_PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDDI6d306Q8fIfCOaTXyiUeJHkrIvYISRcc73s3vF1ZT7XN8RNPwJxo8pWaJMmvyTn9N4HQ632qJBVHf8sxHi/fEsraprwCtzvzQETrNRwVxLO5jVmRGi60j8Ue1efIlzPXV9je9mkjzOmdssymZkh2QhUrCmZYI/FCEa3/cNMW0QIDAQAB";
 		final String ALIPAY_GATEWAY = "https://openapi.alipay.com/gateway.do";
-		/*//声明返回的信息
-		Map<String, Object> map = new HashMap<String,Object>();*/
-		String out_trade_no = (String) map.get("out_trade_no");
+		Map<String, Object> map = new HashMap<String, Object>();
 		//获取支付宝POST过来反馈信息
 		Map<String,String> params = new HashMap<String,String>();
 		Map requestParams = request.getParameterMap();
@@ -411,34 +420,45 @@ public class AliPay {
 			//valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
 			params.put(name, valueStr);
 		}
-		
 		//切记alipaypublickey是支付宝的公钥，请去open.alipay.com对应应用下查看。
 		//boolean AlipaySignature.rsaCheckV1(Map<String, String> params, String publicKey, String charset, String sign_type)
 		boolean flag = false;
+		System.err.println("获取订单信息："+params.get("out_trade_no"));
 		try {
 			flag = AlipaySignature.rsaCheckV1(params, ALIPAY_PUBLIC_KEY, CHARSET,"RSA");
-			PayRecord payRecord = payRecordService.get(out_trade_no);
-			if(payRecord.getPayTime()!=null){
-                System.out.println("通知微信后台");
-                payRecord.setPayTime(new Date());
-                String phone=payRecord.getPhone();
-                payRecord.setPayStatus("1");
-                /*AppCustomer appCustomer=appCustomerService.getByPhone(phone);
-                float balance=appCustomer.getBalance();
-                balance+=Float.valueOf(map.get("total_fee"))/100;
-                appCustomer.setBalance(balance);
-                appCustomerService.update(appCustomer);*/
-                payRecordService.update(payRecord);
-                status = "0200";
-                message = "支付成功";
-            }
+			String out_trade_no = params.get("out_trade_no");
+            PayRecord payRecord = payRecordService.get(out_trade_no);
+			if(flag)
+			{
+				
+	            if(payRecord==null)
+	            {
+	            	status = "0404";
+	            	message = "数据库中不存在这个订单";
+	            	/*map.put("payData", payRecord);*/
+	            }
+	            else
+	            {
+	            	status = "0200";
+		            message = "支付成功";
+		            payRecord.setPayStatus("1");
+		            payRecordService.update(payRecord);
+		            /*map.put("payData", payRecord);*/
+	            }
+			}
+			else
+			{
+				status = "0400";
+	            message = "支付失败";
+	            /*map.put("payData", payRecord);*/
+			}
 		} catch (AlipayApiException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		map.put("flag", flag);
 		map.put("status", status);
 		map.put("message", message);
+		
 		return map;
 	}
 	

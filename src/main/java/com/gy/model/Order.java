@@ -87,6 +87,11 @@ public class Order implements Serializable {
 	 * 交易流水号
 	 */
 	private String serialnumber;
+	
+	/**
+	 * 创建易捷的订单号
+	 */
+	private String otherOrderID;
 
 	/**
 	 * 创建订单用户 
@@ -321,6 +326,23 @@ public class Order implements Serializable {
 
 	public void setOrdergoods(Set<OrderGoods> ordergoods) {
 		this.ordergoods = ordergoods;
+	}
+
+	/**
+	 * 创建易捷的订单编号的get方法
+	 * @return
+	 */
+	@Column(name="otherOrderID",length=200,nullable=true,insertable=true,updatable=true)
+	public String getOtherOrderID() {
+		return otherOrderID;
+	}
+
+	/**
+	 * 创建易捷的订单编号的set方法
+	 * @param otherOrderID
+	 */
+	public void setOtherOrderID(String otherOrderID) {
+		this.otherOrderID = otherOrderID;
 	}
 	
 }

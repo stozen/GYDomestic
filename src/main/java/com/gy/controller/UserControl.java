@@ -458,4 +458,65 @@ public class UserControl {
 		
 		return map;
 	}
+	
+	/**
+	 * 实现留存可视化功能的实现
+	 * @return
+	 */
+	@RequestMapping(value="queryretained",method=RequestMethod.GET)
+	@ResponseBody
+	public Map<String, Object> queryRetained(@RequestParam String beginTime, String endTime) {
+		// TODO Auto-generated method stub
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		if(beginTime==null || endTime==null)
+		{
+			status = "0503";
+			message = "输入的起始时间或截止时间为空对象";
+		}
+		else
+		{
+			if((beginTime.equals("") || "".equals(beginTime)) && (endTime.equals("") || "".equals(endTime))) {
+				status = "0603";
+				message = "输入的起始时间或截止时间为空";
+			}
+			else
+			{
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				Date begin;
+				Date end;
+				try {
+					begin = sdf.parse(beginTime);
+					end = sdf.parse(endTime);
+					if(begin.before(end)) {
+						//查询所有用户个数
+						List<DataCount> userdata = userService.queryRetained(beginTime, endTime);
+						
+						JSONArray json = new JSONArray();
+						for (DataCount datacount : userdata) {
+							JSONObject jo = new JSONObject();
+							jo.put("userId", datacount.getDataCountId());
+							jo.put("userTime", datacount.getTime());
+							jo.put("userRetained", datacount.getPayMoney());
+							json.add(jo);
+						}
+						map.put("userRetained", json);
+						status = "0200";
+						message = "查询成功";
+					}
+					else {
+						status = "0604";
+						message = "时间先后顺序不对，起始时间在截止时间之后了";
+					}
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+		}
+		map.put("status", status);
+		map.put("message",message);
+		return map;
+	}
 }
