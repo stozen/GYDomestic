@@ -200,8 +200,8 @@ public class AliPay {
 				final String APP_ID = "2016080301699003";
 				final String APP_PRIVATE_KEY = "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJzuFpK2ikT/cLzBMQS2G0VBDJM0vjHser7pV+AG5d2kfkSSzRgDMKyTiq871M8jQmEfVlZJNtgXcKdyV5bUhoCNQL4Tq3Jp8Ndo8oAQ/3NvSux794kkq6L2UhHwckJ5yoTb4bNzQYwkGXEmAal22+bZwsc6IVwNzk2TJ0H6VdpVAgMBAAECgYAoA9G/sUoKk/PkPYLJR8ImY5LYSl+hDUKzQX7FwhyE6rfDtocTc2TK7Ig1bJU0CDKZ30q9j8erTDbOi6pn7GMrKAzpF1nSMTjJgio03Kat9784YfI7tcT0YJjaGIsjNCeUiEhy/Hd1LxpExB1Dcet9Siy3USe4qXvzY7lXlkf9AQJBANCY+cWllFUJPwxg3kx77nrqlRBCodKuizcqZBJsZc3k/IDB8LX9UU3sljeNHJM9Ee/AU/fUzDLww4E/BsP0X5UCQQDAl2Nr/RylEw9cveOJDSstYFrVmWU+lZQN0Nq3StFcg/wEtV1H/ajOEHxn4/lYvLN2RcVTgIMm8lwxm1bWu9/BAkAUCU2cjX4E+QFkV/2iTRkoF1ZAHJZcnUVkBB9eoajZsRAL8hUD9hQULxByv4wqHGiXpdqq6HbAwd2VkY89zUBNAkEAl/wgms0RuPfUrMSx9qssws+Cf4RhkMUsJMcIg5OIqzEBRpn19mUovQ3nj3kqgqvQGGsxMRd+6NJkjUVgf2+eQQJAT1uJnT3N9h1O/FAhXrcg1f0tBswtCyvtcZNh3EStARDj2NluJwJiMMbgRZe12jfvfN6lmq0sUvwOT298H8W6qQ==";
 				final String ALIPAY_PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDDI6d306Q8fIfCOaTXyiUeJHkrIvYISRcc73s3vF1ZT7XN8RNPwJxo8pWaJMmvyTn9N4HQ632qJBVHf8sxHi/fEsraprwCtzvzQETrNRwVxLO5jVmRGi60j8Ue1efIlzPXV9je9mkjzOmdssymZkh2QhUrCmZYI/FCEa3/cNMW0QIDAQAB";
-				String returnUrl = "www.h5SDK.com/h5sdk/validation.html";
-				String callBackUrl = "www.h5SDK.com/h5sdk/validation.html";
+				String returnUrl = "http://23sdk.23h5.cn/h5SDK/validation.html";
+				String callBackUrl = "http://23sdk.23h5.cn/h5SDK/validation.html";
 				final String CHARSET = "utf-8";
 				final String ALIPAY_GATEWAY = "https://openapi.alipay.com/gateway.do";
 				/*创建支付宝的扩展参数*/
@@ -261,7 +261,7 @@ public class AliPay {
 				            payRecord.setOrderid(number);
 				            payRecord.setPayMoney(total_amount);
 				            payRecord.setPayStyle("支付宝APP支付");
-				            payRecord.setPayStatus("1");
+				            payRecord.setPayStatus("0");
 				            /*SimpleDateFormat sdfdate = new SimpleDateFormat("yyyyMMddHHmmss");
 				            System.err.println("时间日期:"+timestamp);*/
 				            payRecord.setPayTime(new Date());
@@ -356,7 +356,7 @@ public class AliPay {
 				            payRecord.setOrderid(number);
 				            payRecord.setPayMoney(total_amount);
 				            payRecord.setPayStyle("支付宝APP支付");
-				            payRecord.setPayStatus("1");
+				            payRecord.setPayStatus("0");
 				            /*SimpleDateFormat sdfdate = new SimpleDateFormat("yyyyMMddHHmmss");
 				            System.err.println("时间日期:"+timestamp);*/
 				            payRecord.setPayTime(new Date());
@@ -427,7 +427,24 @@ public class AliPay {
 		try {
 			flag = AlipaySignature.rsaCheckV1(params, ALIPAY_PUBLIC_KEY, CHARSET,"RSA");
 			String out_trade_no = params.get("out_trade_no");
+			String app_id = params.get("app_id");
+			
+			AliPayConfig aliPayConfig = aliPayConfigService.queryBysql("from AliPayConfig where APP_ID="+"'"+app_id+"'");
+			String send_url = "";
+			if(aliPayConfig==null)
+			{
+				status = "0404";
+				message = "没有第三方通知的地址";
+			}
+			else
+			{
+				status = "6200";
+				message = "有第三方通知的地址";
+				send_url = aliPayConfig.getRETURN_URL();
+			}
+			
             PayRecord payRecord = payRecordService.get(out_trade_no);
+            String SEND_URL = send_url;
 			if(flag)
 			{
 				
@@ -440,7 +457,39 @@ public class AliPay {
 	            else
 	            {
 	            	status = "0200";
-		            message = "支付成功";
+	    			message = "验证签名支付成功";
+	    			
+	    			try {
+	    		        //创建连接
+	    		        URL url = new URL(SEND_URL);
+	    		        HttpURLConnection connection = (HttpURLConnection) url
+	    		                .openConnection();
+	    		        connection.setDoOutput(true);
+	    		        connection.setDoInput(true);
+	    		        connection.setRequestMethod("POST");
+	    		        /* connection.setRequestProperty("Authorization", token);*/
+	    		        connection.setUseCaches(false);
+	    		        connection.setInstanceFollowRedirects(true);
+	    		        connection.setRequestProperty("Content-Type","application/json");
+	    		        connection.connect();
+	    		        
+	    		        //POST请求
+	    		        DataOutputStream out = new DataOutputStream(
+	    		                connection.getOutputStream());
+	    		        JSONObject obj = new JSONObject();
+	    		        obj.put("out_trade_no", out_trade_no);
+	    		        obj.put("status", status);
+	    		        obj.put("message", message);
+	    		        obj.put("total_amount", requestParams.get("total_amount"));
+	    		        System.err.println("通知第三方服务器");
+	    		        
+	    		        out.writeBytes(obj.toString());
+	    		        out.flush();
+	    		        out.close();
+	    			} catch (Exception e)
+	    			{
+	    				e.printStackTrace();
+	    			}
 		            payRecord.setPayStatus("1");
 		            payRecordService.update(payRecord);
 		            /*map.put("payData", payRecord);*/
@@ -448,8 +497,49 @@ public class AliPay {
 			}
 			else
 			{
-				status = "0400";
-	            message = "支付失败";
+	            if(payRecord==null)
+	            {
+	            	status = "0404";
+	            	message = "数据库中不存在这个订单";
+	            }
+	            else
+	            {
+	            	status = "0604";
+	    			message = "验证签名支付失败";
+	    			try {
+	    		        //创建连接
+	    		        URL url = new URL(SEND_URL);
+	    		        HttpURLConnection connection = (HttpURLConnection) url
+	    		                .openConnection();
+	    		        connection.setDoOutput(true);
+	    		        connection.setDoInput(true);
+	    		        connection.setRequestMethod("POST");
+	    		        /* connection.setRequestProperty("Authorization", token);*/
+	    		        connection.setUseCaches(false);
+	    		        connection.setInstanceFollowRedirects(true);
+	    		        connection.setRequestProperty("Content-Type","application/json");
+	    		        connection.connect();
+	    		        
+	    		        //POST请求
+	    		        DataOutputStream out = new DataOutputStream(
+	    		                connection.getOutputStream());
+	    		        JSONObject obj = new JSONObject();
+	    		        obj.put("out_trade_no", out_trade_no);
+	    		        obj.put("status", status);
+	    		        obj.put("message", message);
+	    		        obj.put("total_amount", requestParams.get("total_amount"));
+	    		        System.err.println("通知第三方服务器");
+	    		        
+	    		        out.writeBytes(obj.toString());
+	    		        out.flush();
+	    		        out.close();
+	    			} catch (Exception e)
+	    			{
+	    				e.printStackTrace();
+	    			}
+		            payRecord.setPayStatus("0");
+		            payRecordService.update(payRecord);
+	            }
 	            /*map.put("payData", payRecord);*/
 			}
 		} catch (AlipayApiException e) {
@@ -458,7 +548,6 @@ public class AliPay {
 		}
 		map.put("status", status);
 		map.put("message", message);
-		
 		return map;
 	}
 	

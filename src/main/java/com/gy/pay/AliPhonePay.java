@@ -1,9 +1,13 @@
 package com.gy.pay;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -19,11 +23,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradeWapPayRequest;
+import com.google.gson.annotations.Since;
 import com.gy.model.AliPayConfig;
 import com.gy.model.Game;
 import com.gy.model.Order;
@@ -147,8 +153,8 @@ public class AliPhonePay {
 				/*final String APP_ID = aliPayConfig.getAPP_ID();
 				final String APP_PRIVATE_KEY = aliPayConfig.getAPP_PRIVATE_KEY();
 				final String ALIPAY_PUBLIC_KEY = aliPayConfig.getALIPAY_PUBLIC_KEY();*/
-				String returnUrl = "www.h5SDK.com/h5sdk/validation.html";
-				String callBackUrl = "www.h5SDK.com/h5sdk/validation.html";
+				String returnUrl = "http://23sdk.23h5.cn/h5SDK/validation.html";
+				String callBackUrl = "http://23sdk.23h5.cn/h5SDK/validation.html";
 				 
 				/*创建支付宝支付的公共参数*/
 				final String APP_ID = "2016080301699003";
@@ -205,7 +211,7 @@ public class AliPhonePay {
 	            payRecord.setOrderid(number);
 	            payRecord.setPayMoney(total_amount);
 	            payRecord.setPayStyle("支付宝手机APP网站支付");
-	            payRecord.setPayStatus("1");
+	            payRecord.setPayStatus("0");
 	            /*SimpleDateFormat sdfdate = new SimpleDateFormat("yyyyMMddHHmmss");
 	            System.err.println("时间日期:"+timestamp);*/
 	            payRecord.setPayTime(new Date());
@@ -283,7 +289,7 @@ public class AliPhonePay {
 	            payRecord.setOrderid(number);
 	            payRecord.setPayMoney(total_amount);
 	            payRecord.setPayStyle("支付宝手机APP网站支付");
-	            payRecord.setPayStatus("1");
+	            payRecord.setPayStatus("0");
 	            /*SimpleDateFormat sdfdate = new SimpleDateFormat("yyyyMMddHHmmss");
 	            System.err.println("时间日期:"+timestamp);*/
 	            payRecord.setPayTime(new Date());
@@ -306,6 +312,24 @@ public class AliPhonePay {
 		Map<String, Object> map = new HashMap<String, Object>();
 		/*Map<String, String> paramsMap = ... //将异步通知中收到的所有参数都存放到map中*/		
 		Map<String, String> paramsMap = new HashMap<String,String>();
+		//获取请求参数
+		Map requestParams = request.getParameterMap();
+		for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext();) {
+		    String name = (String) iter.next();
+		    String[] values = (String[]) requestParams.get(name);
+		    String valueStr = "";
+		    for (int i = 0; i < values.length; i++) {
+		        valueStr = (i == values.length - 1) ? valueStr + values[i]
+		                    : valueStr + values[i] + ",";
+		  	}
+		    //乱码解决，这段代码在出现乱码时使用。
+			//valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
+		    paramsMap.put(name, valueStr);
+		}
+		/*paramsMap.put("app_id", (String)requestParams.get("app_id"));
+		paramsMap.put("auth_app_id", (String) requestParams.get("auth_app_id"));
+		paramsMap.put("charset", (String)requestParams.get("charset"));
+		System.err.println("获取订单编号:"+requestParams.get("out_trade_no"));*/
 		/*创建支付宝支付的公共参数*/
 		final String APP_ID = "2016080301699003";
 		final String APP_PRIVATE_KEY = "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJzuFpK2ikT/cLzBMQS2G0VBDJM0vjHser7pV+AG5d2kfkSSzRgDMKyTiq871M8jQmEfVlZJNtgXcKdyV5bUhoCNQL4Tq3Jp8Ndo8oAQ/3NvSux794kkq6L2UhHwckJ5yoTb4bNzQYwkGXEmAal22+bZwsc6IVwNzk2TJ0H6VdpVAgMBAAECgYAoA9G/sUoKk/PkPYLJR8ImY5LYSl+hDUKzQX7FwhyE6rfDtocTc2TK7Ig1bJU0CDKZ30q9j8erTDbOi6pn7GMrKAzpF1nSMTjJgio03Kat9784YfI7tcT0YJjaGIsjNCeUiEhy/Hd1LxpExB1Dcet9Siy3USe4qXvzY7lXlkf9AQJBANCY+cWllFUJPwxg3kx77nrqlRBCodKuizcqZBJsZc3k/IDB8LX9UU3sljeNHJM9Ee/AU/fUzDLww4E/BsP0X5UCQQDAl2Nr/RylEw9cveOJDSstYFrVmWU+lZQN0Nq3StFcg/wEtV1H/ajOEHxn4/lYvLN2RcVTgIMm8lwxm1bWu9/BAkAUCU2cjX4E+QFkV/2iTRkoF1ZAHJZcnUVkBB9eoajZsRAL8hUD9hQULxByv4wqHGiXpdqq6HbAwd2VkY89zUBNAkEAl/wgms0RuPfUrMSx9qssws+Cf4RhkMUsJMcIg5OIqzEBRpn19mUovQ3nj3kqgqvQGGsxMRd+6NJkjUVgf2+eQQJAT1uJnT3N9h1O/FAhXrcg1f0tBswtCyvtcZNh3EStARDj2NluJwJiMMbgRZe12jfvfN6lmq0sUvwOT298H8W6qQ==";
@@ -314,17 +338,127 @@ public class AliPhonePay {
 		final String ALIPAY_PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDDI6d306Q8fIfCOaTXyiUeJHkrIvYISRcc73s3vF1ZT7XN8RNPwJxo8pWaJMmvyTn9N4HQ632qJBVHf8sxHi/fEsraprwCtzvzQETrNRwVxLO5jVmRGi60j8Ue1efIlzPXV9je9mkjzOmdssymZkh2QhUrCmZYI/FCEa3/cNMW0QIDAQAB";
 		final String ALIPAY_GATEWAY = "https://openapi.alipay.com/gateway.do";
 		boolean signVerified = false;
+		
 		try {
-			signVerified = AlipaySignature.rsaCheckV1(paramsMap, ALIPAY_PUBLIC_KEY, CHARSET, "RSA");
+			signVerified = AlipaySignature.rsaCheckV1(paramsMap, ALIPAY_PUBLIC_KEY, CHARSET,"RSA");
+			String out_trade_no = paramsMap.get("out_trade_no");
+			String app_id = paramsMap.get("app_id");
+			
+			AliPayConfig aliPayConfig = aliPayConfigService.queryBysql("from AliPayConfig where APP_ID="+"'"+app_id+"'");
+			
+			String send_url = "";
+			if(aliPayConfig==null)
+			{
+				status = "0404";
+				message = "没有第三方通知的地址";
+			}
+			else
+			{
+				status = "6200";
+				message = "有第三方通知的地址";
+				send_url = aliPayConfig.getRETURN_URL();
+			}
+			PayRecord payRecord = payRecordService.get(out_trade_no);
+			String SEND_URL = send_url;
+			if(signVerified){
+				// TODO 验签成功后，按照支付结果异步通知中的描述，对支付结果中的业务内容进行二次校验，校验成功后在response中返回success并继续商户自身业务处理，校验失败返回failure
+				if(payRecord==null)
+				{
+					status = "0404";
+					message = "数据库中不存在这个订单";
+				}
+				else
+				{
+					status = "0200";
+					message = "验证签名支付成功";
+					try {
+	    		        //创建连接
+	    		        URL url = new URL(SEND_URL);
+	    		        HttpURLConnection connection = (HttpURLConnection) url
+	    		                .openConnection();
+	    		        connection.setDoOutput(true);
+	    		        connection.setDoInput(true);
+	    		        connection.setRequestMethod("POST");
+	    		        /* connection.setRequestProperty("Authorization", token);*/
+	    		        connection.setUseCaches(false);
+	    		        connection.setInstanceFollowRedirects(true);
+	    		        connection.setRequestProperty("Content-Type","application/json");
+	    		        connection.connect();
+	    		        
+	    		        //POST请求
+	    		        DataOutputStream out = new DataOutputStream(
+	    		                connection.getOutputStream());
+	    		        JSONObject obj = new JSONObject();
+	    		        obj.put("out_trade_no", out_trade_no);
+	    		        obj.put("status", status);
+	    		        obj.put("message", message);
+	    		        obj.put("total_amount", requestParams.get("total_amount"));
+	    		        System.err.println("通知第三方服务器");
+	    		        
+	    		        out.writeBytes(obj.toString());
+	    		        out.flush();
+	    		        out.close();
+	    			} catch (Exception e)
+	    			{
+	    				e.printStackTrace();
+	    			}
+					payRecord.setPayStatus("1");
+					payRecordService.update(payRecord);
+					System.err.println("更新支付状态成功");
+				}
+			}else{
+			// TODO 验签失败则记录异常日志，并在response中返回failure.
+				if(payRecord==null)
+				{
+					status = "0404";
+					message = "数据库中不存在这个订单";
+				}
+				else
+				{
+					status = "0604";
+					message = "验证签名支付失败";
+					try {
+	    		        //创建连接
+	    		        URL url = new URL(SEND_URL);
+	    		        HttpURLConnection connection = (HttpURLConnection) url
+	    		                .openConnection();
+	    		        connection.setDoOutput(true);
+	    		        connection.setDoInput(true);
+	    		        connection.setRequestMethod("POST");
+	    		        /* connection.setRequestProperty("Authorization", token);*/
+	    		        connection.setUseCaches(false);
+	    		        connection.setInstanceFollowRedirects(true);
+	    		        connection.setRequestProperty("Content-Type","application/json");
+	    		        connection.connect();
+	    		        
+	    		        //POST请求
+	    		        DataOutputStream out = new DataOutputStream(
+	    		                connection.getOutputStream());
+	    		        JSONObject obj = new JSONObject();
+	    		        obj.put("out_trade_no", out_trade_no);
+	    		        obj.put("status", status);
+	    		        obj.put("message", message);
+	    		        obj.put("total_amount", requestParams.get("total_amount"));
+	    		        System.err.println("通知第三方服务器");
+	    		        
+	    		        out.writeBytes(obj.toString());
+	    		        out.flush();
+	    		        out.close();
+	    			} catch (Exception e)
+	    			{
+	    				e.printStackTrace();
+	    			}
+					payRecord.setPayStatus("0");
+					payRecordService.update(payRecord);
+				}
+			}
 		} catch (AlipayApiException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} //调用SDK验证签名
-		if(signVerified){
-		// TODO 验签成功后，按照支付结果异步通知中的描述，对支付结果中的业务内容进行二次校验，校验成功后在response中返回success并继续商户自身业务处理，校验失败返回failure
-		}else{
-		// TODO 验签失败则记录异常日志，并在response中返回failure.
-		}
+		
+		map.put("status", status);
+		map.put("message", message);
 		return map;
 	}
 }

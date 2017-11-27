@@ -1,10 +1,13 @@
 package com.gy.pay;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
+import com.alibaba.fastjson.JSONObject;
 import com.gy.model.Game;
 import com.gy.model.Goods;
 import com.gy.model.Order;
@@ -446,6 +449,21 @@ public class WeiXinPay {
             if (map.get("result_code").equals("SUCCESS")) {
                 System.out.println("充值成功！");
                 PayRecord payRecord = payRecordService.get(out_trade_no);
+                String appid = (String)map.get("appid");
+                WeixinPayConfig weixinPayConfig = weixinPayConfigService.queryBysql("from WeixinPayConfig where APP_ID="+"'"+appid+"'");
+                String send_url = "";
+                if(weixinPayConfig==null)
+                {
+                	status = "0404";
+				message = "没有第三方通知的地址";
+				}
+				else
+				{
+					status = "6200";
+					message = "有第三方通知的地址";
+					send_url = weixinPayConfig.getRETURN_URL();
+				}
+                String SEND_URL = send_url;
                 System.err.println("支付情况:"+payRecord);
                 /*System.out.println("订单号："+Long.valueOf(map.get("out_trade_no")));*/
                 /*System.out.println("payRecord.getPayTime():"+payRecord.getPayTime()==null+","+payRecord.getPayTime());*/
@@ -462,10 +480,89 @@ public class WeiXinPay {
                     appCustomerService.update(appCustomer);*/
                     payRecordService.update(payRecord);
                     String notifyStr = XMLUtil.setXML("SUCCESS", "支付成功!");
+                    
+                    try {
+	    		        //创建连接
+	    		        URL url = new URL(SEND_URL);
+	    		        HttpURLConnection connection = (HttpURLConnection) url
+	    		                .openConnection();
+	    		        connection.setDoOutput(true);
+	    		        connection.setDoInput(true);
+	    		        connection.setRequestMethod("POST");
+	    		        /* connection.setRequestProperty("Authorization", token);*/
+	    		        connection.setUseCaches(false);
+	    		        connection.setInstanceFollowRedirects(true);
+	    		        connection.setRequestProperty("Content-Type","application/json");
+	    		        connection.connect();
+	    		        
+	    		        //POST请求
+	    		        DataOutputStream out = new DataOutputStream(
+	    		                connection.getOutputStream());
+	    		        JSONObject obj = new JSONObject();
+	    		        obj.put("out_trade_no", out_trade_no);
+	    		        obj.put("status", status);
+	    		        obj.put("message", message);
+	    		        System.err.println("通知第三方服务器");
+	    		        
+	    		        out.writeBytes(obj.toString());
+	    		        out.flush();
+	    		        out.close();
+	    			} catch (Exception e)
+	    			{
+	    				e.printStackTrace();
+	    			}
                     writer.write(notifyStr);
                     writer.flush();
                 }
             }
+        }
+        else
+        {
+        	String appid = (String)map.get("appid");
+            WeixinPayConfig weixinPayConfig = weixinPayConfigService.queryBysql("from WeixinPayConfig where APP_ID="+"'"+appid+"'");
+            String send_url = "";
+            if(weixinPayConfig==null)
+            {
+            	status = "0404";
+			message = "没有第三方通知的地址";
+			}
+			else
+			{
+				status = "6200";
+				message = "有第三方通知的地址";
+				send_url = weixinPayConfig.getRETURN_URL();
+			}
+            String SEND_URL = send_url;
+        	try {
+		        //创建连接
+		        URL url = new URL(SEND_URL);
+		        HttpURLConnection connection = (HttpURLConnection) url
+		                .openConnection();
+		        connection.setDoOutput(true);
+		        connection.setDoInput(true);
+		        connection.setRequestMethod("POST");
+		        /* connection.setRequestProperty("Authorization", token);*/
+		        connection.setUseCaches(false);
+		        connection.setInstanceFollowRedirects(true);
+		        connection.setRequestProperty("Content-Type","application/json");
+		        connection.connect();
+		        
+		        //POST请求
+		        DataOutputStream out = new DataOutputStream(
+		                connection.getOutputStream());
+		        JSONObject obj = new JSONObject();
+		        obj.put("out_trade_no", out_trade_no);
+		        obj.put("status", status);
+		        obj.put("message", message);
+		        System.err.println("通知第三方服务器");
+		        
+		        out.writeBytes(obj.toString());
+		        out.flush();
+		        out.close();
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+			}
         }
     }
 }
