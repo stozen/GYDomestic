@@ -39,6 +39,7 @@ import com.gy.model.PayRecord;
 import com.gy.model.User;
 import com.gy.services.AliPayConfigService;
 import com.gy.services.OrderGoodsService;
+import com.gy.services.OrderService;
 import com.gy.services.PayRecordService;
 
 @Controller
@@ -67,6 +68,28 @@ public class AliPhonePay {
 	
 	@Autowired
 	private AliPayConfigService aliPayConfigService;
+	
+	/**
+	 * 创建订单服务
+	 */
+	@Autowired
+	private OrderService orderService;
+	
+	/**
+	 * 声明订单服务的get方法
+	 * @return
+	 */
+	public OrderService getOrderService() {
+		return orderService;
+	}
+
+	/**
+	 * 声明订单服务的get方法
+	 * @param orderService
+	 */
+	public void setOrderService(OrderService orderService) {
+		this.orderService = orderService;
+	}
 	
 	/**
 	 * 获取订单详情服务
@@ -372,40 +395,51 @@ public class AliPhonePay {
 				{
 					status = "0200";
 					message = "验证签名支付成功";
-					try {
-	    		        //创建连接
-	    		        URL url = new URL(SEND_URL);
-	    		        HttpURLConnection connection = (HttpURLConnection) url
-	    		                .openConnection();
-	    		        connection.setDoOutput(true);
-	    		        connection.setDoInput(true);
-	    		        connection.setRequestMethod("POST");
-	    		        /* connection.setRequestProperty("Authorization", token);*/
-	    		        connection.setUseCaches(false);
-	    		        connection.setInstanceFollowRedirects(true);
-	    		        connection.setRequestProperty("Content-Type","application/json");
-	    		        connection.connect();
-	    		        
-	    		        //POST请求
-	    		        DataOutputStream out = new DataOutputStream(
-	    		                connection.getOutputStream());
-	    		        JSONObject obj = new JSONObject();
-	    		        obj.put("out_trade_no", out_trade_no);
-	    		        obj.put("status", status);
-	    		        obj.put("message", message);
-	    		        obj.put("total_amount", requestParams.get("total_amount"));
-	    		        System.err.println("通知第三方服务器");
-	    		        
-	    		        out.writeBytes(obj.toString());
-	    		        out.flush();
-	    		        out.close();
-	    			} catch (Exception e)
+					Order order = orderService.queryBysql(out_trade_no);
+	    			String  result = order.getIsPushed();
+	    			if(result.equals("") || result==null)
 	    			{
-	    				e.printStackTrace();
+	    				
+	    				try {
+		    		        //创建连接
+		    		        URL url = new URL(SEND_URL);
+		    		        HttpURLConnection connection = (HttpURLConnection) url
+		    		                .openConnection();
+		    		        connection.setDoOutput(true);
+		    		        connection.setDoInput(true);
+		    		        connection.setRequestMethod("POST");
+		    		        /* connection.setRequestProperty("Authorization", token);*/
+		    		        connection.setUseCaches(false);
+		    		        connection.setInstanceFollowRedirects(true);
+		    		        connection.setRequestProperty("Content-Type","application/json");
+		    		        connection.connect();
+		    		        
+		    		        //POST请求
+		    		        DataOutputStream out = new DataOutputStream(
+		    		                connection.getOutputStream());
+		    		        JSONObject obj = new JSONObject();
+		    		        obj.put("out_trade_no", out_trade_no);
+		    		        obj.put("status", status);
+		    		        obj.put("message", message);
+		    		        obj.put("total_amount", requestParams.get("total_amount"));
+		    		        System.err.println("通知第三方服务器");
+		    		        
+		    		        out.writeBytes(obj.toString());
+		    		        out.flush();
+		    		        out.close();
+		    			} catch (Exception e)
+		    			{
+		    				e.printStackTrace();
+		    			}
+						payRecord.setPayStatus("1");
+						payRecordService.update(payRecord);
+						System.err.println("更新支付状态成功");
 	    			}
-					payRecord.setPayStatus("1");
-					payRecordService.update(payRecord);
-					System.err.println("更新支付状态成功");
+	    			else
+	    			{
+	    				order.setIsPushed("1");
+	    				orderService.update(order);
+	    			}
 				}
 			}else{
 			// TODO 验签失败则记录异常日志，并在response中返回failure.
@@ -418,39 +452,50 @@ public class AliPhonePay {
 				{
 					status = "0604";
 					message = "验证签名支付失败";
-					try {
-	    		        //创建连接
-	    		        URL url = new URL(SEND_URL);
-	    		        HttpURLConnection connection = (HttpURLConnection) url
-	    		                .openConnection();
-	    		        connection.setDoOutput(true);
-	    		        connection.setDoInput(true);
-	    		        connection.setRequestMethod("POST");
-	    		        /* connection.setRequestProperty("Authorization", token);*/
-	    		        connection.setUseCaches(false);
-	    		        connection.setInstanceFollowRedirects(true);
-	    		        connection.setRequestProperty("Content-Type","application/json");
-	    		        connection.connect();
-	    		        
-	    		        //POST请求
-	    		        DataOutputStream out = new DataOutputStream(
-	    		                connection.getOutputStream());
-	    		        JSONObject obj = new JSONObject();
-	    		        obj.put("out_trade_no", out_trade_no);
-	    		        obj.put("status", status);
-	    		        obj.put("message", message);
-	    		        obj.put("total_amount", requestParams.get("total_amount"));
-	    		        System.err.println("通知第三方服务器");
-	    		        
-	    		        out.writeBytes(obj.toString());
-	    		        out.flush();
-	    		        out.close();
-	    			} catch (Exception e)
+					
+					Order order = orderService.queryBysql(out_trade_no);
+	    			String  result = order.getIsPushed();
+	    			if(result.equals("") || result==null)
 	    			{
-	    				e.printStackTrace();
+	    				try {
+		    		        //创建连接
+		    		        URL url = new URL(SEND_URL);
+		    		        HttpURLConnection connection = (HttpURLConnection) url
+		    		                .openConnection();
+		    		        connection.setDoOutput(true);
+		    		        connection.setDoInput(true);
+		    		        connection.setRequestMethod("POST");
+		    		        /* connection.setRequestProperty("Authorization", token);*/
+		    		        connection.setUseCaches(false);
+		    		        connection.setInstanceFollowRedirects(true);
+		    		        connection.setRequestProperty("Content-Type","application/json");
+		    		        connection.connect();
+		    		        
+		    		        //POST请求
+		    		        DataOutputStream out = new DataOutputStream(
+		    		                connection.getOutputStream());
+		    		        JSONObject obj = new JSONObject();
+		    		        obj.put("out_trade_no", out_trade_no);
+		    		        obj.put("status", status);
+		    		        obj.put("message", message);
+		    		        obj.put("total_amount", requestParams.get("total_amount"));
+		    		        System.err.println("通知第三方服务器");
+		    		        
+		    		        out.writeBytes(obj.toString());
+		    		        out.flush();
+		    		        out.close();
+		    			} catch (Exception e)
+		    			{
+		    				e.printStackTrace();
+		    			}
+						payRecord.setPayStatus("0");
+						payRecordService.update(payRecord);
 	    			}
-					payRecord.setPayStatus("0");
-					payRecordService.update(payRecord);
+	    			else
+	    			{
+	    				order.setIsPushed("1");
+	    				orderService.update(order);
+	    			}
 				}
 			}
 		} catch (AlipayApiException e) {

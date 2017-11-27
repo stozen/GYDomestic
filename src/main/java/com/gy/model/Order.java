@@ -92,6 +92,11 @@ public class Order implements Serializable {
 	 * 创建易捷的订单号
 	 */
 	private String otherOrderID;
+	
+	/**
+	 * 创建是否已经推送
+	 */
+	private String isPushed;
 
 	/**
 	 * 创建订单用户 
@@ -343,6 +348,23 @@ public class Order implements Serializable {
 	 */
 	public void setOtherOrderID(String otherOrderID) {
 		this.otherOrderID = otherOrderID;
+	}
+
+	/**
+	 * 创建订单是否已经推送的get方法
+	 * @return
+	 */
+	@Column(name="isPushed",length=80,nullable=true,insertable=true,updatable=true)
+	public String getIsPushed() {
+		return isPushed;
+	}
+
+	/**
+	 * 创建订单是否推送的set方法
+	 * @param isPushed
+	 */
+	public void setIsPushed(String isPushed) {
+		this.isPushed = isPushed;
 	}
 	
 }
