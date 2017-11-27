@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
@@ -548,6 +549,52 @@ public class AliPay {
 		}
 		map.put("status", status);
 		map.put("message", message);
+		return map;
+	}
+	
+	@RequestMapping(value="receive",method=RequestMethod.GET)
+	public @ResponseBody Map<String, Object> receiveServer(@RequestParam String status,String out_trade_no){
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		
+		if(status.equals("0200"))
+		{
+			
+			PayRecord payRecord = payRecordService.get(out_trade_no);
+			if(payRecord==null)
+			{
+				status = "0604";
+				message = "没有这个订单";
+			}
+			else
+			{
+				message = "支付成功!";
+				status = "0200";
+				payRecord.setPayStatus("1");
+				payRecordService.update(payRecord);
+			}
+		}
+		else
+		{
+			PayRecord payRecord = payRecordService.get(out_trade_no);
+			if(payRecord==null)
+			{
+				status = "0604";
+				message = "没有这个订单";
+			}
+			else
+			{
+				message = "支付失败!";
+				status = "0605";
+				payRecord.setPayStatus("0");
+				payRecordService.update(payRecord);
+			}
+		}
+		
+		map.put("status",status);
+		map.put("message", message);
+		map.remove("out_trade_no");
+		
 		return map;
 	}
 	
