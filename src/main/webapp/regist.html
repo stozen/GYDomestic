@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <title>注册</title>
+    <link rel="Shortcut Icon" href="img/ico.ico" >
+    <link rel="stylesheet" href="css/style.css" type="text/css">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <script type="text/javascript" src="./js/Api.js"></script>
+</head>
+<body>
+<div id="login" class="content">
+    <div class="title">
+        <img onclick="history.go(-1)" id="back" src="./img/顶部返回ICON@3x.png">
+        <div class="title-text">注册</div>
+    </div>
+    <div class="regist-from">
+        <img class="icon" src="./img/用户icon@3x.png">
+        <input id="username" class="input" placeholder="请输入手机号">
+        <div class="line"></div>
+        <img class="icon" src="./img/密码ICON@3x.png">
+        <input id="validCode" class="input1"  placeholder="请输入验证码" maxlength="6">
+        <input id="sendCode" type="button" class="btn-validCode" onclick="toValidCode()" value="获得验证码">
+        <div class="line"></div>
+        <img class="icon" src="./img/密码ICON@3x.png">
+        <input id="password" class="input" type="password" placeholder="请输入密码">
+        <div class="line"></div>
+        <button class="btn-all" onclick="toRegist()">
+            <img class="btn-img" src="img/登录按钮@3x.png">
+                <span class="btn-text">注册</span>
+        </button>
+        <br/>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    function toRegist() {
+        var body = {};
+        var phone = document.getElementById("username");
+        var validCode = document.getElementById("validCode");
+        var password = document.getElementById("password");
+
+        body.username = phone.value+"";
+        body.valicode = validCode.value+"";
+        body.password = password.value+"";
+        body.type = "1";
+        if (body.username===""||body.valicode===""||body.password===""){
+            alert("请填写完整");
+            return;
+        }
+        regist(body, function (response) {
+            switch (response.status) {
+                case "0200":
+                    history.back();
+                    break;
+                case "0202":
+                    alert("该用户已经注册了，请重新填写！");
+                    break;
+                default:
+                    alert("注册失败");
+                    break;
+            }
+        })
+    }
+
+    function toValidCode(){
+        var body = {};
+        var phone = document.getElementById("username");
+        validCode(body, phone.value, function (response) {
+            switch (response.status) {
+                case "0200":
+                    time(document.getElementById("sendCode"));
+                    break;
+                default:
+                    alert("发送验证码失败");
+                    break;
+            }
+        })
+    }
+
+    window.onload = function () {
+        // logout();
+    };
+</script>
+</html>

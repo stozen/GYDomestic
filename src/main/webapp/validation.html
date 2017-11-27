@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>支付验证</title>
+    <link rel="stylesheet" href="css/style.css" type="text/css">
+    <script type="text/javascript" src="./js/Api.js"></script>
+
+    <style>
+
+        #loading {
+            position: fixed;
+            z-index: 10;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            color: white;
+        }
+
+        #loading #run {
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 120px;
+            height: 120px;
+            margin-left: -60px;
+            margin-top: -60px;
+            -webkit-animation: turn 1s linear infinite;
+        }
+
+        #loading .box {
+            background-color: rgba(0, 0, 0, .7);
+            border-radius: 20px;
+            width: 120px;
+            height: 120px;
+            position: fixed;
+            z-index: 9999;
+            left: 50%;
+            top: 50%;
+            margin-left: -60px;
+            margin-top: -60px
+        }
+
+        .img {
+            width: 100px;
+            padding: 10px;
+        }
+
+        @-webkit-keyframes changeBgColor {
+            0% {
+                background: white;
+            }
+            100% {
+                background: white;
+            }
+        }
+
+        @-webkit-keyframes turn {
+            0% {
+                -webkit-transform: rotate(0deg);
+                border-color: white;
+            }
+            100% {
+                -webkit-transform: rotate(360deg);
+                border-color: white;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="title">
+    <img onclick="history.go(-1)" id="back" src="./img/顶部返回ICON@3x.png">
+    <div class="title-text">支付验证</div>
+</div>
+<div id="loading" class="animated fadeIn">
+    <div class="cover"></div>
+    <div class="box">
+        <div id="run">
+            <img class="img" src="./img/gy_loading.png">
+        </div>
+    </div>
+</div>
+</body>
+<script language="javascript">
+    function toSign() {
+//        window.location.href = getProduct().returnUrl + "?payStatus=success&price=" + QueryString("total_amount") +
+//            "&trade_no=" + QueryString("out_trade_no");
+        var body = {};
+        body.out_trade_no = QueryString("out_trade_no");
+        body.version = QueryString("version");
+        body.app_id = QueryString("app_id");
+        body.charset = QueryString("charset");
+        body.sign_type = QueryString("sign_type");
+        body.trade_no = QueryString("trade_no");
+        body.auth_app_id = QueryString("auth_app_id");
+        body.timestamp = QueryString("timestamp");
+        body.seller_id = QueryString("seller_id");
+        body.total_amount = QueryString("total_amount");
+        body.method = QueryString("method");
+        body.sign = QueryString("sign");
+        validationPay(body, function (response) {
+            console.log(response);
+            switch (response.status) {
+                case "0200":
+                    window.location.href = getProduct().returnUrl + "?payStatus=success&price=" + body.total_amount +
+                        "&trade_no=" + body.trade_no;
+                    break;
+                default:
+                    window.location.href = getProduct().returnUrl + "?payStatus=error";
+                    break;
+            }
+            productDel();
+        })
+    }
+    toSign();
+</script>
+
+</html>

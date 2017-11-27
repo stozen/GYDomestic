@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <title>游达登录</title>
+    <link rel="Shortcut Icon" href="img/ico.ico" >
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="css/style.css" type="text/css">
+    <script type="text/javascript" src="./js/Api.js"></script>
+
+</head>
+<body>
+<div id="login" class="content">
+    <img class="bg-img" src="img/gy_big_bg.png" width="100%">
+    <div class="logo">
+        <img class="logo-img" src="img/LOGO@3x.png" width="80%">
+    </div>
+    <div class="from">
+        <img class="icon" src="./img/用户icon@3x.png">
+        <input id="username" class="input" placeholder="请输入手机号" style="max-width:750px">
+        <div class="line" style="max-width:800px"></div>
+        <img class="icon" src="./img/密码ICON@3x.png">
+        <input id="password" class="input" type="password" placeholder="请输入密码" style="max-width:750px">
+        <div class="line" style="max-width:800px"></div>
+        <button class="btn-all" onclick="toLogin()">
+            <img class="btn-img" src="img/登录按钮@3x.png">
+            <span class="btn-text">登录</span>
+        </button>
+        <br/>
+        <span class="text-regist" onclick="toRegist()">注册</span>
+        <span class="text-forget" onclick="toForget()">忘记密码</span>
+    </div>
+   <div id="form" style="display: none">
+   </div>
+</div>
+</body>
+<script type="text/javascript">
+
+    function toLogin() {
+        var body = {};
+        var phone = document.getElementById("username");
+        var password = document.getElementById("password");
+        if (phone === "") {
+        }
+        body.username = phone.value;
+        body.password = password.value;
+        body.type = "1";
+        body.games = [{"gamepackage": getKey().key}];
+        if (body.username === "" || body.password === "") {
+            alert("请填写完整");
+            return;
+        }
+        login(body, function (response) {
+            switch (response.status) {
+                case "0200":
+                    response.username = body.username;
+                    loginSuccess(response);
+                    break;
+                default:
+                    alert("登录失败");
+                    break;
+            }
+        })
+    }
+    function loginSuccess(response){
+        var address=getKey().backUrl;
+        document.getElementById("form").innerHTML =
+            "<form method ='get' action=" + address+">" +
+            "<input name ='userId' type='text' value="+response.userid+">"+
+            "<input name ='gameId' type='text' value="+response.gameid+">"+
+            "<input name ='token' type='text' value="+response.token+">"+
+            "</form >";
+        document.forms[0].submit();
+    }
+    function toRegist() {
+        window.location.href = './regist.html'
+    }
+
+    function toForget() {
+        window.location.href = './forget.html'
+    }
+
+    function initGame() {
+        var key={key:QueryString("youdaKey"),backUrl:QueryString("backUrl")};
+        if (keyIsEmpty(key)){
+            history.go(-1);
+        }
+        saveKey(key);
+    }
+    window.onload = function () {
+        initGame();
+        loginOut();
+    };
+</script>
+
+</html>

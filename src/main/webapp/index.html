@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="utf-8">
+    <TITLE> H5 SDK Demo </TITLE>
+    <link rel="Shortcut Icon" href="img/ico.ico" >
+    <link rel="stylesheet" href="css/style.css" type="text/css">
+    <script type="text/javascript" src="js/Api.js"></script>
+    <style>
+        h1 {
+            line-height: 50px;
+            margin: 0;
+        }
+        a {
+            font-size: 38px;
+        }
+    </style>
+</head>
+<body>
+<div class="content">
+    <h1>H5 SDK Demo</h1><br>
+    <span id="id"></span>
+    <span id="phone"></span>
+    <button id="login" onclick="toLogin()">登录</button>
+    <br>
+    <button onclick="toPay()"> 支付</button>
+    <br/>
+</div>
+<a style="display: none" id="payHref" target="_blank"></a>
+<a style="display: none" id="loginHref"></a>
+</body>
+<script>
+    var user;
+    window.onload = function () {
+        user = {userId: QueryString("userId"), gameId: QueryString("gameId"), token: QueryString("token")};
+        if (userIsEmpty(user)) {
+            document.getElementById("login").innerHTML = "登录";
+            document.getElementById("id").innerHTML = "";
+            document.getElementById("phone").innerHTML = "";
+        } else {
+            document.getElementById("login").innerHTML = "注销登录";
+            document.getElementById("id").innerHTML = "用户ID" + user.userId + "<br/>";
+            document.getElementById("phone").innerHTML = "用户token" + user.token + "<br/>";
+        }
+    };
+
+    function toPay() {
+//        var address = "http://23sdk.23h5.cn/h5SDK/pay.html";
+        var address = "./pay.html";
+        address += "?userId="+user.userId;
+        address += "&gameId="+user.gameId;
+        address += "&token="+user.token;
+        address += "&price=0.01";
+        address += "&content=这是商品";
+        address += "&orderId=465436435645"; //支付订单号
+        var a = document.getElementById("payHref");
+        a.href = address;
+        a.setAttribute("onclick", '');
+        //激发标签点击事件OVER
+        a.click("return false");
+    }
+    function toLogin() {
+        var address = "./login.html?" + "youdaKey=" + "com.youda.demo&" + "backUrl=" + window.location.href;
+        var a = document.getElementById("loginHref");
+        a.href = address;
+        a.setAttribute("onclick", '');
+        //激发标签点击事件OVER
+        a.click("return false");
+    }
+</script>
+</html>

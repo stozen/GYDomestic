@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <title>忘记密码</title>
+    <link rel="Shortcut Icon" href="img/ico.ico" >
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+
+    <link rel="stylesheet" href="css/style.css" type="text/css">
+    <script type="text/javascript" src="./js/Api.js"></script>
+</head>
+<body>
+<div id="login" class="content">
+    <div class="title">
+        <img onclick="history.go(-1)" id="back" src="./img/顶部返回ICON@3x.png">
+        <div class="title-text">忘记密码</div>
+    </div>
+    <div id="first" class="regist-from">
+        <img class="icon" src="./img/用户icon@3x.png">
+        <input id="phone" class="input" placeholder="请输入手机号">
+        <div class="line"></div>
+        <img class="icon" src="./img/密码ICON@3x.png">
+
+        <input id="validCode" class="input1" placeholder="请输入验证码" maxlength="6">
+        <button id="sendCode" class="btn-validCode" onclick="toValidCode()" value="获得验证码"></button>
+        <div class="line"></div>
+        <button class="btn-all" onclick="toForget()">
+            <img class="btn-img" src="img/登录按钮@3x.png">
+            <span class="btn-text">下一步</span>
+        </button>
+        <br/>
+    </div>
+    <div id="next" class="regist-from" style="display: none">
+        <img class="icon" src="./img/密码ICON@3x.png">
+        <input id="password" class="input" type="password" placeholder="请输入新密码">
+        <div class="line"></div>
+        <img class="icon" src="./img/密码ICON@3x.png">
+        <input id="passwordSec" class="input" type="password" placeholder="请再次输入新密码">
+        <div class="line"></div>
+        <button class="btn-all" onclick="toForgetNext()">
+            <img class="btn-img" src="img/登录按钮@3x.png">
+            <span class="btn-text">确定</span>
+        </button>
+        <br/>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    function toForget() {
+        var body = {};
+        var phone = document.getElementById("phone");
+        var validCode = document.getElementById("validCode");
+
+        body.username = phone.value;
+        body.valicode = validCode.value;
+        if (body.username === "" || body.valicode === "") {
+            alert("请填写完整");
+            return;
+        }
+        forgetFirst(body, function (response) {
+            switch (response.status) {
+                case "0200":
+                    document.getElementById("first").style.display = "none";
+                    document.getElementById("next").style.display = "block";
+                    break;
+                default:
+                    alert("验证码不正确");
+                    break;
+            }
+        })
+    }
+
+    function toValidCode() {
+        var phone = document.getElementById("phone");
+        if (phone.value === "") {
+            alert("请填写完整");
+            return;
+        }
+        validCode(null, phone.value, function (response) {
+            switch (response.status) {
+                case "0200":
+                    time(document.getElementById("sendCode"));
+                    break;
+                default:
+                    alert("发送验证码失败");
+                    break;
+            }
+        })
+
+    }
+
+    function toForgetNext() {
+        var body = {};
+        var phone = document.getElementById("phone");
+        var pass1 = document.getElementById("password");
+        var pass2 = document.getElementById("passwordSec");
+
+        body.username = phone.value;
+        body.password = pass1.value;
+        body.confirmpass = pass2.value;
+        if (body.username === "" || body.password === "" || body.confirmpass === "") {
+            alert("请填写完整");
+            return;
+        }
+        if (body.password !== body.confirmpass) {
+            alert("两次输入的密码不一致");
+            return;
+        }
+        forgetNext(body, function (response) {
+            switch (response.status) {
+                case "0200":
+                    history.go(-1);
+                    break;
+                case 403:
+                    alert("修改失败，不能使用之前的密码");
+                    break;
+                default:
+                    alert("修改失败，请稍后重试");
+                    break;
+            }
+        });
+    }
+
+    window.onload = function () {
+        // logout();
+    };
+</script>
+</html>

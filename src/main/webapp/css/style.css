@@ -1,0 +1,353 @@
+.content {
+    text-align: center;
+    margin: auto;
+    height: 100%;
+    width: 100%;
+}
+
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color: #d4d4d4;
+}
+
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color: #d4d4d4;
+}
+
+input:-ms-input-placeholder {
+    color: #d4d4d4;
+}
+
+input::-webkit-input-placeholder {
+    color: #d4d4d4;
+}
+
+body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+html {
+    height: 100%;
+    font-size: 18px;
+    font-family: "Microsoft Sans Serif";
+}
+
+.logo {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    margin: auto;
+    margin-top: -80px;
+    background: url("../img/LOGO框‘@3x.png") no-repeat;
+    background-size: 100% 100%;
+    -moz-background-size: 100% 100%;
+}
+
+.logo-img {
+    width: 80px;
+    padding: 10px;
+}
+
+.from {
+    width: 100%;
+}
+.bg-img{
+    max-width: 800px;
+    width: 100%;
+}
+.input {
+    width: 80%;
+    background: none;
+    border: none;
+    outline: none;
+    height: 53px;
+    font-size: 18px;
+    margin-left: 10px;
+    padding: 0;
+    top: -10px;
+    vertical-align: middle;
+}
+
+.input1 {
+    width: 80%;
+    background: none;
+    border: none;
+    outline: none;
+    height: 53px;
+    font-size: 18px;
+    margin-left: 10px;
+    padding: 0;
+    top: -10px;
+    vertical-align: middle;
+
+}
+
+.btn-validCode {
+    color: #5A7BED;
+    width: 120px;
+    height: 48px;
+    font-size: 18px;
+    position: absolute;
+    z-index: 1;
+    margin-left: -150px;
+    outline: none;
+    margin-top: 5px;
+    border-style: solid;
+    background-color: white;
+    border-color: #5A7BED;
+    text-align: center;
+    text-decoration: none;
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, .22);
+    -webkit-border-radius: 30px;
+    -moz-border-radius: 30px;
+    border-radius: 30px;
+    -webkit-transition: all 0.15s ease;
+    -moz-transition: all 0.15s ease;
+    -o-transition: all 0.15s ease;
+    -ms-transition: all 0.15s ease;
+    transition: all 0.15s ease;
+
+}
+
+.icon {
+    margin: 0 auto;
+    height: 22px;
+    vertical-align: middle;
+}
+
+.line {
+    width: 90%;
+    height: 1px;
+    background: #e5e5e5;
+    margin: 10px auto;
+    padding: 0px;
+    overflow: hidden;
+}
+
+.btn-all {
+    margin-top: 50px;
+    background: none;
+    border: none;
+    outline: none;
+    padding-bottom: 20px;
+}
+
+.btn-img {
+    width: auto;
+    height: 50px;
+}
+.btn-text{
+    position: relative;
+    z-index: 999;
+    width: 100%;
+    text-align: center;
+    display: block;
+    margin-top: -45px;
+    top: 0;
+    color: white;
+    font-size: 18px;
+}
+
+.text-forget {
+    display: inline-block;
+    width: 40%;
+    max-width: 300px;
+    font-size: 16px;
+    text-align: end;
+    border: none;
+}
+
+.text-regist {
+    display: inline-block;
+    width: 40%;
+    max-width: 300px;
+    font-size: 16px;
+    text-align: start;
+    border: none;
+}
+
+.regist-from {
+
+    width: 100%;
+    margin-top: 8%;
+    background: #ffffff;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.title {
+    width: 100%;
+    height: 50px;
+    text-align: start;
+    background-image: url("../img/顶部栏@3x.png");
+    background-size: 100% 100%;
+    -moz-background-size: 100% 100%;
+}
+
+#back {
+    vertical-align: middle;
+    height: 40%;
+    padding: 15px;
+    float: left;
+}
+
+.title-text {
+    color: white;
+    font-size: 18px;
+    line-height: 50px;
+    text-align: center;
+    margin-right: 30px;
+}
+
+.pay-content {
+    background: #f6f6f6;
+}
+
+.pay-menu {
+    width: 100%;
+    margin-top: 10px;
+    background: #ffffff;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 16px;
+    text-align: start;
+}
+
+.pay-text-f {
+    display: inline-block;
+    float: right;
+    margin-right: 10px;
+    color: #ff2742;
+
+}
+
+.pay-text-l {
+    margin-left: 10px;
+    display: inline-block;
+    color: #666666;
+}
+
+.pay-type {
+    font-size: 18px;
+    margin-left: 50px;
+}
+
+.ali-pay {
+    margin-top: 1px;
+}
+
+.wechat-pay {
+    margin-top: 1px;
+}
+
+.pay-text {
+    display: inline-block;
+    box-sizing: border-box;
+    vertical-align: middle;
+    margin-left: 10px;
+}
+
+.pay-img {
+    display: inline-block;
+    box-sizing: border-box;
+    vertical-align: middle;
+    margin-left: 10px;
+    height: 30px;
+}
+
+.pay-check {
+    float: right;
+    margin-right: 10px;
+    vertical-align: middle;
+    display: inline-block;
+    box-sizing: border-box;
+    height: 30px;
+}
+
+.pay-check input {
+    opacity: 0;
+}
+
+.pay-check label:before {
+    content: '';
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    background-image: url("../img/椭圆-1@3x.png");
+    background-size: 100% 100%;
+    -moz-background-size: 100% 100%;
+    transition: all 0.3s ease;
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+}
+
+.pay-check input[type='checkbox']:checked + label:before {
+    background-image: url("../img/勾选@3x.png");
+    width: 30px;
+    height: 30px;
+    background-size: 100% 100%;
+    -moz-background-size: 100% 100%;
+}
+
+.pay-check input[type='checkbox']:checked + label:after {
+    width: 30px;
+    height: 30px;
+    background-image: url("../img/勾选@3x.png");
+    background-size: 100% 100%;
+    -moz-background-size: 100% 100%;
+}
+
+.pay-bottom {
+    position: fixed;
+    background: #ffffff;
+    width: 100%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    bottom: 0;
+    text-align: start;
+}
+
+.pay-text-price {
+    color: #ff2742;
+
+}
+
+.pay-text-button {
+    line-height: 45px;
+    margin-left: 10px;
+}
+
+.pay {
+    color: white;
+    background: #ff2742;
+    display: flex;
+    float: right;
+    padding: 10px;
+    margin-right: 10px;
+    border-radius: 5px;
+}
+
+.time {
+    margin-right: 15px;
+    margin-left: 15px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.pay-span {
+    line-height: 25px;
+}
+
+form {
+    width: 100%;
+    height: 100%;
+}
+
+input {
+    display: inline-block;
+}

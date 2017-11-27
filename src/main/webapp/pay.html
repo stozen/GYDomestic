@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <title>订单中心</title>
+    <link rel="Shortcut Icon" href="img/ico.ico" >
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="css/style.css" type="text/css">
+    <script type="text/javascript" src="./js/Api.js"></script>
+
+</head>
+<body>
+<div id="pay-content" class="content pay-content">
+    <div class="title">
+        <img onclick="history.go(-1)" id="back" src="./img/顶部返回ICON@3x.png">
+        <div class="title-text">收银台</div>
+    </div>
+    <div class="pay-menu">
+        <span class="pay-text-l">订单金额</span>
+        <span id="price" class="pay-text-f"></span>
+    </div>
+    <div class="pay-menu">
+        <span class="pay-text-l">订单编号</span>
+        <span id="number" class="pay-text-f"></span>
+    </div>
+    <div class="pay-menu">
+        <span class="pay-text-l">支付方式</span>
+        <span class="pay-type">  支付宝 </span>
+    </div>
+    <div class="pay-menu ali-pay">
+        <img class="pay-img" src="img/支付宝@3x.png">
+        <span class="pay-text"> 支付宝</span>
+        <div style="display: none" class='pay-check'>
+            <input type='checkbox' id='check-ali' name='checkboox[]'>
+            <label for='check-ali'></label>
+        </div>
+    </div>
+    <div class="pay-bottom">
+        <span class="pay-text-button">总计</span>
+        <span id="allPrice" class="pay-text-button pay-text-price"></span>
+        <div onclick="alipay()" class="pay">
+            <span class="pay-span"> 支付</span>
+            <img class="time" src="img/倒计时@3x.png" height="25">
+            <span id="timeOut" class="pay-span"></span>
+        </div>
+    </div>
+    <div id="pay-ali">
+
+    </div>
+</div>
+<script language="javascript">
+    var order = null;
+    var user = null;
+
+    function load() {
+         user = {
+            userId: QueryString("userId"),
+            token: QueryString("token"),
+            gameId: QueryString("gameId")
+        };
+        var product = {
+            price: QueryString("price"),
+            content: QueryString("content"),
+            orderid: QueryString("orderid")
+        };
+        if (productIsEmpty(product)) {
+            window.close();
+        }
+
+        if (userIsEmpty(user)) {
+            window.location.href = './login.html'
+        } else {
+            saveUser(user);
+            create(product);
+        }
+
+
+
+    }
+
+    function create(product) {
+        if (order !== null) {
+            return;
+        }
+        var body = {};
+        body.paytype = "";
+        body.paystatus = "";
+        body.user = {"userid": user.userId + ""};
+        body.games = {"gameid": user.gameId + ""};
+        body.otherOrderID = product.orderid;
+        body.payment = product.price;
+        body.ordergoods = [{"title": product.content, "price": product.price, "number": "", "orderid": ""}];
+        console.log(body);
+        createOrder(body, function (response) {
+            switch (response.status) {
+                case "0200":
+                    order = response;
+                    document.getElementById("price").innerHTML = "¥" + body.payment;
+                    document.getElementById("number").innerHTML = response.serialnumber;
+                    document.getElementById("allPrice").innerHTML = "¥" + body.payment;
+                    setTime();
+                    break;
+                default:
+                    alert("创建订单失败");
+                    break;
+            }
+        })
+    }
+
+    function alipay() {
+        if (order === null) {
+            return;
+        }
+        var body = {"orderid": order.orderid + ''};
+        console.log(body);
+        alipayOrder(body, function (response) {
+            console.log("response" + response);
+            document.getElementById("pay-ali").innerHTML = response;
+            document.forms[0].submit();
+        })
+    }
+
+
+    function setTime() {
+        var x = 30, interval;
+        var d = new Date("1111/1/1,0:" + x + ":0");
+        interval = setInterval(function () {
+            var m = d.getMinutes();
+            var s = d.getSeconds();
+            m = m < 10 ? "0" + m : m;
+            s = s < 10 ? "0" + s : s;
+            document.getElementById("timeOut").innerHTML = m + ":" + s;
+            if (m === 0 && s === 0) {
+                clearInterval(interval);
+                return;
+            }
+            d.setSeconds(s - 1);
+        }, 1000);
+    }
+
+    // Your logic here
+    load();
+
+</script>
+
+</body>
+</html>
