@@ -784,7 +784,6 @@ public class WeiXinWebPay {
         /*Map<String, Object> map = new HashMap<String, Object>();*/
 		/*商户网站唯一订单号*/
 		String out_trade_no = ((String) map.get("orderid")).trim();
-		String wapUrl = ((String) map.get("wapUrl")).trim();
 		/*查询订单详情里面是否有这个订单*/
 		OrderGoods orderGoods = orderGoodsService.query(Integer.parseInt(out_trade_no));
 		if(orderGoods == null)
@@ -833,12 +832,12 @@ public class WeiXinWebPay {
     	        String nonce_str = WXUtil.getNonceStr();
     	        prepayReqHandler.setParameter("nonce_str", nonce_str);
     	        prepayReqHandler.setParameter("notify_url", ConstantUtil.NOTIFY_URL);
-    	        
+    	      
     	        /*这一段设置场景信息--开始*/
     	        Map<String, Object> scene_info = new HashMap<String, Object>();
     	        scene_info.put("type", "Wap");
-    	        scene_info.put("wap_url", wapUrl);
-    	        scene_info.put("wap_name", body);
+    	        scene_info.put("wap_url", "http://23sdk.23h5.cn/h5SDK/index.html");
+    	        scene_info.put("wap_name", "游达SDK支付");
     	        Map<String, Object> mapinfo = new HashMap<String, Object>();
     	        mapinfo.put("h5_info", scene_info);
     	        ObjectMapper mapper = new ObjectMapper();
