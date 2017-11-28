@@ -460,9 +460,11 @@ public class AliPay {
 	            	status = "0200";
 	    			message = "验证签名支付成功";
 	    			
-	    			Order order = orderService.queryBysql(out_trade_no);
+	    			Order order = orderService.queryBysql("from Order where otherOrderID="+"'"+out_trade_no+"'");
+	    			System.err.println("获取订单的信息"+order);
 	    			String  result = order.getIsPushed();
-	    			if(result.equals("") || result==null)
+	    			System.err.println("是否推送结果是"+result);
+	    			if(result==null || result.equals(""))
 	    			{
 	    				try {
 		    		        //创建连接
@@ -495,11 +497,14 @@ public class AliPay {
 		    			{
 		    				e.printStackTrace();
 		    			}
+	    				order.setIsPushed("1");
+	    				orderService.update(order);
 	    				payRecord.setPayStatus("1");
 			            payRecordService.update(payRecord);
 	    			}
 	    			else
 	    			{
+	    				System.err.println("已经推送了，不需要推送了");
 	    				order.setIsPushed("1");
 	    				orderService.update(order);
 	    			}
@@ -518,9 +523,9 @@ public class AliPay {
 	            {
 	            	status = "0604";
 	    			message = "验证签名支付失败";
-	    			Order order = orderService.queryBysql(out_trade_no);
+	    			Order order = orderService.queryBysql("from Order where otherOrderID="+"'"+out_trade_no+"'");
 	    			String  result = order.getIsPushed();
-	    			if(result.equals("") || result==null)
+	    			if(result==null || result.equals(""))
 	    			{
 	    				try {
 		    		        //创建连接
@@ -553,11 +558,14 @@ public class AliPay {
 		    			{
 		    				e.printStackTrace();
 		    			}
+	    				order.setIsPushed("1");
+	    				orderService.update(order);
 			            payRecord.setPayStatus("0");
 			            payRecordService.update(payRecord);
 	    			}
 	    			else
 	    			{
+	    				System.err.println("已经推送了不需要再推送了");
 	    				order.setIsPushed("1");
 	    				orderService.update(order);
 	    			}
