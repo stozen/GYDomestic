@@ -262,7 +262,6 @@ public class WeiXinWebPay {
     	                    + ConstantUtil.APP_KEY;
     	            /*System.out.println("签名之前字符串:"+signs);*/
     	            
-    	            
     	            /*Order order = orderGoods.getOrder();
     	            Game game = order.getGames();
     	            String gamePackage = game.getGamepackage();*/
@@ -1015,7 +1014,7 @@ public class WeiXinWebPay {
     	        
     	        prepayReqHandler.setGateUrl(GATEURL);
     	        String prepayid = prepayReqHandler.sendPrepay();
-    	        String mweb_url = prepayReqHandler.sendPrepay();
+    	        String mweb_url = prepayReqHandler.sendWebPay();
     	        
     	        System.err.println("之前生成的签名:"+sign);
     	        // 若获取prepayid成功，将相关信息返回客户端
