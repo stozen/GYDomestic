@@ -1,10 +1,13 @@
 package com.gy.pay;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
@@ -41,6 +45,7 @@ import com.gy.pay.ConstantUtil;
 import com.gy.pay.MD5Util;
 import com.gy.pay.WXUtil;
 import com.gy.services.OrderGoodsService;
+import com.gy.services.OrderService;
 import com.gy.services.PayRecordService;
 import com.gy.services.WeixinPayConfigService;
 
@@ -85,6 +90,12 @@ public class WeiXinWebPay {
 	public WeixinPayConfigService getWeixinPayConfigService() {
 		return weixinPayConfigService;
 	}
+	
+	/**
+	 * 创建订单服务
+	 */
+	@Autowired
+	private OrderService orderService;
 
 	/**
 	 * 实现微信支付的配置服务的依赖注入的set方法
@@ -125,6 +136,22 @@ public class WeiXinWebPay {
 	 */
 	public void setPayRecordService(PayRecordService payRecordService) {
 		this.payRecordService = payRecordService;
+	}
+	
+	/**
+	 * 实现订单服务的get方法
+	 * @return
+	 */
+	public OrderService getOrderService() {
+		return orderService;
+	}
+
+	/**
+	 * 实现订单服务的set方法
+	 * @param orderService
+	 */
+	public void setOrderService(OrderService orderService) {
+		this.orderService = orderService;
 	}
 
 	@ResponseBody 
@@ -222,6 +249,7 @@ public class WeiXinWebPay {
     	        
     	        prepayReqHandler.setGateUrl(ConstantUtil.GATEURL);
     	        String prepayid = prepayReqHandler.sendPrepay();
+    	        String mweb_url = prepayReqHandler.sendWebPay();
     	        
     	        System.err.println("之前生成的签名:"+sign);
     	        // 若获取prepayid成功，将相关信息返回客户端
@@ -271,6 +299,7 @@ public class WeiXinWebPay {
 		        	map.put("goodName", goodname);
 		        	map.put("goodPrice", total.toString());
 		        	map.put("ourOrderID", out_trade_no);
+		        	map.put("mweb_url",mweb_url);
     	            /*map.put("mergeSigns",signs);*/
     	            
     	            /**
@@ -358,6 +387,7 @@ public class WeiXinWebPay {
     	        
     	        prepayReqHandler.setGateUrl(GATEURL);
     	        String prepayid = prepayReqHandler.sendPrepay();
+    	        String mweb_url = prepayReqHandler.sendWebPay();
     	        
     	        System.err.println("之前生成的签名:"+sign);
     	        // 若获取prepayid成功，将相关信息返回客户端
@@ -407,6 +437,8 @@ public class WeiXinWebPay {
 		        	map.put("goodName", goodname);
 		        	map.put("goodPrice", total.toString());
 		        	map.put("ourOrderID", out_trade_no);
+		        	map.put("mweb_url", mweb_url);
+		        	
     	            /*map.put("mergeSigns",signs);*/
     	            
     	            /**
@@ -530,6 +562,7 @@ public class WeiXinWebPay {
     	        
     	        prepayReqHandler.setGateUrl(ConstantUtil.GATEURL);
     	        String prepayid = prepayReqHandler.sendPrepay();
+    	        String mweb_url = prepayReqHandler.sendPrepay();
     	        
     	        System.err.println("之前生成的签名:"+sign);
     	        // 若获取prepayid成功，将相关信息返回客户端
@@ -579,6 +612,7 @@ public class WeiXinWebPay {
 		        	map.put("goodName", goodname);
 		        	map.put("goodPrice", total.toString());
 		        	map.put("ourOrderID", out_trade_no);
+		        	map.put("mweb_url", mweb_url);
     	            /*map.put("mergeSigns",signs);*/
     	            
     	            /**
@@ -668,6 +702,7 @@ public class WeiXinWebPay {
     	        
     	        prepayReqHandler.setGateUrl(GATEURL);
     	        String prepayid = prepayReqHandler.sendPrepay();
+    	        String mweb_url = prepayReqHandler.sendPrepay();
     	        
     	        System.err.println("之前生成的签名:"+sign);
     	        // 若获取prepayid成功，将相关信息返回客户端
@@ -717,6 +752,7 @@ public class WeiXinWebPay {
 		        	map.put("goodName", goodname);
 		        	map.put("goodPrice", total.toString());
 		        	map.put("ourOrderID", out_trade_no);
+		        	map.put("mweb_url", mweb_url);
     	            /*map.put("mergeSigns",signs);*/
     	            
     	            /**
@@ -840,6 +876,7 @@ public class WeiXinWebPay {
     	        
     	        prepayReqHandler.setGateUrl(ConstantUtil.GATEURL);
     	        String prepayid = prepayReqHandler.sendPrepay();
+    	        String mweb_url = prepayReqHandler.sendPrepay();
     	        
     	        System.err.println("之前生成的签名:"+sign);
     	        // 若获取prepayid成功，将相关信息返回客户端
@@ -889,6 +926,7 @@ public class WeiXinWebPay {
 		        	map.put("goodName", goodname);
 		        	map.put("goodPrice", total.toString());
 		        	map.put("ourOrderID", out_trade_no);
+		        	map.put("mweb_url", mweb_url);
     	            /*map.put("mergeSigns",signs);*/
     	            
     	            /**
@@ -939,8 +977,8 @@ public class WeiXinWebPay {
     	        /*这一段设置场景信息--开始*/
     	        Map<String, Object> scene_info = new HashMap<String, Object>();
     	        scene_info.put("type", "Wap");
-    	        scene_info.put("wap_url", wapUrl);
-    	        scene_info.put("wap_name", body);
+    	        scene_info.put("wap_url", "http://23sdk.23h5.cn/h5SDK/index.html");
+    	        scene_info.put("wap_name", "游达SDK支付");
     	        Map<String, Object> mapinfo = new HashMap<String, Object>();
     	        mapinfo.put("h5_info", scene_info);
     	        ObjectMapper mapper = new ObjectMapper();
@@ -978,6 +1016,7 @@ public class WeiXinWebPay {
     	        
     	        prepayReqHandler.setGateUrl(GATEURL);
     	        String prepayid = prepayReqHandler.sendPrepay();
+    	        String mweb_url = prepayReqHandler.sendPrepay();
     	        
     	        System.err.println("之前生成的签名:"+sign);
     	        // 若获取prepayid成功，将相关信息返回客户端
@@ -1027,6 +1066,7 @@ public class WeiXinWebPay {
 		        	map.put("goodName", goodname);
 		        	map.put("goodPrice", total.toString());
 		        	map.put("ourOrderID", out_trade_no);
+		        	map.put("mweb_url", mweb_url);
     	            /*map.put("mergeSigns",signs);*/
     	            
     	            /**
@@ -1057,15 +1097,18 @@ public class WeiXinWebPay {
      * @param response
      * @throws IOException
      */
-	 @RequestMapping(value = "/signwebpay")
-    public void signWebPay(HttpServletRequest request, HttpServletResponse response)
+	@RequestMapping(value = "/signwebpay")
+	@ResponseBody
+    public Map<String,Object> signWebPay(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         System.out.println("微信支付回调");
-        PrintWriter writer = response.getWriter();
+        /*PrintWriter writer = response.getWriter();*/
         InputStream inStream = request.getInputStream();
         ByteArrayOutputStream outSteam = new ByteArrayOutputStream();
         String out_trade_no = request.getParameter("out_trade_no");
         System.err.println("订单编号:"+out_trade_no);
+        Map<String,Object> mapdata = new HashMap<String,Object>();
+        /*PrepayIdRequestHandler prepayReqHandler = new PrepayIdRequestHandler(request, response);*/
         byte[] buffer = new byte[1024];
         int len = 0;
         while ((len = inStream.read(buffer)) != -1) {
@@ -1099,18 +1142,176 @@ public class WeiXinWebPay {
                     System.out.println("通知微信后台");
                     payRecord.setPayTime(new Date());
                     String phone=payRecord.getPhone();
-                    payRecord.setPayStatus("1");
                     /*AppCustomer appCustomer=appCustomerService.getByPhone(phone);
                     float balance=appCustomer.getBalance();
                     balance+=Float.valueOf(map.get("total_fee"))/100;
                     appCustomer.setBalance(balance);
                     appCustomerService.update(appCustomer);*/
-                    payRecordService.update(payRecord);
-                    String notifyStr = XMLUtil.setXML("SUCCESS", "支付成功!");
+                    /*String notifyStr = XMLUtil.setXML("SUCCESS", "支付成功!");
                     writer.write(notifyStr);
-                    writer.flush();
+                    writer.flush();*/
+                    String send_url="";
+                    String appid = "";
+					try {
+						appid = map.get("appid");
+						System.err.println("获取到的APPID是:"+appid);
+	                    WeixinPayConfig weixinPayConfig = weixinPayConfigService.queryBysql("from WeixinPayConfig where APP_ID="+"'"+appid+"'");
+	                    send_url = weixinPayConfig.getRETURN_URL();
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					
+                    String SEND_URL = send_url;
+                    Order order = orderService.queryBysql("from Order where otherOrderID="+"'"+out_trade_no+"'");
+	    			String  resultcode = order.getIsPushed();
+	    			if(resultcode==null || resultcode.equals(""))
+	    			{
+	    				try {
+		    		        //创建连接
+		    		        URL url = new URL(SEND_URL);
+		    		        HttpURLConnection connection = (HttpURLConnection) url
+		    		                .openConnection();
+		    		        connection.setDoOutput(true);
+		    		        connection.setDoInput(true);
+		    		        connection.setRequestMethod("POST");
+		    		        /* connection.setRequestProperty("Authorization", token);*/
+		    		        connection.setUseCaches(false);
+		    		        connection.setInstanceFollowRedirects(true);
+		    		        connection.setRequestProperty("Content-Type","application/json");
+		    		        connection.connect();
+		    		        
+		    		        //POST请求
+		    		        DataOutputStream out = new DataOutputStream(
+		    		                connection.getOutputStream());
+		    		        JSONObject obj = new JSONObject();
+		    		        obj.put("out_trade_no", out_trade_no);
+		    		        obj.put("status", "0200");
+		    		        obj.put("message", "微信支付验签成功");
+		    		        System.err.println("通知第三方服务器");
+		    		        
+		    		        out.writeBytes(obj.toString());
+		    		        out.flush();
+		    		        out.close();
+		    			} catch (Exception e)
+		    			{
+		    				e.printStackTrace();
+		    			}
+	    				order.setIsPushed("1");
+	    				orderService.update(order);
+	    				payRecord.setPayStatus("1");
+			            payRecordService.update(payRecord);
+	    			}
+	    			else
+	    			{
+	    				System.err.println("已经推送了，不需要推送了");
+	    				order.setIsPushed("1");
+	    				orderService.update(order);
+	    			}
                 }
             }
+            else
+            {
+                PayRecord payRecord = payRecordService.get(out_trade_no);
+                String send_url="";
+                String appid = "";
+				try {
+					appid = map.get("appid");
+					System.err.println("获取到的APPID是:"+appid);
+                    WeixinPayConfig weixinPayConfig = weixinPayConfigService.queryBysql("from WeixinPayConfig where APP_ID="+"'"+appid+"'");
+                    send_url = weixinPayConfig.getRETURN_URL();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+                String SEND_URL = send_url;
+                Order order = orderService.queryBysql("from Order where otherOrderID="+"'"+out_trade_no+"'");
+    			String  resultcode = order.getIsPushed();
+    			if(resultcode==null || resultcode.equals(""))
+    			{
+    				try {
+	    		        //创建连接
+	    		        URL url = new URL(SEND_URL);
+	    		        HttpURLConnection connection = (HttpURLConnection) url
+	    		                .openConnection();
+	    		        connection.setDoOutput(true);
+	    		        connection.setDoInput(true);
+	    		        connection.setRequestMethod("POST");
+	    		        /* connection.setRequestProperty("Authorization", token);*/
+	    		        connection.setUseCaches(false);
+	    		        connection.setInstanceFollowRedirects(true);
+	    		        connection.setRequestProperty("Content-Type","application/json");
+	    		        connection.connect();
+	    		        
+	    		        //POST请求
+	    		        DataOutputStream out = new DataOutputStream(
+	    		                connection.getOutputStream());
+	    		        JSONObject obj = new JSONObject();
+	    		        obj.put("out_trade_no", out_trade_no);
+	    		        obj.put("status", "0604");
+	    		        obj.put("message", "微信支付验签失败");
+	    		        System.err.println("通知第三方服务器");
+	    		        
+	    		        out.writeBytes(obj.toString());
+	    		        out.flush();
+	    		        out.close();
+	    			} catch (Exception e)
+	    			{
+	    				e.printStackTrace();
+	    			}
+    				order.setIsPushed("1");
+    				orderService.update(order);
+    				payRecord.setPayStatus("1");
+		            payRecordService.update(payRecord);
+    			}
+            }
         }
+        return mapdata;
     }
+	 
+	@RequestMapping(value="receive",method=RequestMethod.GET)
+	public @ResponseBody Map<String, Object> receiveServer(@RequestParam String status,String out_trade_no){
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		if(status.equals("0200"))
+		{
+			
+			PayRecord payRecord = payRecordService.get(out_trade_no);
+			if(payRecord==null)
+			{
+				status = "0604";
+				message = "没有这个订单";
+			}
+			else
+			{
+				message = "支付成功!";
+				status = "0200";
+				payRecord.setPayStatus("1");
+				payRecordService.update(payRecord);
+			}
+		}
+		else
+		{
+			PayRecord payRecord = payRecordService.get(out_trade_no);
+			if(payRecord==null)
+			{
+				status = "0604";
+				message = "没有这个订单";
+			}
+			else
+			{
+				message = "支付失败!";
+				status = "0605";
+				payRecord.setPayStatus("0");
+				payRecordService.update(payRecord);
+			}
+		}
+		
+		map.put("status",status);
+		map.put("message", message);
+		map.remove("out_trade_no");
+		
+		return map;
+	}
 }

@@ -87,4 +87,63 @@ public class PrepayIdRequestHandler extends RequestHandler {
         }
         return prepayid;
     }
+    
+    // 提交预支付
+    public String sendWebPay() throws Exception {
+        String mweb_url = "";
+        Set es=super.getAllParameters().entrySet();
+        Iterator it=es.iterator();
+        StringBuffer sb = new StringBuffer("<xml>");
+        while(it.hasNext()){
+            Map.Entry entry = (Map.Entry) it.next();
+            String k = (String) entry.getKey();
+            String v = (String) entry.getValue();
+            sb.append("<"+k+">"+v+"</"+k+">");
+        }
+        sb.append("</xml>");
+        String params=sb.substring(0);
+        System.out.println("请求参数："+params);
+        String requestUrl = super.getGateUrl();
+        System.out.println("请求url："+requestUrl);
+        TenpayHttpClient httpClient = new TenpayHttpClient();
+        httpClient.setReqContent(requestUrl);
+        String resContent = "";
+        if (httpClient.callHttpPost(requestUrl, params)) {
+            resContent = httpClient.getResContent();
+            System.out.println("获取prepayid的返回值：\n"+resContent);
+            Map<String,String> map=XMLUtil.doXMLParse(resContent);
+            if(map.containsKey("mweb_url"))
+            	mweb_url=map.get("mweb_url");
+        }
+        return mweb_url;
+    }
+    
+    // 提交预支付
+    public String sendAppId() throws Exception {
+        String appid = "";
+        Set es=super.getAllParameters().entrySet();
+        Iterator it=es.iterator();
+        StringBuffer sb = new StringBuffer("<xml>");
+        while(it.hasNext()){
+            Map.Entry entry = (Map.Entry) it.next();
+            String k = (String) entry.getKey();
+            String v = (String) entry.getValue();
+            sb.append("<"+k+">"+v+"</"+k+">");
+        }
+        sb.append("</xml>");
+        String params=sb.substring(0);
+        System.out.println("请求参数："+params);
+        String requestUrl = super.getGateUrl();
+        System.out.println("请求url："+requestUrl);
+        TenpayHttpClient httpClient = new TenpayHttpClient();
+        httpClient.setReqContent(requestUrl);
+        String resContent = "";
+        if (httpClient.callHttpPost(requestUrl, params)) {
+            resContent = httpClient.getResContent();
+            Map<String,String> map=XMLUtil.doXMLParse(resContent);
+            if(map.containsKey("appid"))
+            	appid=map.get("appid");
+        }
+        return appid;
+    }
 }
