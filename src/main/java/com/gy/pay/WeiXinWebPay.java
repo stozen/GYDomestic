@@ -1201,12 +1201,18 @@ public class WeiXinWebPay {
 	    				orderService.update(order);
 	    				payRecord.setPayStatus("1");
 			            payRecordService.update(payRecord);
+			            mapdata.put("status","0200");
+			            mapdata.put("message","微信支付验签成功");
+			            mapdata.put("out_trade_no", out_trade_no);
 	    			}
 	    			else
 	    			{
 	    				System.err.println("已经推送了，不需要推送了");
 	    				order.setIsPushed("1");
 	    				orderService.update(order);
+	    				mapdata.put("status","0603");
+			            mapdata.put("message","已经推送了，不需要推送了");
+			            mapdata.put("out_trade_no", out_trade_no);
 	    			}
                 }
             }
@@ -1264,6 +1270,20 @@ public class WeiXinWebPay {
     				orderService.update(order);
     				payRecord.setPayStatus("1");
 		            payRecordService.update(payRecord);
+		            order.setIsPushed("1");
+    				orderService.update(order);
+    				mapdata.put("status","0604");
+		            mapdata.put("message","微信支付验签失败");
+		            mapdata.put("out_trade_no", out_trade_no);
+    			}
+    			else
+    			{
+    				System.err.println("已经推送了，不需要推送了");
+    				order.setIsPushed("1");
+    				orderService.update(order);
+    				mapdata.put("status","0603");
+		            mapdata.put("message","已经推送了，不需要推送了");
+		            mapdata.put("out_trade_no", out_trade_no);
     			}
             }
         }
