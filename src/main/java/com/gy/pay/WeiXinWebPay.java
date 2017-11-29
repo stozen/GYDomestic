@@ -783,6 +783,8 @@ public class WeiXinWebPay {
         /*Map<String, Object> map = new HashMap<String, Object>();*/
 		/*商户网站唯一订单号*/
 		String out_trade_no = ((String) map.get("orderid")).trim();
+		String spbill_create_ip = ((String) map.get("spbill_create_ip")).trim();
+		
 		/*查询订单详情里面是否有这个订单*/
 		OrderGoods orderGoods = orderGoodsService.query(Integer.parseInt(out_trade_no));
 		if(orderGoods == null)
@@ -856,7 +858,7 @@ public class WeiXinWebPay {
     	        System.err.println("订单号:"+number);
     	        prepayReqHandler.setParameter("out_trade_no", number);
     	        /*prepayReqHandler.setParameter("sign_type","MD5");*/
-    	        String spbill_create_ip=request.getRemoteAddr();
+    	        /*String spbill_create_ip=request.getRemoteAddr();*/
     	        prepayReqHandler.setParameter("spbill_create_ip", spbill_create_ip);
     	        String timestamp = WXUtil.getTimeStamp();
     	        prepayReqHandler.setParameter("time_start", timestamp);
@@ -996,7 +998,7 @@ public class WeiXinWebPay {
     	        System.err.println("订单号:"+number);
     	        prepayReqHandler.setParameter("out_trade_no", number);
     	        /*prepayReqHandler.setParameter("sign_type","MD5");*/
-    	        String spbill_create_ip=request.getRemoteAddr();
+    	        /*String spbill_create_ip=request.getRemoteAddr();*/
     	        prepayReqHandler.setParameter("spbill_create_ip", spbill_create_ip);
     	        String timestamp = WXUtil.getTimeStamp();
     	        prepayReqHandler.setParameter("time_start", timestamp);
