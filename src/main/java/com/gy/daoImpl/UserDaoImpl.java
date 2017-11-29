@@ -77,11 +77,17 @@ public class UserDaoImpl implements UserDao{
 		Session session = getSession();
 		User user = null;
 		try {
+			tx = session.beginTransaction();
 			user = (User)session.get(User.class, userid);
 			Hibernate.initialize(user);
+			tx.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			if(tx!=null)
+			{
+				tx.rollback();
+			}
 		} finally {
 			if(session!=null){
 				session.close();
