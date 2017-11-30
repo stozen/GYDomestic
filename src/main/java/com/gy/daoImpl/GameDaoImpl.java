@@ -425,6 +425,11 @@ public class GameDaoImpl implements GameDao {
 			{
 				tx.rollback();
 			}
+		} finally
+		{
+			if (session!=null) {
+				session.close();
+			}
 		}
 		return dataCounts;
 	}
