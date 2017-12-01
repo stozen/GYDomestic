@@ -92,9 +92,6 @@ public class UserDaoImpl implements UserDao{
 			if(session!=null){
 				session.close();
 			}
-			/*if(sessionFactory!=null){
-				sessionFactory.close();
-			}*/
 		}
 		return user;
 	}
@@ -424,12 +421,12 @@ public class UserDaoImpl implements UserDao{
 			{
 				tx.rollback();
 			}
-		} /*finally {
+		} finally {
 			if(session!=null)
 			{
 				session.close();
 			}
-		}*/
+		}
 		return users;
 	}
 
@@ -455,6 +452,10 @@ public class UserDaoImpl implements UserDao{
 			if(tx!=null)
 			{
 				tx.rollback();
+			}
+		} finally {
+			if(session!=null) {
+				session.close();
 			}
 		}
 		
@@ -483,6 +484,10 @@ public class UserDaoImpl implements UserDao{
 			{
 				tx.rollback();
 			}
+		} finally {
+			if(session!=null) {
+				session.close();
+			}
 		}
 		return dataCounts;
 	}
@@ -510,6 +515,10 @@ public class UserDaoImpl implements UserDao{
 			if(tx!=null) 
 			{
 				tx.rollback();
+			}
+		} finally {
+			if(session!=null) {
+				session.close();
 			}
 		}
 		return dataCounts;
