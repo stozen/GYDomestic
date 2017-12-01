@@ -135,15 +135,10 @@ public class UserDaoImpl implements UserDao{
     	int count = 0;
 		try {
 			tx = session.beginTransaction();
-			query = session.createSQLQuery("select * from tb_gyuser");
-			count = query.list().size();
-			tx.commit();
+			count = session.createSQLQuery("select * from tb_gyuser").list().size();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			if(tx!=null) {
-				tx.rollback();
-			}
 		} finally {
 			if(session!=null) {
 				session.close();
