@@ -421,10 +421,6 @@ public class GameDaoImpl implements GameDao {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			if(tx!=null)
-			{
-				tx.rollback();
-			}
 		} finally
 		{
 			if (session!=null) {
