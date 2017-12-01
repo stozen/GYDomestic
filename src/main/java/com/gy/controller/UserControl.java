@@ -330,7 +330,7 @@ public class UserControl {
 	public @ResponseBody Map<String, Object> queryForPage(@RequestParam String pageNo,String pageSize) {
 		Map<String, Object> map = new HashMap<String,Object>();
 		
-		if((pageNo.equals("") || "".equals("")) && (pageSize.equals("") || "".equals(pageSize)))
+		if((pageNo.equals(pageNo) || "".equals("")) && (pageSize.equals("") || "".equals(pageSize)))
 		{
 			status = "0602";
 			message = "查询的当前页码为空";
@@ -377,7 +377,7 @@ public class UserControl {
 		// TODO Auto-generated method stub
 		Map<String, Object> map = new HashMap<String, Object>();
 		
-		if((pageNo.equals("") || "".equals("")) && (pageSize.equals("") || "".equals(pageSize)))
+		if((pageNo.equals(pageNo) || "".equals(pageNo)) && (pageSize.equals("") || "".equals(pageSize)))
 		{
 			status = "0602";
 			message = "查询的当前页码为空";

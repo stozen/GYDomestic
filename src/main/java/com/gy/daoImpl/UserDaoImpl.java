@@ -144,6 +144,10 @@ public class UserDaoImpl implements UserDao{
 			if(tx!=null) {
 				tx.rollback();
 			}
+		} finally {
+			if(session!=null) {
+				session.close();
+			}
 		}
         return count;  
     }
