@@ -105,17 +105,13 @@ public class GameDaoImpl implements GameDao {
 			tx.commit();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			if(tx!=null)
-			{
-				tx.rollback();
-			}
 			e.printStackTrace();
-		} /*finally {
+		} finally {
 			if(session!=null)
 			{
 				session.close();
 			}
-		}*/
+		}
 		
 		return games;
 	}
